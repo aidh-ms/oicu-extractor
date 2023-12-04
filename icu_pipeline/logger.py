@@ -2,7 +2,7 @@ import logging
 import colorlog
 
 
-class CustomLogger:
+class ICUPLogger:
     def __init__(self):
         self._logger: logging.Logger = logging.getLogger()  # Get the root logger
         self._logger.setLevel(logging.INFO)  # Set your desired log level

@@ -1,3 +1,4 @@
 psycopg[binary]
 SQLAlchemy
 pandas
+colorlog

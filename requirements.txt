@@ -2,3 +2,4 @@ psycopg[binary]
 SQLAlchemy
 pandas
 colorlog
+pandera

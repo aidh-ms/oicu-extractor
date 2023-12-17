@@ -1,5 +1,6 @@
 psycopg[binary]
 SQLAlchemy
-pandas
+pandas==2.1.3
+pandas-stubs==2.1.1.230928
 colorlog
-pandera
+pandera[mypy]

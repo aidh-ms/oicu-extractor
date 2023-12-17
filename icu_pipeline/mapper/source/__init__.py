@@ -63,11 +63,11 @@ class AbstractSourceMapper(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _to_fihr(self, df: DataFrame) -> DataFrame:
+    def _to_fihr(self, df: DataFrame) -> DataFrame[AbstractFHIRSinkSchema]:
         raise NotImplementedError
 
     @abstractmethod
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame:
+    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
         raise NotImplementedError
 
 

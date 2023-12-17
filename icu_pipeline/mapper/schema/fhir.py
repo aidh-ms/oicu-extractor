@@ -20,12 +20,12 @@ class ValueQuantity(TypedDict):
 
 
 class AbstractFHIRSinkSchema(AbstractSinkSchema):
-    identifier: Series[Identifier]
+    identifier: Series[Identifier]  # type: ignore[type-var]
 
 
 class FHIRObservation(AbstractFHIRSinkSchema):
     _SINK_NAME = "observation"
 
-    subject: Series[Subject]
+    subject: Series[Subject]  # type: ignore[type-var]
     effective_date_time: Series[Annotated[pd.DatetimeTZDtype, "ns", "utc"]]
-    value_quantity: Series[ValueQuantity]
+    value_quantity: Series[ValueQuantity]  # type: ignore[type-var]

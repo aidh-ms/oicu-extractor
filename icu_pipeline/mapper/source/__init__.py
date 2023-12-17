@@ -1,7 +1,7 @@
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
 from enum import StrEnum, auto
-from typing import Generator
+from typing import Generator, Any, Generic, TypeVar
 
 import pandas as pd
 from pandera.typing import DataFrame
@@ -10,6 +10,9 @@ from sqlalchemy import create_engine
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
+
+F = TypeVar("F", bound=AbstractFHIRSinkSchema)
+O = TypeVar("O", bound=AbstractOHDSISinkSchema)
 
 
 class DataSource(StrEnum):
@@ -22,7 +25,7 @@ class SourceMapperConfiguration:
     chunksize: int = 10000
 
 
-class AbstractSourceMapper(ABC):
+class AbstractSourceMapper(ABC, Generic[F, O]):
     def __init__(
         self,
         snomed_id: str,
@@ -59,23 +62,25 @@ class AbstractSourceMapper(ABC):
             self._sink_mapper.to_output_format(df, self._ohdsi_schema)
 
     @abstractmethod
-    def get_data(self) -> Generator[DataFrame, None, None]:
+    def get_data(self) -> Generator[pd.DataFrame, None, None]:
         raise NotImplementedError
 
     @abstractmethod
-    def _to_fihr(self, df: DataFrame) -> DataFrame:
+    def _to_fihr(self, df: DataFrame) -> DataFrame[F]:
         raise NotImplementedError
 
     @abstractmethod
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame:
+    def _to_ohdsi(self, df: DataFrame) -> DataFrame[O]:
         raise NotImplementedError
 
 
-class AbstractDatabaseSourceMapper(AbstractSourceMapper, metaclass=ABCMeta):
+class AbstractDatabaseSourceMapper(
+    AbstractSourceMapper, Generic[F, O], metaclass=ABCMeta
+):
     SQL_QUERY: str
-    SQL_PARAMS: dict[str, str]
+    SQL_PARAMS: dict[str, Any]
 
-    def get_data(self) -> Generator[DataFrame, None, None]:
+    def get_data(self) -> Generator[pd.DataFrame, None, None]:
         engine = create_engine(self._source_config.connection)
         with engine.connect().execution_options(
             stream_results=True

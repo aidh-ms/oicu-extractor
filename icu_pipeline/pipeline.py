@@ -1,3 +1,5 @@
+from typing import Type
+
 from icu_pipeline.concept import AbstractSnomedConcept
 from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
 from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
@@ -6,7 +8,7 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 class Pipeline:
     def __init__(
         self,
-        concepts: list[AbstractSnomedConcept],
+        concepts: list[Type[AbstractSnomedConcept]],
         sink_mapper: AbstractSinkMapper,
         mapping_format: MappingFormat,
         source_mapper_configs: dict[DataSource, SourceMapperConfiguration],

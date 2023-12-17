@@ -4,6 +4,7 @@ import pandas as pd
 from pandera.typing import DataFrame
 
 from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper
+from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.schema.fhir import (
     Identifier,
     Subject,
@@ -12,7 +13,10 @@ from icu_pipeline.mapper.schema.fhir import (
 )
 
 
-class AbstractMimicLabEventsMapper(AbstractDatabaseSourceMapper, metaclass=ABCMeta):
+class AbstractMimicLabEventsMapper(
+    AbstractDatabaseSourceMapper[FHIRObservation, AbstractOHDSISinkSchema],
+    metaclass=ABCMeta,
+):
     SQL_QUERY = "SELECT * FROM mimiciv_hosp.labevents WHERE itemid = any(%(values)s);"
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
@@ -34,9 +38,9 @@ class AbstractMimicLabEventsMapper(AbstractDatabaseSourceMapper, metaclass=ABCMe
             Identifier(value=self._snomed_id)
         ] * len(df)
 
-        return observation_df
+        return observation_df.pipe(DataFrame[FHIRObservation])
 
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame:
+    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
         raise NotImplementedError
 
 

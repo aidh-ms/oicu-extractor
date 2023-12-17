@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Type
 
 from icu_pipeline.mapper.source import AbstractSourceMapper, DataSource
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
@@ -9,9 +10,9 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 
 class AbstractSnomedConcept(ABC):
     SNOMED_ID: str
-    FHIR_SCHEMA: AbstractFHIRSinkSchema
-    OHDSI_SCHEMA: AbstractOHDSISinkSchema
-    MAPPER: dict[DataSource, AbstractSourceMapper]
+    FHIR_SCHEMA: Type[AbstractFHIRSinkSchema]
+    OHDSI_SCHEMA: Type[AbstractOHDSISinkSchema]
+    MAPPER: dict[DataSource, Type[AbstractSourceMapper]]
 
     def __init__(
         self,

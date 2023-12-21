@@ -62,3 +62,11 @@ class TemperatureFahrenheitMapper(AbstractMimicChartEventsMapper):
         )
 
         return observation_df.pipe(DataFrame[FHIRObservation])
+
+
+class HeightMapper(AbstractMimicChartEventsMapper):
+    SQL_PARAMS = {"values": [226730]}
+
+
+class WeightMapper(AbstractMimicChartEventsMapper):
+    SQL_PARAMS = {"values": [226512]}

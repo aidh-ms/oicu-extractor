@@ -28,6 +28,8 @@ from icu_pipeline.mapper.source.mimic.chartevent import (
     OxygenSaturationMapper,
     TemperatureMapper,
     TemperatureFahrenheitMapper,
+    WeightMapper,
+    HeightMapper,
 )
 from icu_pipeline.mapper.source.mimic.derived import UrineOutputMapper
 
@@ -191,3 +193,17 @@ class Temperature(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: [TemperatureFahrenheitMapper, TemperatureMapper]}
+
+
+class Height(AbstractSnomedConcept):
+    SNOMED_ID = "1153637007"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: HeightMapper}
+
+
+class Weight(AbstractSnomedConcept):
+    SNOMED_ID = "726527001"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: WeightMapper}

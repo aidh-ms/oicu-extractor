@@ -13,3 +13,7 @@ class MimicSerumCreatinineMapper(AbstractMimicLabEventsMapper):
 
 class UreaMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [52647, 51006]}
+
+
+class HbMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50811, 51222, 51640]}

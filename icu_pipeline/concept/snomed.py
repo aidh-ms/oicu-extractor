@@ -5,6 +5,7 @@ from icu_pipeline.mapper.source import DataSource
 from icu_pipeline.mapper.source.mimic.labevents import (
     MimicSerumCreatinineMapper,
     UreaMapper,
+    HbMapper,
 )
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeartRateMapper,
@@ -86,3 +87,10 @@ class Urea(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: UreaMapper}
+
+
+class Hb(AbstractSnomedConcept):
+    SNOMED_ID = "104141003"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: HbMapper}

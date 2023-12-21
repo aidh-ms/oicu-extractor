@@ -1,48 +1,59 @@
 from abc import ABCMeta
 
-import pandas as pd
-from pandera.typing import DataFrame
-
-from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper
-from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
-from icu_pipeline.mapper.schema.fhir import (
-    Identifier,
-    Subject,
-    ValueQuantity,
-    FHIRObservation,
-)
+from icu_pipeline.mapper.source.mimic import AbstractMimicEventsMapper
 
 
-class AbstractMimicLabEventsMapper(
-    AbstractDatabaseSourceMapper[FHIRObservation, AbstractOHDSISinkSchema],
-    metaclass=ABCMeta,
-):
+class AbstractMimicLabEventsMapper(AbstractMimicEventsMapper, metaclass=ABCMeta):
     SQL_QUERY = "SELECT * FROM mimiciv_hosp.labevents WHERE itemid = any(%(values)s);"
-
-    def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
-        observation_df = pd.DataFrame()
-
-        observation_df[FHIRObservation.subject] = df["subject_id"].map(
-            lambda id: Subject(reference=str(id))
-        )
-        observation_df[FHIRObservation.effective_date_time] = pd.to_datetime(
-            df["charttime"], utc=True
-        )
-        observation_df[FHIRObservation.value_quantity] = df.apply(
-            lambda _df: ValueQuantity(
-                value=float(_df["valuenum"]), unit=_df["valueuom"]
-            ),
-            axis=1,
-        )
-        observation_df[FHIRObservation.identifier] = [
-            Identifier(value=self._snomed_id)
-        ] * len(df)
-
-        return observation_df.pipe(DataFrame[FHIRObservation])
-
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
-        raise NotImplementedError
 
 
 class MimicSerumCreatinineMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50912, 52546]}
+
+
+class UreaMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [52647, 51006]}
+
+
+class HbMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50811, 51222, 51640]}
+
+
+class ArterialBloodLactateMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50813, 52442]}
+
+
+class BloodSodiumMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50824, 50983, 52455, 52623]}
+
+
+class PotassiumMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50822, 50971, 52452, 52610]}
+
+
+class ChlorideMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50902, 50806, 52434, 52535]}
+
+
+class BilirubineMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [53089, 50885]}
+
+
+class GOTASTMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50878]}
+
+
+class GPTAPTMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50861]}
+
+
+class GGTMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50927]}
+
+
+class SerumLDHMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50954]}
+
+
+class INRMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [51675]}

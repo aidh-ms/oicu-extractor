@@ -13,10 +13,15 @@ from icu_pipeline.mapper.schema.fhir import (
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 
 
-class AbstractMimicEventsMapper(
+class AbstractPatientMapper(
     AbstractDatabaseSourceMapper[FHIRObservation, AbstractOHDSISinkSchema],
     metaclass=ABCMeta,
 ):
+    SQL_QUERY = "SELECT * FROM mimiciv_hosp.patients;"
+    SQL_PARAMS = {}
+    VALUE_FIELD: str
+    UNIT: str = ""
+
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
         observation_df = pd.DataFrame()
 
@@ -24,10 +29,10 @@ class AbstractMimicEventsMapper(
             lambda id: Reference(reference=str(id), type="Patient")
         )
         observation_df[FHIRObservation.effective_date_time] = pd.to_datetime(
-            df["charttime"], utc=True
+            df["anchor_year"], format="%Y", utc=True  # TODO: Use first encouter date
         )
         observation_df[FHIRObservation.value_quantity] = df.apply(
-            lambda _df: Quantity(value=float(_df["valuenum"]), unit=_df["valueuom"]),
+            lambda _df: Quantity(value=float(_df[self.VALUE_FIELD]), unit=self.UNIT),
             axis=1,
         )
         observation_df[FHIRObservation.identifier] = [
@@ -38,3 +43,12 @@ class AbstractMimicEventsMapper(
 
     def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
         raise NotImplementedError
+
+
+class AgeMapper(AbstractPatientMapper):
+    VALUE_FIELD = "anchor_age"
+    UNIT = "years"
+
+
+class GenderMapper(AbstractPatientMapper):
+    VALUE_FIELD = "gender"

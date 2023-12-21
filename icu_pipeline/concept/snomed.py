@@ -13,6 +13,7 @@ from icu_pipeline.mapper.source.mimic.labevents import (
     BilirubineMapper,
     GOTASTMapper,
     GPTAPTMapper,
+    GGTMapper,
 )
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeartRateMapper,
@@ -150,3 +151,10 @@ class GPTAPT(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: GPTAPTMapper}
+
+
+class GGT(AbstractSnomedConcept):
+    SNOMED_ID = "60153001"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: GGTMapper}

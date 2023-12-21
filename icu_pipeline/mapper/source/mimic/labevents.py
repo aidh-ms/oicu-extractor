@@ -45,3 +45,7 @@ class GOTASTMapper(AbstractMimicLabEventsMapper):
 
 class GPTAPTMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50861]}
+
+
+class GGTMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50927]}

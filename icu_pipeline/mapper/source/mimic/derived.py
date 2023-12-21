@@ -54,10 +54,10 @@ class AbstractBgMapper(
     AbstractDatabaseSourceMapper[FHIRObservation, AbstractOHDSISinkSchema],
     metaclass=ABCMeta,
 ):
-    SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE specimen = 'ART.';"
+    SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE specimen = 'ART.';"  # and %(field)s IS NOT NULL;"
+    VALUE_FIELD: str
     SQL_PARAMS = {}
     UNIT: str = ""
-    VALUE_FIELD: str
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
         observation_df = pd.DataFrame()
@@ -99,4 +99,10 @@ class ArterialBicarbonateMapper(AbstractBgMapper):
 
 
 class ArterialBaseexcessMapper(AbstractBgMapper):
+    SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE specimen = 'ART.' and baseexcess IS NOT NULL;"
     VALUE_FIELD = "baseexcess"
+
+
+class FiO2Mapper(AbstractBgMapper):
+    SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE fio2 IS NOT NULL;"
+    VALUE_FIELD = "fio2"

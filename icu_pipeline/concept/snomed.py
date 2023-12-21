@@ -38,6 +38,7 @@ from icu_pipeline.mapper.source.mimic.derived import (
     ArterialPHMapper,
     ArterialBicarbonateMapper,
     ArterialBaseexcessMapper,
+    FiO2Mapper,
 )
 
 
@@ -249,3 +250,10 @@ class ArterialBaseexcess(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: ArterialBaseexcessMapper}
+
+
+class FiO2(AbstractSnomedConcept):
+    SNOMED_ID = "250774007"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: FiO2Mapper}

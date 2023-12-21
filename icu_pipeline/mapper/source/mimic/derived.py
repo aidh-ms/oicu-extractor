@@ -88,3 +88,15 @@ class ArterialPO2Mapper(AbstractBgMapper):
 
 class ArterialPCO2Mapper(AbstractBgMapper):
     VALUE_FIELD = "pco2"
+
+
+class ArterialPHMapper(AbstractBgMapper):
+    VALUE_FIELD = "ph"
+
+
+class ArterialBicarbonateMapper(AbstractBgMapper):
+    VALUE_FIELD = "bicarbonate"
+
+
+class ArterialBaseexcessMapper(AbstractBgMapper):
+    VALUE_FIELD = "baseexcess"

@@ -8,6 +8,8 @@ from icu_pipeline.mapper.source.mimic.labevents import (
     HbMapper,
     ArterialBloodLactateMapper,
     BloodSodiumMapper,
+    PotassiumMapper,
+    ChlorideMapper,
 )
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeartRateMapper,
@@ -110,3 +112,17 @@ class BloodSodium(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: BloodSodiumMapper}
+
+
+class Potassium(AbstractSnomedConcept):
+    SNOMED_ID = "312468003"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: PotassiumMapper}
+
+
+class Chloride(AbstractSnomedConcept):
+    SNOMED_ID = "312468003"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: ChlorideMapper}

@@ -17,3 +17,7 @@ class SystolicBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
 
 class DiastolicBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220051]}
+
+
+class MeanArterialBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
+    SQL_PARAMS = {"values": [220052]}

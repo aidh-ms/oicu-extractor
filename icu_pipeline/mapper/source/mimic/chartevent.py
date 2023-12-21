@@ -1,5 +1,12 @@
 from abc import ABCMeta
 
+import pandas as pd
+from pandera.typing import DataFrame
+
+from icu_pipeline.mapper.schema.fhir import (
+    Quantity,
+)
+from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 from icu_pipeline.mapper.source.mimic import AbstractMimicEventsMapper
 
 
@@ -37,3 +44,21 @@ class MeanArterialBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper)
 
 class OxygenSaturationMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220277]}
+
+
+class TemperatureMapper(AbstractMimicChartEventsMapper):
+    SQL_PARAMS = {"values": [226329, 223762]}
+
+
+class TemperatureFahrenheitMapper(AbstractMimicChartEventsMapper):
+    SQL_PARAMS = {"values": [223761]}
+
+    def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
+        observation_df = super()._to_fihr(df)
+        observation_df[FHIRObservation.value_quantity] = observation_df[
+            FHIRObservation.value_quantity
+        ].map(
+            lambda quantity: Quantity(value=(quantity["value"] - 32) * 5 / 9, unit="°C")
+        )
+
+        return observation_df.pipe(DataFrame[FHIRObservation])

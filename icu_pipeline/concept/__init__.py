@@ -12,7 +12,9 @@ class AbstractSnomedConcept(ABC):
     SNOMED_ID: str
     FHIR_SCHEMA: Type[AbstractFHIRSinkSchema]
     OHDSI_SCHEMA: Type[AbstractOHDSISinkSchema]
-    MAPPER: dict[DataSource, Type[AbstractSourceMapper]]
+    MAPPER: dict[
+        DataSource, Type[AbstractSourceMapper] | list[Type[AbstractSourceMapper]]
+    ]
 
     def __init__(
         self,
@@ -28,13 +30,26 @@ class AbstractSnomedConcept(ABC):
 
     def map(self):
         for source, source_mapper in self.MAPPER.items():
-            mapper = source_mapper(
-                self.SNOMED_ID,
-                self.FHIR_SCHEMA,
-                self.OHDSI_SCHEMA,
-                self._source_mapper_configs[source],
-                self._sink_mapper,
-                self._mapping_format,
-            )
+            if not isinstance(source_mapper, list):
+                self._map(source_mapper, source)
+                continue
 
-            mapper.map()
+            source_mappers = source_mapper
+            for source_mapper in source_mappers:
+                self._map(source_mapper, source)
+
+    def _map(
+        self,
+        source_mapper: Type[AbstractSourceMapper],
+        source: Type[AbstractSourceMapper],
+    ):
+        mapper = source_mapper(
+            self.SNOMED_ID,
+            self.FHIR_SCHEMA,
+            self.OHDSI_SCHEMA,
+            self._source_mapper_configs[source],
+            self._sink_mapper,
+            self._mapping_format,
+        )
+
+        mapper.map()

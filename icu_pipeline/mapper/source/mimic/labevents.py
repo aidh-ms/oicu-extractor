@@ -9,3 +9,7 @@ class AbstractMimicLabEventsMapper(AbstractMimicEventsMapper, metaclass=ABCMeta)
 
 class MimicSerumCreatinineMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50912, 52546]}
+
+
+class UreaMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [52647, 51006]}

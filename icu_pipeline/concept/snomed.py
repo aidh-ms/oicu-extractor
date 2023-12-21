@@ -27,6 +27,7 @@ from icu_pipeline.mapper.source.mimic.chartevent import (
     MeanArterialBloodPressureNonInvasiveMapper,
     OxygenSaturationMapper,
 )
+from icu_pipeline.mapper.source.mimic.derived import UrineOutputMapper
 
 
 class SerumCreatinine(AbstractSnomedConcept):
@@ -174,3 +175,10 @@ class INR(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: INRMapper}
+
+
+class UrineOutput(AbstractSnomedConcept):
+    SNOMED_ID = "404231008"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: UrineOutputMapper}

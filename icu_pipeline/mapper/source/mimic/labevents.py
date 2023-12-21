@@ -41,3 +41,7 @@ class BilirubineMapper(AbstractMimicLabEventsMapper):
 
 class GOTASTMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50878]}
+
+
+class GPTAPTMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50861]}

@@ -12,6 +12,7 @@ from icu_pipeline.mapper.source.mimic.labevents import (
     ChlorideMapper,
     BilirubineMapper,
     GOTASTMapper,
+    GPTAPTMapper,
 )
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeartRateMapper,
@@ -138,7 +139,14 @@ class Bilirubine(AbstractSnomedConcept):
 
 
 class GOTAST(AbstractSnomedConcept):
-    SNOMED_ID = "250637003"
+    SNOMED_ID = "45896001"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: GOTASTMapper}
+
+
+class GPTAPT(AbstractSnomedConcept):
+    SNOMED_ID = "250637003"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: GPTAPTMapper}

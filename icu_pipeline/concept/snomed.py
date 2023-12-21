@@ -1,9 +1,12 @@
 from icu_pipeline.concept import AbstractSnomedConcept
-from icu_pipeline.mapper.schema.fhir import FHIRObservation
+from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.source import DataSource
 from icu_pipeline.mapper.source.mimic.labevents import MimicSerumCreatinineMapper
-from icu_pipeline.mapper.source.mimic.chartevent import MimicHeartRateMapper
+from icu_pipeline.mapper.source.mimic.chartevent import (
+    MimicHeartRateMapper,
+    SystolicBloodPressureInvasiveMapper,
+)
 
 
 class SerumCreatinine(AbstractSnomedConcept):
@@ -18,3 +21,10 @@ class HeartRate(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: MimicHeartRateMapper}
+
+
+class SystolicBloodPressureInvasive(AbstractSnomedConcept):
+    SNOMED_ID = "251071003"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: SystolicBloodPressureInvasiveMapper}

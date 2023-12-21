@@ -6,6 +6,7 @@ from icu_pipeline.mapper.source.mimic.labevents import MimicSerumCreatinineMappe
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeartRateMapper,
     SystolicBloodPressureInvasiveMapper,
+    DiastolicBloodPressureInvasiveMapper,
 )
 
 
@@ -28,3 +29,10 @@ class SystolicBloodPressureInvasive(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: SystolicBloodPressureInvasiveMapper}
+
+
+class DiastolicBloodPressureInvasive(AbstractSnomedConcept):
+    SNOMED_ID = "251073000"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: DiastolicBloodPressureInvasiveMapper}

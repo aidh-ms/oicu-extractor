@@ -13,3 +13,7 @@ class MimicHeartRateMapper(AbstractMimicChartEventsMapper):
 
 class SystolicBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220050]}
+
+
+class DiastolicBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
+    SQL_PARAMS = {"values": [220051]}

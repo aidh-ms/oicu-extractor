@@ -31,7 +31,11 @@ from icu_pipeline.mapper.source.mimic.chartevent import (
     WeightMapper,
     HeightMapper,
 )
-from icu_pipeline.mapper.source.mimic.derived import UrineOutputMapper
+from icu_pipeline.mapper.source.mimic.derived import (
+    UrineOutputMapper,
+    ArterialPCO2Mapper,
+    ArterialPO2Mapper,
+)
 
 
 class SerumCreatinine(AbstractSnomedConcept):
@@ -207,3 +211,17 @@ class Weight(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: WeightMapper}
+
+
+class ArterialPO2(AbstractSnomedConcept):
+    SNOMED_ID = "25579001"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: ArterialPO2Mapper}
+
+
+class ArterialPCO2(AbstractSnomedConcept):
+    SNOMED_ID = "167028004"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: ArterialPCO2Mapper}

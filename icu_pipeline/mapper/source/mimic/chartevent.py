@@ -29,3 +29,11 @@ class SystolicBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
 
 class DiastolicBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220180]}
+
+
+class MeanArterialBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
+    SQL_PARAMS = {"values": [220181]}
+
+
+class OxygenSaturationMapper(AbstractMimicChartEventsMapper):
+    SQL_PARAMS = {"values": [220277]}

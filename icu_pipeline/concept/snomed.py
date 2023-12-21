@@ -10,6 +10,8 @@ from icu_pipeline.mapper.source.mimic.chartevent import (
     MeanArterialBloodPressureInvasiveMapper,
     SystolicBloodPressureNonInvasiveMapper,
     DiastolicBloodPressureNonInvasiveMapper,
+    MeanArterialBloodPressureNonInvasiveMapper,
+    OxygenSaturationMapper,
 )
 
 
@@ -60,3 +62,17 @@ class DiastolicBloodPressureNonInvasive(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: DiastolicBloodPressureNonInvasiveMapper}
+
+
+class MeanArterialBloodPressureNonInvasive(AbstractSnomedConcept):
+    SNOMED_ID = "251074006"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: MeanArterialBloodPressureNonInvasiveMapper}
+
+
+class OxygenSaturation(AbstractSnomedConcept):
+    SNOMED_ID = "431314004"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: OxygenSaturationMapper}

@@ -33,3 +33,7 @@ class PotassiumMapper(AbstractMimicLabEventsMapper):
 
 class ChlorideMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50902, 50806, 52434, 52535]}
+
+
+class BilirubineMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [53089, 50885]}

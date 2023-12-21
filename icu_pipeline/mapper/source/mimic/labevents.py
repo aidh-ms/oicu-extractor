@@ -49,3 +49,11 @@ class GPTAPTMapper(AbstractMimicLabEventsMapper):
 
 class GGTMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50927]}
+
+
+class SerumLDHMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50954]}
+
+
+class INRMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [51675]}

@@ -40,6 +40,7 @@ from icu_pipeline.mapper.source.mimic.derived import (
     ArterialBaseexcessMapper,
     FiO2Mapper,
 )
+from icu_pipeline.mapper.source.mimic.patient import AgeMapper, GenderMapper
 
 
 class SerumCreatinine(AbstractSnomedConcept):
@@ -257,3 +258,17 @@ class FiO2(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: FiO2Mapper}
+
+
+class Age(AbstractSnomedConcept):
+    SNOMED_ID = "424144002"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: AgeMapper}
+
+
+class Gender(AbstractSnomedConcept):
+    SNOMED_ID = "263495000"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: GenderMapper}

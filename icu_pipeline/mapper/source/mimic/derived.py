@@ -54,9 +54,9 @@ class AbstractBgMapper(
     AbstractDatabaseSourceMapper[FHIRObservation, AbstractOHDSISinkSchema],
     metaclass=ABCMeta,
 ):
-    SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE specimen = 'ART.';"  # and %(field)s IS NOT NULL;"
-    VALUE_FIELD: str
+    SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE specimen = 'ART.';"
     SQL_PARAMS = {}
+    VALUE_FIELD: str
     UNIT: str = ""
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:

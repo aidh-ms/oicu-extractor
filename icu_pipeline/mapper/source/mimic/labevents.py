@@ -21,3 +21,7 @@ class HbMapper(AbstractMimicLabEventsMapper):
 
 class ArterialBloodLactateMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50813, 52442]}
+
+
+class BloodSodiumMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50824, 50983, 52455, 52623]}

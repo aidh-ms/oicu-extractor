@@ -57,7 +57,7 @@ class AbstractBgMapper(
     SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE specimen = 'ART.';"
     SQL_PARAMS = {}
     VALUE_FIELD: str
-    UNIT: str = ""
+    UNIT: str = "mmHg"
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
         observation_df = pd.DataFrame()

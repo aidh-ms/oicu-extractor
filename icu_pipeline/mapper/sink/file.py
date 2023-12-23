@@ -30,4 +30,6 @@ class CSVFileSinkMapper(AbstractSinkMapper):
             df = df.join(pd.json_normalize(df[column]).add_prefix(f"{column}__"))  # type: ignore[arg-type]
             df = df.drop(columns=[column])
 
+        df.columns = df.columns.str.replace(".", "__")
+
         df.to_csv(file_path, mode="a+", index=False, header=header)

@@ -6,7 +6,7 @@ from icu_pipeline.mapper.schema.fhir import (
     AbstractFHIRSinkSchema,
     Reference,
     Quantity,
-    CodeableConcept,
+    CodeableReference,
     Period,
 )
 
@@ -19,7 +19,7 @@ class Dosage(TypedDict):
 class FHIRMedicationStatement(AbstractFHIRSinkSchema):
     _SINK_NAME = "medicationstatement"
 
-    medication: Series[CodeableConcept]  # type: ignore[type-var]
     subject: Series[Reference]  # type: ignore[type-var]
-    effective_period: Series[Period]
+    effective_period: Series[Period]  # type: ignore[type-var]
+    medication: Series[CodeableReference]  # type: ignore[type-var]
     dosage: Series[Dosage]  # type: ignore[type-var]

@@ -277,7 +277,7 @@ class Gender(AbstractSnomedConcept):
 
 
 class Norepinephrine(AbstractSnomedConcept):
-    SNOMED_ID = "263495000"
+    SNOMED_ID = "45555007"
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: NorepinephrineMapper}

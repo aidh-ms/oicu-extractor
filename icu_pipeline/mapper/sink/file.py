@@ -16,12 +16,15 @@ class CSVFileSinkMapper(AbstractSinkMapper):
         self,
         df: pd.DataFrame,
         schema: AbstractSinkSchema,
+        snomed_id: str,
     ) -> None:
-        file_path = self._path / f"{schema._SINK_NAME}.csv"
+        file_path = self._path / f"{schema._SINK_NAME}" / f"{snomed_id}.csv"
 
         header = False
         if not file_path.exists():
             header = True
+
+        file_path.parent.mkdir(parents=True, exist_ok=True)
 
         for column in df.columns:
             if not isinstance(df[column][0], dict):

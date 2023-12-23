@@ -1,14 +1,6 @@
-from typing import TypedDict, Annotated
-
-import pandas as pd
-from pandera.typing import Series
+from typing import TypedDict, Type
 
 from icu_pipeline.mapper.schema import AbstractSinkSchema
-
-
-class Identifier(TypedDict):
-    value: str
-    system: str
 
 
 class Reference(TypedDict):
@@ -21,5 +13,14 @@ class Quantity(TypedDict):
     unit: str
 
 
+class Coding(TypedDict):
+    code: str
+    system: str
+
+
+class CodeableConcept(TypedDict):
+    coding: Coding
+
+
 class AbstractFHIRSinkSchema(AbstractSinkSchema):
-    identifier: Series[Identifier]  # type: ignore[type-var]
+    pass

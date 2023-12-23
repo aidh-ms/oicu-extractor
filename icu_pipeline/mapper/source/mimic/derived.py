@@ -6,7 +6,8 @@ from pandera.typing import DataFrame
 from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.schema.fhir import (
-    Identifier,
+    CodeableConcept,
+    Coding,
     Reference,
     Quantity,
 )
@@ -40,8 +41,8 @@ class UrineOutputMapper(
             lambda _df: Quantity(value=float(_df["urineoutput"]), unit="ml"),
             axis=1,
         )
-        observation_df[FHIRObservation.identifier] = [
-            Identifier(value=self._snomed_id, system="snomed")
+        observation_df[FHIRObservation.code] = [
+            CodeableConcept(coding=Coding(code=self._snomed_id, system="snomed"))
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])
@@ -72,8 +73,8 @@ class AbstractBgMapper(
             lambda _df: Quantity(value=float(_df[self.VALUE_FIELD]), unit=self.UNIT),
             axis=1,
         )
-        observation_df[FHIRObservation.identifier] = [
-            Identifier(value=self._snomed_id, system="snomed")
+        observation_df[FHIRObservation.code] = [
+            CodeableConcept(coding=Coding(code=self._snomed_id, system="snomed"))
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])

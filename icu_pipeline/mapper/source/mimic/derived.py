@@ -6,12 +6,14 @@ from pandera.typing import DataFrame
 from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.schema.fhir import (
+    CodeableReference,
     CodeableConcept,
     Coding,
     Reference,
     Quantity,
 )
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
+from icu_pipeline.mapper.schema.fhir.deviceusage import FHIRDeviceUsage
 
 
 class UrineOutputMapper(
@@ -107,3 +109,32 @@ class ArterialBaseexcessMapper(AbstractBgMapper):
 class FiO2Mapper(AbstractBgMapper):
     SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE fio2 IS NOT NULL;"
     VALUE_FIELD = "fio2"
+
+
+class DialysisMapper(
+    AbstractDatabaseSourceMapper[FHIRDeviceUsage, AbstractOHDSISinkSchema],
+):
+    SQL_QUERY = """SELECT mimiciv_derived.rrt.*, subject_id FROM mimiciv_derived.rrt JOIN mimiciv_icu.icustays ON mimiciv_derived.rrt.stay_id=mimiciv_icu.icustays.stay_id"""
+    SQL_PARAMS = {}
+
+    def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRDeviceUsage]:
+        observation_df = pd.DataFrame()
+
+        observation_df[FHIRDeviceUsage.patient] = df["subject_id"].map(
+            lambda id: Reference(reference=str(id), type="Patient")
+        )
+        observation_df[FHIRDeviceUsage.timing_date_time] = pd.to_datetime(
+            df["charttime"], utc=True
+        )
+        observation_df[FHIRDeviceUsage.device] = [
+            CodeableReference(
+                concept=CodeableConcept(
+                    coding=Coding(code=self._snomed_id, system="snomed")
+                )
+            )
+        ] * len(df)
+
+        return observation_df.pipe(DataFrame[FHIRDeviceUsage])
+
+    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
+        raise NotImplementedError

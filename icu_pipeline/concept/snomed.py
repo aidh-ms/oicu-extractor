@@ -42,7 +42,10 @@ from icu_pipeline.mapper.source.mimic.derived import (
     FiO2Mapper,
 )
 from icu_pipeline.mapper.source.mimic.patient import AgeMapper, GenderMapper
-from icu_pipeline.mapper.source.mimic.inputevents import NorepinephrineMapper
+from icu_pipeline.mapper.source.mimic.inputevents import (
+    NorepinephrineMapper,
+    AdrenalineMapper,
+)
 
 
 class SerumCreatinine(AbstractSnomedConcept):
@@ -281,3 +284,10 @@ class Norepinephrine(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: NorepinephrineMapper}
+
+
+class Adrenaline(AbstractSnomedConcept):
+    SNOMED_ID = "387362001"
+    FHIR_SCHEMA = FHIRMedicationStatement
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: AdrenalineMapper}

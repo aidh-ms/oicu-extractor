@@ -58,3 +58,7 @@ class AbstractMimicInputEventMapper(
 
 class NorepinephrineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [221906]}
+
+
+class AdrenalineMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [221289, 229617]}

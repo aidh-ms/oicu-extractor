@@ -1,14 +1,9 @@
 from typing import TypedDict, Annotated
 
 import pandas as pd
-from pandera.typing import Series
+from pydantic import PlainValidator
 
 from icu_pipeline.mapper.schema import AbstractSinkSchema
-
-
-class Identifier(TypedDict):
-    value: str
-    system: str
 
 
 class Reference(TypedDict):
@@ -21,5 +16,23 @@ class Quantity(TypedDict):
     unit: str
 
 
+class Period(TypedDict):
+    start: Annotated[pd.Timestamp, PlainValidator(lambda x: pd.Timestamp(x))]
+    end: Annotated[pd.Timestamp, PlainValidator(lambda x: pd.Timestamp(x))]
+
+
+class Coding(TypedDict):
+    code: str
+    system: str
+
+
+class CodeableConcept(TypedDict):
+    coding: Coding
+
+
+class CodeableReference(TypedDict):
+    concept: CodeableConcept
+
+
 class AbstractFHIRSinkSchema(AbstractSinkSchema):
-    identifier: Series[Identifier]  # type: ignore[type-var]
+    pass

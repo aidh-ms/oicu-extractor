@@ -54,12 +54,12 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
     def to_fihr(self):
         for df in self.get_data():
             df = self._to_fihr(df).pipe(self._fhir_schema)
-            self._sink_mapper.to_output_format(df, self._fhir_schema)
+            self._sink_mapper.to_output_format(df, self._fhir_schema, self._snomed_id)
 
     def to_ohdsi(self):
         for df in self.get_data():
             df = self._to_ohdsi(df).pipe(self._ohdsi_schema)
-            self._sink_mapper.to_output_format(df, self._ohdsi_schema)
+            self._sink_mapper.to_output_format(df, self._ohdsi_schema, self._snomed_id)
 
     @abstractmethod
     def get_data(self) -> Generator[pd.DataFrame, None, None]:

@@ -6,7 +6,8 @@ from pandera.typing import DataFrame
 from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.schema.fhir import (
-    Identifier,
+    CodeableConcept,
+    Coding,
     Reference,
     Quantity,
 )
@@ -40,8 +41,8 @@ class UrineOutputMapper(
             lambda _df: Quantity(value=float(_df["urineoutput"]), unit="ml"),
             axis=1,
         )
-        observation_df[FHIRObservation.identifier] = [
-            Identifier(value=self._snomed_id, system="snomed")
+        observation_df[FHIRObservation.code] = [
+            CodeableConcept(coding=Coding(code=self._snomed_id, system="snomed"))
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])
@@ -57,7 +58,7 @@ class AbstractBgMapper(
     SQL_QUERY = "SELECT * FROM mimiciv_derived.bg WHERE specimen = 'ART.';"
     SQL_PARAMS = {}
     VALUE_FIELD: str
-    UNIT: str = ""
+    UNIT: str = "mmHg"
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
         observation_df = pd.DataFrame()
@@ -72,8 +73,8 @@ class AbstractBgMapper(
             lambda _df: Quantity(value=float(_df[self.VALUE_FIELD]), unit=self.UNIT),
             axis=1,
         )
-        observation_df[FHIRObservation.identifier] = [
-            Identifier(value=self._snomed_id, system="snomed")
+        observation_df[FHIRObservation.code] = [
+            CodeableConcept(coding=Coding(code=self._snomed_id, system="snomed"))
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])

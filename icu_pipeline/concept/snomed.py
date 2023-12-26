@@ -46,6 +46,7 @@ from icu_pipeline.mapper.source.mimic.inputevents import (
     NorepinephrineMapper,
     AdrenalineMapper,
     VasopressineMapper,
+    DobutamineMapper,
 )
 
 
@@ -299,3 +300,10 @@ class Vasopressine(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: VasopressineMapper}
+
+
+class Dobutamine(AbstractSnomedConcept):
+    SNOMED_ID = "387145002"
+    FHIR_SCHEMA = FHIRMedicationStatement
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: DobutamineMapper}

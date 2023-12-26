@@ -6,9 +6,7 @@ from pandera.typing import Series
 from icu_pipeline.mapper.schema.fhir import (
     AbstractFHIRSinkSchema,
     Reference,
-    Quantity,
     CodeableReference,
-    Period,
 )
 
 

@@ -70,3 +70,7 @@ class VasopressineMapper(AbstractMimicInputEventMapper):
 
 class DobutamineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [221653]}
+
+
+class VancomycineMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [225798]}

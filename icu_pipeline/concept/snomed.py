@@ -1,6 +1,7 @@
 from icu_pipeline.concept import AbstractSnomedConcept
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 from icu_pipeline.mapper.schema.fhir.medication import FHIRMedicationStatement
+from icu_pipeline.mapper.schema.fhir.deviceusage import FHIRDeviceUsage
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.source import DataSource
 from icu_pipeline.mapper.source.mimic.labevents import (
@@ -40,6 +41,7 @@ from icu_pipeline.mapper.source.mimic.derived import (
     ArterialBicarbonateMapper,
     ArterialBaseexcessMapper,
     FiO2Mapper,
+    DialysisMapper,
 )
 from icu_pipeline.mapper.source.mimic.patient import AgeMapper, GenderMapper
 from icu_pipeline.mapper.source.mimic.inputevents import (
@@ -315,3 +317,10 @@ class Vancomycine(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: VancomycineMapper}
+
+
+class Dialysis(AbstractSnomedConcept):
+    SNOMED_ID = "108241001"
+    FHIR_SCHEMA = FHIRDeviceUsage
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: DialysisMapper}

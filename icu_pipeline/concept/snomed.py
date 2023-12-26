@@ -45,6 +45,7 @@ from icu_pipeline.mapper.source.mimic.patient import AgeMapper, GenderMapper
 from icu_pipeline.mapper.source.mimic.inputevents import (
     NorepinephrineMapper,
     AdrenalineMapper,
+    VasopressineMapper,
 )
 
 
@@ -291,3 +292,10 @@ class Adrenaline(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: AdrenalineMapper}
+
+
+class Vasopressine(AbstractSnomedConcept):
+    SNOMED_ID = "77671006"
+    FHIR_SCHEMA = FHIRMedicationStatement
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: VasopressineMapper}

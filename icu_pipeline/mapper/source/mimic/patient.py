@@ -10,9 +10,7 @@ class GenderMapper(AbstractMimicEventsMapper):
             END valuenum
         FROM mimiciv_hosp.patients;
     """
-    SQL_PARAMS = {}
 
 
 class AgeMapper(AbstractMimicEventsMapper):
     SQL_QUERY = "SELECT *, anchor_year as charttime, anchor_age as valuenum, 'years' as valueuom FROM mimiciv_hosp.patients;"  # fmt: skip
-    SQL_PARAMS = {}

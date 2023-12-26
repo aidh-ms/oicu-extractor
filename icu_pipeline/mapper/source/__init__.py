@@ -78,7 +78,7 @@ class AbstractDatabaseSourceMapper(
     AbstractSourceMapper, Generic[F, O], metaclass=ABCMeta
 ):
     SQL_QUERY: str
-    SQL_PARAMS: dict[str, Any]
+    SQL_PARAMS: dict[str, Any] = {}
 
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
         engine = create_engine(self._source_config.connection)

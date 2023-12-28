@@ -17,5 +17,6 @@ class AbstractSinkMapper(ABC):
         self,
         df: DataFrame[AbstractSinkSchema],
         schema: AbstractSinkSchema,
+        id: str,
     ) -> None:
         raise NotImplementedError

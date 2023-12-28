@@ -2,6 +2,7 @@ from icu_pipeline.concept import AbstractSnomedConcept
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 from icu_pipeline.mapper.schema.fhir.medication import FHIRMedicationStatement
 from icu_pipeline.mapper.schema.fhir.deviceusage import FHIRDeviceUsage
+from icu_pipeline.mapper.schema.fhir.encounter import FHIREncounter
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.source import DataSource
 from icu_pipeline.mapper.source.mimic.labevents import (
@@ -51,6 +52,7 @@ from icu_pipeline.mapper.source.mimic.inputevents import (
     DobutamineMapper,
     VancomycineMapper,
 )
+from icu_pipeline.mapper.source.mimic.icustays import ICUEncounterMapper
 
 
 class SerumCreatinine(AbstractSnomedConcept):
@@ -324,3 +326,10 @@ class Dialysis(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRDeviceUsage
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: DialysisMapper}
+
+
+class ICUEncounter(AbstractSnomedConcept):
+    SNOMED_ID = "meta"
+    FHIR_SCHEMA = FHIREncounter
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: ICUEncounterMapper}

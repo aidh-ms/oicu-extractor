@@ -1,4 +1,4 @@
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import Type
 
 from icu_pipeline.mapper.source import AbstractSourceMapper, DataSource
@@ -44,23 +44,3 @@ class AbstractConcept(ABC):
         source: Type[AbstractSourceMapper],
     ) -> None:
         raise NotImplementedError
-
-
-class AbstractSnomedConcept(AbstractConcept, metaclass=ABCMeta):
-    SNOMED_ID: str
-
-    def _map(
-        self,
-        source_mapper: Type[AbstractSourceMapper],
-        source: Type[AbstractSourceMapper],
-    ):
-        mapper = source_mapper(
-            self.SNOMED_ID,
-            self.FHIR_SCHEMA,
-            self.OHDSI_SCHEMA,
-            self._source_mapper_configs[source],
-            self._sink_mapper,
-            self._mapping_format,
-        )
-
-        mapper.map()

@@ -59,21 +59,21 @@ class DialysisMapper(
     SQL_PARAMS = {}
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRDeviceUsage]:
-        observation_df = pd.DataFrame()
+        device_usage_df = pd.DataFrame()
 
-        observation_df[FHIRDeviceUsage.patient] = df["subject_id"].map(
+        device_usage_df[FHIRDeviceUsage.patient] = df["subject_id"].map(
             lambda id: Reference(reference=str(id), type="Patient")
         )
-        observation_df[FHIRDeviceUsage.timing_date_time] = pd.to_datetime(
+        device_usage_df[FHIRDeviceUsage.timing_date_time] = pd.to_datetime(
             df["charttime"], utc=True
         )
-        observation_df[FHIRDeviceUsage.device] = [
+        device_usage_df[FHIRDeviceUsage.device] = [
             CodeableReference(
                 concept=CodeableConcept(coding=Coding(code=self._id, system="snomed"))
             )
         ] * len(df)
 
-        return observation_df.pipe(DataFrame[FHIRDeviceUsage])
+        return device_usage_df.pipe(DataFrame[FHIRDeviceUsage])
 
     def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
         raise NotImplementedError

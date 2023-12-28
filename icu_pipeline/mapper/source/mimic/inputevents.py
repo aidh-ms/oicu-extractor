@@ -23,24 +23,24 @@ class AbstractMimicInputEventMapper(
     SQL_QUERY = "SELECT * FROM mimiciv_icu.inputevents WHERE itemid = any(%(values)s);"
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRMedicationStatement]:
-        observation_df = pd.DataFrame()
+        medication_df = pd.DataFrame()
 
-        observation_df[FHIRMedicationStatement.subject] = df["subject_id"].map(
+        medication_df[FHIRMedicationStatement.subject] = df["subject_id"].map(
             lambda id: Reference(reference=str(id), type="Patient")
         )
-        observation_df[FHIRMedicationStatement.effective_period] = df.apply(
+        medication_df[FHIRMedicationStatement.effective_period] = df.apply(
             lambda _df: Period(
                 start=pd.to_datetime(_df["starttime"], utc=True),
                 end=pd.to_datetime(_df["endtime"], utc=True),
             ),
             axis=1,
         )
-        observation_df[FHIRMedicationStatement.medication] = [
+        medication_df[FHIRMedicationStatement.medication] = [
             CodeableReference(
                 concept=CodeableConcept(coding=Coding(code=self._id, system="snomed"))
             )
         ] * len(df)
-        observation_df[FHIRMedicationStatement.dosage] = df.apply(
+        medication_df[FHIRMedicationStatement.dosage] = df.apply(
             lambda _df: Dosage(
                 dose_quantity=Quantity(value=_df["amount"], unit=_df["amountuom"]),
                 rate_quantity=Quantity(value=_df["rate"], unit=_df["rateuom"]),
@@ -48,7 +48,7 @@ class AbstractMimicInputEventMapper(
             axis=1,
         )
 
-        return observation_df.pipe(DataFrame[FHIRMedicationStatement])
+        return medication_df.pipe(DataFrame[FHIRMedicationStatement])
 
     def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
         raise NotImplementedError

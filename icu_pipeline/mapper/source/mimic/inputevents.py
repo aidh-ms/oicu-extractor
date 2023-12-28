@@ -37,7 +37,9 @@ class AbstractMimicInputEventMapper(
         )
         medication_df[FHIRMedicationStatement.medication] = [
             CodeableReference(
-                concept=CodeableConcept(coding=Coding(code=self._id, system="snomed"))
+                concept=CodeableConcept(
+                    coding=Coding(code=self._id, system=self._id_type)
+                )
             )
         ] * len(df)
         medication_df[FHIRMedicationStatement.dosage] = df.apply(

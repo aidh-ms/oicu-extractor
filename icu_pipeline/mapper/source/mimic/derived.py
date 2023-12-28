@@ -69,7 +69,9 @@ class DialysisMapper(
         )
         device_usage_df[FHIRDeviceUsage.device] = [
             CodeableReference(
-                concept=CodeableConcept(coding=Coding(code=self._id, system="snomed"))
+                concept=CodeableConcept(
+                    coding=Coding(code=self._id, system=self._id_type)
+                )
             )
         ] * len(df)
 

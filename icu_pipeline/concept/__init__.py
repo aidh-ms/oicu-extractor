@@ -9,6 +9,7 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 
 
 class AbstractConcept(ABC):
+    CONCEPT_TYPE: str
     FHIR_SCHEMA: Type[AbstractFHIRSinkSchema]
     OHDSI_SCHEMA: Type[AbstractOHDSISinkSchema]
     MAPPER: dict[

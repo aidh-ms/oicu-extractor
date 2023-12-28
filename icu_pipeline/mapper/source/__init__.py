@@ -1,7 +1,7 @@
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, abstractmethod, ABCMeta
 from dataclasses import dataclass
 from enum import StrEnum, auto
-from typing import Generator, Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, Type, Generator
 
 import pandas as pd
 from pandera.typing import DataFrame
@@ -29,8 +29,8 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
     def __init__(
         self,
         id: str,
-        fhir_schema: AbstractFHIRSinkSchema,
-        ohdsi_schema: AbstractOHDSISinkSchema,
+        fhir_schema: Type[AbstractFHIRSinkSchema],
+        ohdsi_schema: Type[AbstractOHDSISinkSchema],
         source_mapper_config: SourceMapperConfiguration,
         sink_mapper: AbstractSinkMapper,
         mapping_format: MappingFormat = MappingFormat.FHIR,

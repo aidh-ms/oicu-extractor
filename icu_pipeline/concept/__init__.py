@@ -41,6 +41,6 @@ class AbstractConcept(ABC):
     def _map(
         self,
         source_mapper: Type[AbstractSourceMapper],
-        source: Type[AbstractSourceMapper],
+        source: DataSource,
     ) -> None:
         raise NotImplementedError

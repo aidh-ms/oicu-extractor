@@ -2,19 +2,19 @@ from abc import ABCMeta
 from typing import Type
 
 from icu_pipeline.concept import AbstractConcept
-from icu_pipeline.mapper.source import AbstractSourceMapper
+from icu_pipeline.mapper.source import AbstractSourceMapper, DataSource
 
 
 class AbstractMetaConcept(AbstractConcept, metaclass=ABCMeta):
-    Meta_ID: str
+    META_ID: str
 
     def _map(
         self,
         source_mapper: Type[AbstractSourceMapper],
-        source: Type[AbstractSourceMapper],
+        source: DataSource,
     ):
         mapper = source_mapper(
-            self.Meta_ID,
+            self.META_ID,
             self.FHIR_SCHEMA,
             self.OHDSI_SCHEMA,
             self._source_mapper_configs[source],

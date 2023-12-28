@@ -62,7 +62,7 @@ class DialysisMapper(
         device_usage_df = pd.DataFrame()
 
         device_usage_df[FHIRDeviceUsage.patient] = df["subject_id"].map(
-            lambda id: Reference(reference=str(id), type="Patient")
+            lambda id: Reference(reference=str(id), type="MIMIC-Patient")
         )
         device_usage_df[FHIRDeviceUsage.timing_date_time] = pd.to_datetime(
             df["charttime"], utc=True

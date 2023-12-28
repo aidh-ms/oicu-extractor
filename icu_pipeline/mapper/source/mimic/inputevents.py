@@ -26,7 +26,7 @@ class AbstractMimicInputEventMapper(
         medication_df = pd.DataFrame()
 
         medication_df[FHIRMedicationStatement.subject] = df["subject_id"].map(
-            lambda id: Reference(reference=str(id), type="Patient")
+            lambda id: Reference(reference=str(id), type="MIMIC-Patient")
         )
         medication_df[FHIRMedicationStatement.effective_period] = df.apply(
             lambda _df: Period(

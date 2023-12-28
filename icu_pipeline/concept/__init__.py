@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, ABCMeta, abstractmethod
 from typing import Type
 
 from icu_pipeline.mapper.source import AbstractSourceMapper, DataSource
@@ -8,8 +8,7 @@ from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
 from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 
 
-class AbstractSnomedConcept(ABC):
-    SNOMED_ID: str
+class AbstractConcept(ABC):
     FHIR_SCHEMA: Type[AbstractFHIRSinkSchema]
     OHDSI_SCHEMA: Type[AbstractOHDSISinkSchema]
     MAPPER: dict[
@@ -37,6 +36,18 @@ class AbstractSnomedConcept(ABC):
             source_mappers = source_mapper
             for source_mapper in source_mappers:
                 self._map(source_mapper, source)
+
+    @abstractmethod
+    def _map(
+        self,
+        source_mapper: Type[AbstractSourceMapper],
+        source: Type[AbstractSourceMapper],
+    ) -> None:
+        raise NotImplementedError
+
+
+class AbstractSnomedConcept(AbstractConcept, metaclass=ABCMeta):
+    SNOMED_ID: str
 
     def _map(
         self,

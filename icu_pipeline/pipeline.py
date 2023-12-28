@@ -1,7 +1,7 @@
 from multiprocessing import Pool
 from typing import Type
 
-from icu_pipeline.concept import AbstractSnomedConcept
+from icu_pipeline.concept import AbstractConcept
 from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
 from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 
@@ -9,7 +9,7 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 class Pipeline:
     def __init__(
         self,
-        concepts: list[Type[AbstractSnomedConcept]],
+        concepts: list[Type[AbstractConcept]],
         sink_mapper: AbstractSinkMapper,
         mapping_format: MappingFormat,
         source_mapper_configs: dict[DataSource, SourceMapperConfiguration],
@@ -21,7 +21,7 @@ class Pipeline:
         self._source_mapper_configs = source_mapper_configs
         self._processes = processes
 
-    def _worker_func(self, concept: AbstractSnomedConcept):
+    def _worker_func(self, concept: AbstractConcept):
         concept.map()
 
     def transfrom(self):

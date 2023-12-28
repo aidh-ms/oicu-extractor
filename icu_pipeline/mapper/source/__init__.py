@@ -28,7 +28,7 @@ class SourceMapperConfiguration:
 class AbstractSourceMapper(ABC, Generic[F, O]):
     def __init__(
         self,
-        snomed_id: str,
+        id: str,
         fhir_schema: AbstractFHIRSinkSchema,
         ohdsi_schema: AbstractOHDSISinkSchema,
         source_mapper_config: SourceMapperConfiguration,
@@ -37,7 +37,7 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
     ) -> None:
         super().__init__()
 
-        self._snomed_id = snomed_id
+        self._id = id
         self._fhir_schema = fhir_schema
         self._ohdsi_schema = ohdsi_schema
         self._source_config = source_mapper_config
@@ -54,12 +54,12 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
     def to_fihr(self):
         for df in self.get_data():
             df = self._to_fihr(df).pipe(self._fhir_schema)
-            self._sink_mapper.to_output_format(df, self._fhir_schema, self._snomed_id)
+            self._sink_mapper.to_output_format(df, self._fhir_schema, self._id)
 
     def to_ohdsi(self):
         for df in self.get_data():
             df = self._to_ohdsi(df).pipe(self._ohdsi_schema)
-            self._sink_mapper.to_output_format(df, self._ohdsi_schema, self._snomed_id)
+            self._sink_mapper.to_output_format(df, self._ohdsi_schema, self._id)
 
     @abstractmethod
     def get_data(self) -> Generator[pd.DataFrame, None, None]:

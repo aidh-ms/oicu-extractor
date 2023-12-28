@@ -326,10 +326,3 @@ class Dialysis(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRDeviceUsage
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: DialysisMapper}
-
-
-class ICUEncounter(AbstractSnomedConcept):
-    SNOMED_ID = "meta"
-    FHIR_SCHEMA = FHIREncounter
-    OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: ICUEncounterMapper}

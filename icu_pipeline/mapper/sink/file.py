@@ -16,9 +16,9 @@ class CSVFileSinkMapper(AbstractSinkMapper):
         self,
         df: pd.DataFrame,
         schema: AbstractSinkSchema,
-        snomed_id: str,
+        id: str,
     ) -> None:
-        file_path = self._path / f"{schema._SINK_NAME}" / f"{snomed_id}.csv"
+        file_path = self._path / f"{schema._SINK_NAME}" / f"{id}.csv"
 
         header = False
         if not file_path.exists():

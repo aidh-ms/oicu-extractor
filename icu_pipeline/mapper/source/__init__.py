@@ -1,7 +1,7 @@
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, abstractmethod, ABCMeta
 from dataclasses import dataclass
 from enum import StrEnum, auto
-from typing import Generator, Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, Type, Generator
 
 import pandas as pd
 from pandera.typing import DataFrame
@@ -28,16 +28,16 @@ class SourceMapperConfiguration:
 class AbstractSourceMapper(ABC, Generic[F, O]):
     def __init__(
         self,
-        snomed_id: str,
-        fhir_schema: AbstractFHIRSinkSchema,
-        ohdsi_schema: AbstractOHDSISinkSchema,
+        id: str,
+        fhir_schema: Type[AbstractFHIRSinkSchema],
+        ohdsi_schema: Type[AbstractOHDSISinkSchema],
         source_mapper_config: SourceMapperConfiguration,
         sink_mapper: AbstractSinkMapper,
         mapping_format: MappingFormat = MappingFormat.FHIR,
     ) -> None:
         super().__init__()
 
-        self._snomed_id = snomed_id
+        self._id = id
         self._fhir_schema = fhir_schema
         self._ohdsi_schema = ohdsi_schema
         self._source_config = source_mapper_config
@@ -54,12 +54,12 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
     def to_fihr(self):
         for df in self.get_data():
             df = self._to_fihr(df).pipe(self._fhir_schema)
-            self._sink_mapper.to_output_format(df, self._fhir_schema, self._snomed_id)
+            self._sink_mapper.to_output_format(df, self._fhir_schema, self._id)
 
     def to_ohdsi(self):
         for df in self.get_data():
             df = self._to_ohdsi(df).pipe(self._ohdsi_schema)
-            self._sink_mapper.to_output_format(df, self._ohdsi_schema, self._snomed_id)
+            self._sink_mapper.to_output_format(df, self._ohdsi_schema, self._id)
 
     @abstractmethod
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
@@ -78,7 +78,7 @@ class AbstractDatabaseSourceMapper(
     AbstractSourceMapper, Generic[F, O], metaclass=ABCMeta
 ):
     SQL_QUERY: str
-    SQL_PARAMS: dict[str, Any]
+    SQL_PARAMS: dict[str, Any] = {}
 
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
         engine = create_engine(self._source_config.connection)

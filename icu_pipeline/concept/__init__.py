@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Type
 
-from icu_pipeline.mapper.source import AbstractSourceMapper, DataSource
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
-from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
+from icu_pipeline.mapper.source import (
+    SourceMapperConfiguration,
+    DataSource,
+    AbstractSourceMapper,
+)
 
 
 class AbstractConcept(ABC):

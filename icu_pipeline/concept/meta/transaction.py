@@ -6,7 +6,7 @@ from icu_pipeline.mapper.source.mimic.icustays import ICUEncounterMapper
 
 
 class ICUEncounter(AbstractMetaConcept):
-    META_ID = "icu_encounter"
+    CONCEPT_ID = "icu_encounter"
     FHIR_SCHEMA = FHIREncounter
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: ICUEncounterMapper}

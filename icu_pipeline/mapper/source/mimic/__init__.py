@@ -32,7 +32,9 @@ class AbstractMimicEventsMapper(
             axis=1,
         )
         observation_df[FHIRObservation.code] = [
-            CodeableConcept(coding=Coding(code=self._id, system=self._id_type))
+            CodeableConcept(
+                coding=Coding(code=self._concept_id, system=self._concept_type)
+            )
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])

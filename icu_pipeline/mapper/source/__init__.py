@@ -28,8 +28,8 @@ class SourceMapperConfiguration:
 class AbstractSourceMapper(ABC, Generic[F, O]):
     def __init__(
         self,
-        id: str,
-        id_type: str,
+        concept_id: str,
+        concept_type: str,
         fhir_schema: Type[AbstractFHIRSinkSchema],
         ohdsi_schema: Type[AbstractOHDSISinkSchema],
         source_mapper_config: SourceMapperConfiguration,
@@ -38,8 +38,8 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
     ) -> None:
         super().__init__()
 
-        self._id = id
-        self._id_type = id_type
+        self._concept_id = concept_id
+        self._concept_type = concept_type
         self._fhir_schema = fhir_schema
         self._ohdsi_schema = ohdsi_schema
         self._source_config = source_mapper_config

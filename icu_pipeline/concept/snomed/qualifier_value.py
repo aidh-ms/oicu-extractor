@@ -8,7 +8,7 @@ from icu_pipeline.mapper.source.mimic.chartevent import (
 
 
 class Weight(AbstractSnomedConcept):
-    SNOMED_ID = "726527001"
+    CONCEPT_ID = "726527001"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: WeightMapper}

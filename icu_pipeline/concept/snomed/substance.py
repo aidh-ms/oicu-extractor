@@ -13,35 +13,35 @@ from icu_pipeline.mapper.source.mimic.inputevents import (
 
 
 class Norepinephrine(AbstractSnomedConcept):
-    SNOMED_ID = "45555007"
+    CONCEPT_ID = "45555007"
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: NorepinephrineMapper}
 
 
 class Adrenaline(AbstractSnomedConcept):
-    SNOMED_ID = "387362001"
+    CONCEPT_ID = "387362001"
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: AdrenalineMapper}
 
 
 class Vasopressine(AbstractSnomedConcept):
-    SNOMED_ID = "77671006"
+    CONCEPT_ID = "77671006"
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: VasopressineMapper}
 
 
 class Dobutamine(AbstractSnomedConcept):
-    SNOMED_ID = "387145002"
+    CONCEPT_ID = "387145002"
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: DobutamineMapper}
 
 
 class Vancomycine(AbstractSnomedConcept):
-    SNOMED_ID = "372735009"
+    CONCEPT_ID = "372735009"
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: VancomycineMapper}

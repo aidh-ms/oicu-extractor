@@ -1,6 +1,7 @@
+import logging
 import unittest
 from io import StringIO
-import logging
+
 from icu_pipeline.logger import ICUPLogger
 
 
@@ -40,7 +41,3 @@ class LoggerTestCase(unittest.TestCase):
 
         self.assertIn(message, log_output)
         self.assertIn("error", log_output)
-
-
-if __name__ == "__main__":
-    unittest.main()

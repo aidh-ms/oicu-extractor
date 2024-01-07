@@ -23,7 +23,7 @@ class ICUEncounterMapper(
         encounter_df = pd.DataFrame()
 
         encounter_df[FHIREncounter.subject] = df["subject_id"].map(
-            lambda id: Reference(reference=str(id), type="Patient")
+            lambda id: Reference(reference=str(id), type="MIMIC-Patient")
         )
         encounter_df[FHIREncounter.actual_period] = df.apply(
             lambda _df: Period(

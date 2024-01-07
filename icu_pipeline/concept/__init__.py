@@ -9,6 +9,8 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 
 
 class AbstractConcept(ABC):
+    CONCEPT_ID: str
+    CONCEPT_TYPE: str
     FHIR_SCHEMA: Type[AbstractFHIRSinkSchema]
     OHDSI_SCHEMA: Type[AbstractOHDSISinkSchema]
     MAPPER: dict[
@@ -44,3 +46,20 @@ class AbstractConcept(ABC):
         source: DataSource,
     ) -> None:
         raise NotImplementedError
+
+    def _map(
+        self,
+        source_mapper: Type[AbstractSourceMapper],
+        source: DataSource,
+    ):
+        mapper = source_mapper(
+            self.CONCEPT_ID,
+            self.CONCEPT_TYPE,
+            self.FHIR_SCHEMA,
+            self.OHDSI_SCHEMA,
+            self._source_mapper_configs[source],
+            self._sink_mapper,
+            self._mapping_format,
+        )
+
+        mapper.map()

@@ -74,3 +74,15 @@ class DobutamineMapper(AbstractMimicInputEventMapper):
 
 class VancomycineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [225798]}
+
+
+class Dextrose5PercentMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [220949]}
+
+
+class NaClMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [225158]}
+
+
+class Albumine20PercentMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [220861]}

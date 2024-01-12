@@ -11,7 +11,7 @@ from icu_pipeline.mapper.source.mimic.inputevents import (
     VancomycineMapper,
     Dextrose5PercentMapper,
     NaClMapper,
-    Albumine20PercentMapper
+    Albumine25PercentMapper,
 )
 
 
@@ -50,8 +50,7 @@ class Vancomycine(AbstractSnomedConcept):
     MAPPER = {DataSource.MIMIC: VancomycineMapper}
 
 
-
-class Dextrose5Persent(AbstractSnomedConcept):
+class Dextrose5Percent(AbstractSnomedConcept):
     CONCEPT_ID = "100347000"
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
@@ -65,8 +64,8 @@ class NaCl(AbstractSnomedConcept):
     MAPPER = {DataSource.MIMIC: NaClMapper}
 
 
-class Albumine20Percent(AbstractSnomedConcept):
+class Albumine25Percent(AbstractSnomedConcept):
     CONCEPT_ID = "347435009"
     FHIR_SCHEMA = FHIRMedicationStatement
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: Albumine20PercentMapper}
+    MAPPER = {DataSource.MIMIC: Albumine25PercentMapper}

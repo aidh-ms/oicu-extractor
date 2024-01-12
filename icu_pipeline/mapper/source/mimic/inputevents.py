@@ -84,5 +84,5 @@ class NaClMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [225158]}
 
 
-class Albumine20PercentMapper(AbstractMimicInputEventMapper):
-    SQL_PARAMS = {"values": [220861]}
+class Albumine25PercentMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [220862]}

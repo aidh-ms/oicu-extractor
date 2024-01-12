@@ -68,7 +68,7 @@ class PlateletCountMapper(AbstractMimicLabEventsMapper):
 
 
 class CRPMapper(AbstractMimicLabEventsMapper):
-    SQL_PARAMS = {"values": [51652]}
+    SQL_PARAMS = {"values": [50889]}
 
 
 class GlucoseMapper(AbstractMimicLabEventsMapper):

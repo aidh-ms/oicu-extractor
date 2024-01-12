@@ -57,3 +57,31 @@ class SerumLDHMapper(AbstractMimicLabEventsMapper):
 
 class INRMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [51675]}
+
+
+class LeukocyteCountMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [51301, 51755, 51756]}
+
+
+class PlateletCountMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [51265, 51704]}
+
+
+class CRPMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [51652]}
+
+
+class GlucoseMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50931, 52027, 52569]}
+
+
+class MagnesiumMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50960]}
+
+
+class CalciumMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50893, 52034, 52035]}
+
+
+class PhosphateMapper(AbstractMimicLabEventsMapper):
+    SQL_PARAMS = {"values": [50970]}

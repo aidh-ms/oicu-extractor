@@ -20,6 +20,13 @@ from icu_pipeline.mapper.source.mimic.derived import (
 )
 from icu_pipeline.mapper.source.mimic.labevents import (
     ArterialBloodLactateMapper,
+    LeukocyteCountMapper,
+    PlateletCountMapper,
+    CRPMapper,
+    GlucoseMapper,
+    MagnesiumMapper,
+    CalciumMapper,
+    PhosphateMapper,
 )
 from icu_pipeline.mapper.source.mimic.patient import (
     AgeMapper,
@@ -133,3 +140,52 @@ class Gender(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {DataSource.MIMIC: GenderMapper}
+
+
+class LeukocyteCount(AbstractSnomedConcept):
+    CONCEPT_ID = "4298431"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: LeukocyteCountMapper}
+
+
+class PlateletCount(AbstractSnomedConcept):
+    CONCEPT_ID = "4267147"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: PlateletCountMapper}
+
+
+class CRP(AbstractSnomedConcept):
+    CONCEPT_ID = "37398482"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: CRPMapper}
+
+
+class Glucose(AbstractSnomedConcept):
+    CONCEPT_ID = "37399654"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: GlucoseMapper}
+
+
+class Magnesium(AbstractSnomedConcept):
+    CONCEPT_ID = "4243005"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: MagnesiumMapper}
+
+
+class Calcium(AbstractSnomedConcept):
+    CONCEPT_ID = "4193434"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: CalciumMapper}
+
+
+class Phosphate(AbstractSnomedConcept):
+    CONCEPT_ID = "4194292"
+    FHIR_SCHEMA = FHIRObservation
+    OHDSI_SCHEMA = AbstractOHDSISinkSchema
+    MAPPER = {DataSource.MIMIC: PhosphateMapper}

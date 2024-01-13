@@ -18,6 +18,8 @@ class AbstractMimicEventsMapper(
     AbstractDatabaseSourceMapper[FHIRObservation, AbstractOHDSISinkSchema],
     metaclass=ABCMeta,
 ):
+    UNIT = ""
+
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
         observation_df = pd.DataFrame()
 
@@ -28,7 +30,9 @@ class AbstractMimicEventsMapper(
             df["charttime"], utc=True
         )
         observation_df[FHIRObservation.value_quantity] = df.apply(
-            lambda _df: Quantity(value=float(_df["valuenum"]), unit=_df["valueuom"]),
+            lambda _df: Quantity(
+                value=float(_df["valuenum"]), unit=_df["valueuom"] or self.UNIT
+            ),
             axis=1,
         )
         observation_df[FHIRObservation.code] = [

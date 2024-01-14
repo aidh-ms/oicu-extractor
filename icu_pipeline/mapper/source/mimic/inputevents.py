@@ -21,6 +21,8 @@ class AbstractMimicInputEventMapper(
     metaclass=ABCMeta,
 ):
     SQL_QUERY = "SELECT * FROM mimiciv_icu.inputevents WHERE itemid = any(%(values)s);"
+    AMOUNT_UNIT = "ml"
+    RATE_UNIT = "mL/hour"
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRMedicationStatement]:
         medication_df = pd.DataFrame()
@@ -44,8 +46,12 @@ class AbstractMimicInputEventMapper(
         ] * len(df)
         medication_df[FHIRMedicationStatement.dosage] = df.apply(
             lambda _df: Dosage(
-                dose_quantity=Quantity(value=_df["amount"], unit=_df["amountuom"]),
-                rate_quantity=Quantity(value=_df["rate"], unit=_df["rateuom"]),
+                dose_quantity=Quantity(
+                    value=_df["amount"], unit=_df["amountuom"] or self.AMOUNT_UNIT
+                ),
+                rate_quantity=Quantity(
+                    value=_df["rate"], unit=_df["rateuom"] or self.RATE_UNIT
+                ),
             ),
             axis=1,
         )
@@ -74,3 +80,15 @@ class DobutamineMapper(AbstractMimicInputEventMapper):
 
 class VancomycineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [225798]}
+
+
+class Dextrose5PercentMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [220949]}
+
+
+class NaClMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [225158]}
+
+
+class Albumine25PercentMapper(AbstractMimicInputEventMapper):
+    SQL_PARAMS = {"values": [220862]}

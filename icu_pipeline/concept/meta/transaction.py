@@ -11,6 +11,6 @@ class ICUEncounter(AbstractMetaConcept):
     FHIR_SCHEMA = FHIREncounter
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {
-        # DataSource.MIMIC: MimicICUEncounterMapper,
+        DataSource.MIMIC: MimicICUEncounterMapper,
         DataSource.EICU: eICUEncounterMapper,
     }

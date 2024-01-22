@@ -17,6 +17,7 @@ O = TypeVar("O", bound=AbstractOHDSISinkSchema)
 
 class DataSource(StrEnum):
     MIMIC = auto()
+    EICU = auto()
 
 
 @dataclass

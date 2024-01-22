@@ -126,4 +126,4 @@ if __name__ == "__main__":
         configs,
     )
 
-    pipeline.transfrom()
+    pipeline.transform()

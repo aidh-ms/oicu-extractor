@@ -2,6 +2,7 @@ from icu_pipeline.concept.snomed import AbstractSnomedConcept
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.source import DataSource
+from icu_pipeline.mapper.source.amds.numericitems import AmdsHeartRateMapper
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeartRateMapper,
     SystolicBloodPressureInvasiveMapper,
@@ -41,7 +42,10 @@ class HeartRate(AbstractSnomedConcept):
     CONCEPT_ID = "364075005"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicHeartRateMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicHeartRateMapper,
+        DataSource.AMDS: AmdsHeartRateMapper,
+    }
 
 
 class SystolicBloodPressureInvasive(AbstractSnomedConcept):

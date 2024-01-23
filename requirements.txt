@@ -4,3 +4,4 @@ pandas==2.1.4
 pandas-stubs==2.1.4.231227
 colorlog
 pandera[mypy]
+python-dotenv

@@ -29,7 +29,6 @@ from icu_pipeline.concept.snomed.substance import (
     Vancomycine,
     Vasopressine,
 )
-from icu_pipeline.mapper.source.mimic.inputevents import Dextrose5PercentMapper
 from icu_pipeline.pipeline import (
     Pipeline,
     DataSource,

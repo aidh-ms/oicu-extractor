@@ -1,13 +1,4 @@
 from abc import ABCMeta
-import pandas as pd
-
-from pandera.typing import DataFrame
-
-from icu_pipeline.mapper.schema.fhir import (
-    Quantity,
-)
-
-from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 from icu_pipeline.mapper.source.amds import AbstractAmdsEventsMapper
 
 
@@ -19,3 +10,27 @@ class AbstractAmdsNumericItemsMapper(AbstractAmdsEventsMapper, metaclass=ABCMeta
 
 class AmdsHeartRateMapper(AbstractAmdsNumericItemsMapper):
     SQL_PARAMS = {"values": [6640]}
+
+
+class AmdsSystolicBloodPressureInvasiveMapper(AbstractAmdsNumericItemsMapper):
+    SQL_PARAMS = {"values": [6641]}
+
+
+class AmdsDiastolicBloodPressureInvasiveMapper(AbstractAmdsNumericItemsMapper):
+    SQL_PARAMS = {"values": [6643]}
+
+
+class AmdsMeanArterialBloodPressureInvasiveMapper(AbstractAmdsNumericItemsMapper):
+    SQL_PARAMS = {"values": [6642]}
+
+
+class AmdsSystolicBloodPressureNonInvasiveMapper(AbstractAmdsNumericItemsMapper):
+    SQL_PARAMS = {"values": [6678]}
+
+
+class AmdsDiastolicBloodPressureNonInvasiveMapper(AbstractAmdsNumericItemsMapper):
+    SQL_PARAMS = {"values": [6680]}
+
+
+class AmdsMeanBloodPressureNonInvasiveMapper(AbstractAmdsNumericItemsMapper):
+    SQL_PARAMS = {"values": [6679]}

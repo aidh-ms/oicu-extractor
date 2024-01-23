@@ -6,7 +6,9 @@ from icu_pipeline.pipeline import (
 )
 from icu_pipeline.mapper.sink.file import CSVFileSinkMapper
 from icu_pipeline.concept.snomed.observable_entity import (
+    DiastolicBloodPressureInvasive,
     HeartRate,
+    SystolicBloodPressureInvasive,
 )
 from dotenv import load_dotenv
 import os
@@ -23,16 +25,16 @@ if __name__ == "__main__":
     EICU_DB = os.getenv("EICU_DB")
 
     configs = {
-        DataSource.MIMIC: SourceMapperConfiguration(
-            f"postgresql+psycopg://{POSTGRES_USER}@{POSTGRES_HOST}/{MIMIC_DB}",
-        ),
         DataSource.AMDS: SourceMapperConfiguration(
             f"postgresql+psycopg://{POSTGRES_USER}@{POSTGRES_HOST}/{AMDS_DB}",
+        ),
+        DataSource.MIMIC: SourceMapperConfiguration(
+            f"postgresql+psycopg://{POSTGRES_USER}@{POSTGRES_HOST}/{MIMIC_DB}",
         ),
     }
 
     pipeline = Pipeline(
-        [HeartRate],
+        [SystolicBloodPressureInvasive],
         CSVFileSinkMapper(),
         MappingFormat.FHIR,
         configs,

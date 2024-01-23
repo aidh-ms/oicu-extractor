@@ -18,39 +18,39 @@ class MimicHeartRateMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220045]}
 
 
-class SystolicBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
+class MimicSystolicBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220050]}
 
 
-class DiastolicBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
+class MimicDiastolicBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220051]}
 
 
-class MeanArterialBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
+class MimicMeanArterialBloodPressureInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220052]}
 
 
-class SystolicBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
+class MimicSystolicBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220179]}
 
 
-class DiastolicBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
+class MimicDiastolicBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220180]}
 
 
-class MeanArterialBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
+class MimicMeanArterialBloodPressureNonInvasiveMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220181]}
 
 
-class OxygenSaturationMapper(AbstractMimicChartEventsMapper):
+class MimicOxygenSaturationMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [220277]}
 
 
-class TemperatureMapper(AbstractMimicChartEventsMapper):
+class MimicTemperatureMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [226329, 223762]}
 
 
-class TemperatureFahrenheitMapper(AbstractMimicChartEventsMapper):
+class MimicTemperatureFahrenheitMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [223761]}
 
     def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
@@ -64,9 +64,9 @@ class TemperatureFahrenheitMapper(AbstractMimicChartEventsMapper):
         return observation_df.pipe(DataFrame[FHIRObservation])
 
 
-class HeightMapper(AbstractMimicChartEventsMapper):
+class MimicHeightMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [226730]}
 
 
-class WeightMapper(AbstractMimicChartEventsMapper):
+class MimicWeightMapper(AbstractMimicChartEventsMapper):
     SQL_PARAMS = {"values": [226512]}

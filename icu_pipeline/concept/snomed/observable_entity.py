@@ -2,39 +2,44 @@ from icu_pipeline.concept.snomed import AbstractSnomedConcept
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.source import DataSource
-from icu_pipeline.mapper.source.amds.numericitems import AmdsHeartRateMapper
+from icu_pipeline.mapper.source.amds.numericitems import (
+    AmdsHeartRateMapper,
+    AmdsSystolicBloodPressureInvasiveMapper,
+    AmdsDiastolicBloodPressureInvasiveMapper,
+    AmdsMeanArterialBloodPressureInvasiveMapper,
+)
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeartRateMapper,
-    SystolicBloodPressureInvasiveMapper,
-    DiastolicBloodPressureInvasiveMapper,
-    MeanArterialBloodPressureInvasiveMapper,
-    SystolicBloodPressureNonInvasiveMapper,
-    DiastolicBloodPressureNonInvasiveMapper,
-    MeanArterialBloodPressureNonInvasiveMapper,
-    TemperatureMapper,
-    TemperatureFahrenheitMapper,
-    OxygenSaturationMapper,
+    MimicSystolicBloodPressureInvasiveMapper,
+    MimicDiastolicBloodPressureInvasiveMapper,
+    MimicMeanArterialBloodPressureInvasiveMapper,
+    MimicSystolicBloodPressureNonInvasiveMapper,
+    MimicDiastolicBloodPressureNonInvasiveMapper,
+    MimicMeanArterialBloodPressureNonInvasiveMapper,
+    MimicTemperatureMapper,
+    MimicTemperatureFahrenheitMapper,
+    MimicOxygenSaturationMapper,
 )
 from icu_pipeline.mapper.source.mimic.derived import (
-    UrineOutputMapper,
-    FiO2Mapper,
+    MimicUrineOutputMapper,
+    MimicFiO2Mapper,
 )
 from icu_pipeline.mapper.source.mimic.labevents import (
-    ArterialBloodLactateMapper,
-    LeukocyteCountMapper,
-    PlateletCountMapper,
-    CRPMapper,
-    GlucoseMapper,
-    MagnesiumMapper,
-    CalciumMapper,
-    PhosphateMapper,
+    MimicArterialBloodLactateMapper,
+    MimicLeukocyteCountMapper,
+    MimicPlateletCountMapper,
+    MimicCRPMapper,
+    MimicGlucoseMapper,
+    MimicMagnesiumMapper,
+    MimicCalciumMapper,
+    MimicPhosphateMapper,
 )
 from icu_pipeline.mapper.source.mimic.patient import (
-    AgeMapper,
-    GenderMapper,
+    MimicAgeMapper,
+    MimicGenderMapper,
 )
 from icu_pipeline.mapper.source.mimic.chartevent import (
-    HeightMapper,
+    MimicHeightMapper,
 )
 
 
@@ -52,144 +57,155 @@ class SystolicBloodPressureInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251071003"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: SystolicBloodPressureInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicSystolicBloodPressureInvasiveMapper,
+        DataSource.AMDS: AmdsSystolicBloodPressureInvasiveMapper,
+    }
 
 
 class DiastolicBloodPressureInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251073000"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: DiastolicBloodPressureInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicDiastolicBloodPressureInvasiveMapper,
+        DataSource.AMDS: AmdsDiastolicBloodPressureInvasiveMapper,
+    }
 
 
 class MeanArterialBloodPressureInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251074006"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MeanArterialBloodPressureInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicMeanArterialBloodPressureInvasiveMapper,
+        DataSource.AMDS: AmdsMeanArterialBloodPressureInvasiveMapper,
+    }
 
 
 class SystolicBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251070002"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: SystolicBloodPressureNonInvasiveMapper}
+    MAPPER = {DataSource.MIMIC: MimicSystolicBloodPressureNonInvasiveMapper}
 
 
 class DiastolicBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "174255007"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: DiastolicBloodPressureNonInvasiveMapper}
+    MAPPER = {DataSource.MIMIC: MimicDiastolicBloodPressureNonInvasiveMapper}
 
 
 class MeanArterialBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251074006"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MeanArterialBloodPressureNonInvasiveMapper}
+    MAPPER = {DataSource.MIMIC: MimicMeanArterialBloodPressureNonInvasiveMapper}
 
 
 class UrineOutput(AbstractSnomedConcept):
     CONCEPT_ID = "404231008"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: UrineOutputMapper}
+    MAPPER = {DataSource.MIMIC: MimicUrineOutputMapper}
 
 
 class Temperature(AbstractSnomedConcept):
     CONCEPT_ID = "386725007"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: [TemperatureFahrenheitMapper, TemperatureMapper]}
+    MAPPER = {
+        DataSource.MIMIC: [MimicTemperatureFahrenheitMapper, MimicTemperatureMapper]
+    }
 
 
 class FiO2(AbstractSnomedConcept):
     CONCEPT_ID = "250774007"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: FiO2Mapper}
+    MAPPER = {DataSource.MIMIC: MimicFiO2Mapper}
 
 
 class OxygenSaturation(AbstractSnomedConcept):
     CONCEPT_ID = "431314004"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: OxygenSaturationMapper}
+    MAPPER = {DataSource.MIMIC: MimicOxygenSaturationMapper}
 
 
 class ArterialBloodLactate(AbstractSnomedConcept):
     CONCEPT_ID = "372451000119107"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: ArterialBloodLactateMapper}
+    MAPPER = {DataSource.MIMIC: MimicArterialBloodLactateMapper}
 
 
 class Height(AbstractSnomedConcept):
     CONCEPT_ID = "1153637007"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: HeightMapper}
+    MAPPER = {DataSource.MIMIC: MimicHeightMapper}
 
 
 class Age(AbstractSnomedConcept):
     CONCEPT_ID = "424144002"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: AgeMapper}
+    MAPPER = {DataSource.MIMIC: MimicAgeMapper}
 
 
 class Gender(AbstractSnomedConcept):
     CONCEPT_ID = "263495000"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: GenderMapper}
+    MAPPER = {DataSource.MIMIC: MimicGenderMapper}
 
 
 class LeukocyteCount(AbstractSnomedConcept):
     CONCEPT_ID = "4298431"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: LeukocyteCountMapper}
+    MAPPER = {DataSource.MIMIC: MimicLeukocyteCountMapper}
 
 
 class PlateletCount(AbstractSnomedConcept):
     CONCEPT_ID = "4267147"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: PlateletCountMapper}
+    MAPPER = {DataSource.MIMIC: MimicPlateletCountMapper}
 
 
 class CRP(AbstractSnomedConcept):
     CONCEPT_ID = "37398482"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: CRPMapper}
+    MAPPER = {DataSource.MIMIC: MimicCRPMapper}
 
 
 class Glucose(AbstractSnomedConcept):
     CONCEPT_ID = "37399654"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: GlucoseMapper}
+    MAPPER = {DataSource.MIMIC: MimicGlucoseMapper}
 
 
 class Magnesium(AbstractSnomedConcept):
     CONCEPT_ID = "4243005"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MagnesiumMapper}
+    MAPPER = {DataSource.MIMIC: MimicMagnesiumMapper}
 
 
 class Calcium(AbstractSnomedConcept):
     CONCEPT_ID = "4193434"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: CalciumMapper}
+    MAPPER = {DataSource.MIMIC: MimicCalciumMapper}
 
 
 class Phosphate(AbstractSnomedConcept):
     CONCEPT_ID = "4194292"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: PhosphateMapper}
+    MAPPER = {DataSource.MIMIC: MimicPhosphateMapper}

@@ -62,33 +62,33 @@ class AbstractMimicInputEventMapper(
         raise NotImplementedError
 
 
-class NorepinephrineMapper(AbstractMimicInputEventMapper):
+class MimicNorepinephrineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [221906]}
 
 
-class AdrenalineMapper(AbstractMimicInputEventMapper):
+class MimicAdrenalineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [221289, 229617]}
 
 
-class VasopressineMapper(AbstractMimicInputEventMapper):
+class MimicVasopressineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [222315]}
 
 
-class DobutamineMapper(AbstractMimicInputEventMapper):
+class MimicDobutamineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [221653]}
 
 
-class VancomycineMapper(AbstractMimicInputEventMapper):
+class MimicVancomycineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [225798]}
 
 
-class Dextrose5PercentMapper(AbstractMimicInputEventMapper):
+class MimicDextrose5PercentMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [220949]}
 
 
-class NaClMapper(AbstractMimicInputEventMapper):
+class MimicNaClMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [225158]}
 
 
-class Albumine25PercentMapper(AbstractMimicInputEventMapper):
+class MimicAlbumine25PercentMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [220862]}

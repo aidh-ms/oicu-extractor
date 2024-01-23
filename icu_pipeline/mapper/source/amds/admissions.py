@@ -32,3 +32,10 @@ class AmdsEncounterMapper(
             ),
             axis=1,
         )
+         encounter_df[FHIREncounter.care_team] = df["location"].map(
+            lambda id: Reference(reference=str(id), type="CareTeam")
+        )
+        return encounter_df.pipe(DataFrame[FHIREncounter])
+
+    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
+        raise NotImplementedError

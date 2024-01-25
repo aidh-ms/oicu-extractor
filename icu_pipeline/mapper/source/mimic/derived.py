@@ -13,7 +13,7 @@ from icu_pipeline.mapper.schema.fhir import (
 from icu_pipeline.mapper.schema.fhir.deviceusage import FHIRDeviceUsage
 
 
-class UrineOutputMapper(AbstractMimicEventsMapper):
+class MimicUrineOutputMapper(AbstractMimicEventsMapper):
     SQL_QUERY = """
     SELECT 
         subject_id, charttime, 
@@ -28,31 +28,31 @@ class UrineOutputMapper(AbstractMimicEventsMapper):
     SQL_PARAMS = {"values": [226559, 226560, 226561, 226584, 226563, 226564, 226565, 226567, 226557, 226558, 227488, 227489]}  # fmt: skip
 
 
-class ArterialPO2Mapper(AbstractMimicEventsMapper):
+class MimicArterialPO2Mapper(AbstractMimicEventsMapper):
     SQL_QUERY = "SELECT *, po2 as valuenum, 'mmHg' as valueuom FROM mimiciv_derived.bg WHERE specimen = 'ART.';"
 
 
-class ArterialPCO2Mapper(AbstractMimicEventsMapper):
+class MimicArterialPCO2Mapper(AbstractMimicEventsMapper):
     SQL_QUERY = "SELECT *, pco2 as valuenum, 'mmHg' as valueuom FROM mimiciv_derived.bg WHERE specimen = 'ART.';"
 
 
-class ArterialPHMapper(AbstractMimicEventsMapper):
+class MimicArterialPHMapper(AbstractMimicEventsMapper):
     SQL_QUERY = "SELECT *, ph as valuenum, 'mmHg' as valueuom FROM mimiciv_derived.bg WHERE specimen = 'ART.';"
 
 
-class ArterialBicarbonateMapper(AbstractMimicEventsMapper):
+class MimicArterialBicarbonateMapper(AbstractMimicEventsMapper):
     SQL_QUERY = "SELECT *, bicarbonate as valuenum, 'mmHg' as valueuom FROM mimiciv_derived.bg WHERE specimen = 'ART.';"
 
 
-class ArterialBaseexcessMapper(AbstractMimicEventsMapper):
+class MimicArterialBaseexcessMapper(AbstractMimicEventsMapper):
     SQL_QUERY = "SELECT *, baseexcess as valuenum, 'mmHg' as valueuom FROM mimiciv_derived.bg WHERE specimen = 'ART.'  and baseexcess IS NOT NULL;;"
 
 
-class FiO2Mapper(AbstractMimicEventsMapper):
+class MimicFiO2Mapper(AbstractMimicEventsMapper):
     SQL_QUERY = "SELECT *, fio2 as valuenum, 'mmHg' as valueuom FROM mimiciv_derived.bg;"  # fmt: skip
 
 
-class DialysisMapper(
+class MimicDialysisMapper(
     AbstractDatabaseSourceMapper[FHIRDeviceUsage, AbstractOHDSISinkSchema],
 ):
     SQL_QUERY = """SELECT mimiciv_derived.rrt.*, subject_id FROM mimiciv_derived.rrt JOIN mimiciv_icu.icustays ON mimiciv_derived.rrt.stay_id=mimiciv_icu.icustays.stay_id"""

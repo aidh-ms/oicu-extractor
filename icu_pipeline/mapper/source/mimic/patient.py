@@ -1,7 +1,7 @@
 from icu_pipeline.mapper.source.mimic import AbstractMimicEventsMapper
 
 
-class GenderMapper(AbstractMimicEventsMapper):
+class MimicGenderMapper(AbstractMimicEventsMapper):
     SQL_QUERY = """
         SELECT *, anchor_year as charttime, gender as valueuom,
             CASE
@@ -12,5 +12,5 @@ class GenderMapper(AbstractMimicEventsMapper):
     """
 
 
-class AgeMapper(AbstractMimicEventsMapper):
+class MimicAgeMapper(AbstractMimicEventsMapper):
     SQL_QUERY = "SELECT *, anchor_year as charttime, anchor_age as valuenum, 'years' as valueuom FROM mimiciv_hosp.patients;"  # fmt: skip

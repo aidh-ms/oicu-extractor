@@ -24,7 +24,7 @@ class Pipeline:
     def _worker_func(self, concept: AbstractConcept):
         concept.map()
 
-    def transfrom(self):
+    def transform(self):
         with Pool(processes=self._processes) as worker_pool:
             concepts = [
                 concept(

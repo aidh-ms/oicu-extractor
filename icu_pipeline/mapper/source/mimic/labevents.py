@@ -11,77 +11,77 @@ class MimicSerumCreatinineMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50912, 52546]}
 
 
-class UreaMapper(AbstractMimicLabEventsMapper):
+class MimicUreaMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [52647, 51006]}
 
 
-class HbMapper(AbstractMimicLabEventsMapper):
+class MimicHbMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50811, 51222, 51640]}
 
 
-class ArterialBloodLactateMapper(AbstractMimicLabEventsMapper):
+class MimicArterialBloodLactateMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50813, 52442]}
 
 
-class BloodSodiumMapper(AbstractMimicLabEventsMapper):
+class MimicBloodSodiumMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50824, 50983, 52455, 52623]}
 
 
-class PotassiumMapper(AbstractMimicLabEventsMapper):
+class MimicPotassiumMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50822, 50971, 52452, 52610]}
 
 
-class ChlorideMapper(AbstractMimicLabEventsMapper):
+class MimicChlorideMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50902, 50806, 52434, 52535]}
 
 
-class BilirubineMapper(AbstractMimicLabEventsMapper):
+class MimicBilirubineMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [53089, 50885]}
 
 
-class GOTASTMapper(AbstractMimicLabEventsMapper):
+class MimicGOTASTMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50878]}
 
 
-class GPTAPTMapper(AbstractMimicLabEventsMapper):
+class MimicGPTAPTMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50861]}
 
 
-class GGTMapper(AbstractMimicLabEventsMapper):
+class MimicGGTMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50927]}
 
 
-class SerumLDHMapper(AbstractMimicLabEventsMapper):
+class MimicSerumLDHMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50954]}
 
 
-class INRMapper(AbstractMimicLabEventsMapper):
+class MimicINRMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [51675]}
 
 
-class LeukocyteCountMapper(AbstractMimicLabEventsMapper):
+class MimicLeukocyteCountMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [51301, 51755, 51756]}
 
 
-class PlateletCountMapper(AbstractMimicLabEventsMapper):
+class MimicPlateletCountMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [51265, 51704]}
 
 
-class CRPMapper(AbstractMimicLabEventsMapper):
+class MimicCRPMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50889]}
 
 
-class GlucoseMapper(AbstractMimicLabEventsMapper):
+class MimicGlucoseMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50931, 52027, 52569]}
 
 
-class MagnesiumMapper(AbstractMimicLabEventsMapper):
+class MimicMagnesiumMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50960]}
 
 
-class CalciumMapper(AbstractMimicLabEventsMapper):
+class MimicCalciumMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50893, 52034, 52035]}
 
 
-class PhosphateMapper(AbstractMimicLabEventsMapper):
+class MimicPhosphateMapper(AbstractMimicLabEventsMapper):
     SQL_PARAMS = {"values": [50970]}

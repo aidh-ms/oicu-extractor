@@ -43,6 +43,9 @@ from icu_pipeline.mapper.source.mimic.chartevent import (
 )
 from icu_pipeline.mapper.source.eicu.vitalperiodic import (
     EICUHeartRateMapper,
+    EICUDiastolicBloodPressureInvasiveMapper,
+    EICUMeanArterialBloodPressureInvasiveMapper,
+    EICUSystolicBloodPressureInvasiveMapper,
 )
 from icu_pipeline.mapper.source.eicu.vitalaperiodic import (
     EICUSystolicBloodPressureNonInvasiveMapper,
@@ -69,6 +72,7 @@ class SystolicBloodPressureInvasive(AbstractSnomedConcept):
     MAPPER = {
         DataSource.MIMIC: MimicSystolicBloodPressureInvasiveMapper,
         DataSource.AMDS: AmdsSystolicBloodPressureInvasiveMapper,
+        DataSource.EICU: EICUSystolicBloodPressureInvasiveMapper,
     }
 
 
@@ -79,6 +83,7 @@ class DiastolicBloodPressureInvasive(AbstractSnomedConcept):
     MAPPER = {
         DataSource.MIMIC: MimicDiastolicBloodPressureInvasiveMapper,
         DataSource.AMDS: AmdsDiastolicBloodPressureInvasiveMapper,
+        DataSource.EICU: EICUDiastolicBloodPressureInvasiveMapper,
     }
 
 
@@ -89,6 +94,7 @@ class MeanArterialBloodPressureInvasive(AbstractSnomedConcept):
     MAPPER = {
         DataSource.MIMIC: MimicMeanArterialBloodPressureInvasiveMapper,
         DataSource.AMDS: AmdsMeanArterialBloodPressureInvasiveMapper,
+        DataSource.EICU: EICUMeanArterialBloodPressureInvasiveMapper,
     }
 
 

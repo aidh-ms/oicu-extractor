@@ -14,3 +14,18 @@ class AbstractEICUVitalPeriodicMapper(AbstractEICUVitalMapper, metaclass=ABCMeta
 class EICUHeartRateMapper(AbstractEICUVitalPeriodicMapper):
     SQL_FIELDS = {"field": "heartrate"}
     UNIT = ""  # TODO
+
+
+class EICUSystolicBloodPressureInvasiveMapper(AbstractEICUVitalPeriodicMapper):
+    SQL_FIELDS = {"field": "systemicsystolic"}
+    UNIT = ""  # TODO
+
+
+class EICUDiastolicBloodPressureInvasiveMapper(AbstractEICUVitalPeriodicMapper):
+    SQL_FIELDS = {"field": "systemicdiastolic"}
+    UNIT = ""  # TODO
+
+
+class EICUMeanArterialBloodPressureInvasiveMapper(AbstractEICUVitalPeriodicMapper):
+    SQL_FIELDS = {"field": "systemicmean"}
+    UNIT = ""  # TODO

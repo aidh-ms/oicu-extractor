@@ -1,0 +1,16 @@
+from abc import ABCMeta
+
+from icu_pipeline.mapper.source.eicu import AbstractEICUVitalMapper
+
+
+class AbstractEICUVitalPeriodicMapper(AbstractEICUVitalMapper, metaclass=ABCMeta):
+    SQL_QUERY = """
+        SELECT *, {field} as value FROM eicu_crd.vitalperiodic 
+        INNER JOIN eicu_crd.patient ON eicu_crd.vitalperiodic.patientunitstayid = eicu_crd.patient.patientunitstayid
+        ORDER BY eicu_crd.vitalperiodic.patientunitstayid, observationoffset;
+    """
+
+
+class EICUHeartRateMapper(AbstractEICUVitalPeriodicMapper):
+    SQL_FIELDS = {"field": "heartrate"}
+    UNIT = ""  # TODO

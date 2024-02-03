@@ -41,6 +41,12 @@ from icu_pipeline.mapper.source.mimic.patient import (
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeightMapper,
 )
+from icu_pipeline.mapper.source.eicu.vitalperiodic import (
+    EICUHeartRateMapper,
+)
+from icu_pipeline.mapper.source.eicu.vitalaperiodic import (
+    EICUSystolicBloodPressureNonInvasiveMapper,
+)
 
 
 class HeartRate(AbstractSnomedConcept):
@@ -50,6 +56,7 @@ class HeartRate(AbstractSnomedConcept):
     MAPPER = {
         DataSource.MIMIC: MimicHeartRateMapper,
         DataSource.AMDS: AmdsHeartRateMapper,
+        DataSource.EICU: EICUHeartRateMapper,
     }
 
 
@@ -87,7 +94,10 @@ class SystolicBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251070002"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicSystolicBloodPressureNonInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicSystolicBloodPressureNonInvasiveMapper,
+        DataSource.EICU: EICUSystolicBloodPressureNonInvasiveMapper,
+    }
 
 
 class DiastolicBloodPressureNonInvasive(AbstractSnomedConcept):

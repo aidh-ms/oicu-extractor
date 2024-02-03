@@ -46,6 +46,8 @@ from icu_pipeline.mapper.source.eicu.vitalperiodic import (
 )
 from icu_pipeline.mapper.source.eicu.vitalaperiodic import (
     EICUSystolicBloodPressureNonInvasiveMapper,
+    EICUDiastolicBloodPressureNonInvasiveMapper,
+    EICUMeanArterialBloodPressureNonInvasiveMapper,
 )
 
 
@@ -104,14 +106,20 @@ class DiastolicBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "174255007"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicDiastolicBloodPressureNonInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicDiastolicBloodPressureNonInvasiveMapper,
+        DataSource.EICU: EICUDiastolicBloodPressureNonInvasiveMapper,
+    }
 
 
 class MeanArterialBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251074006"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicMeanArterialBloodPressureNonInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicMeanArterialBloodPressureNonInvasiveMapper,
+        DataSource.EICU: EICUMeanArterialBloodPressureNonInvasiveMapper,
+    }
 
 
 class UrineOutput(AbstractSnomedConcept):

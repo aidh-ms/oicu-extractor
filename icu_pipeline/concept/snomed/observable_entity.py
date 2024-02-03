@@ -46,6 +46,8 @@ from icu_pipeline.mapper.source.eicu.vitalperiodic import (
     EICUDiastolicBloodPressureInvasiveMapper,
     EICUMeanArterialBloodPressureInvasiveMapper,
     EICUSystolicBloodPressureInvasiveMapper,
+    EICUOxygenSaturationMapper,
+    EICUTemperatureMapper,
 )
 from icu_pipeline.mapper.source.eicu.vitalaperiodic import (
     EICUSystolicBloodPressureNonInvasiveMapper,
@@ -140,7 +142,8 @@ class Temperature(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {
-        DataSource.MIMIC: [MimicTemperatureFahrenheitMapper, MimicTemperatureMapper]
+        DataSource.MIMIC: [MimicTemperatureFahrenheitMapper, MimicTemperatureMapper],
+        DataSource.EICU: EICUTemperatureMapper,
     }
 
 
@@ -155,7 +158,10 @@ class OxygenSaturation(AbstractSnomedConcept):
     CONCEPT_ID = "431314004"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicOxygenSaturationMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicOxygenSaturationMapper,
+        DataSource.EICU: EICUOxygenSaturationMapper,
+    }
 
 
 class ArterialBloodLactate(AbstractSnomedConcept):

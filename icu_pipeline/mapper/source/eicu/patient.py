@@ -11,7 +11,7 @@ from icu_pipeline.mapper.schema.fhir import (
 from icu_pipeline.mapper.schema.fhir.encounter import FHIREncounter
 
 
-class eICUEncounterMapper(
+class EICUEncounterMapper(
     AbstractDatabaseSourceMapper[FHIREncounter, AbstractOHDSISinkSchema],
 ):
     SQL_QUERY = "SELECT * FROM eicu_crd.patient;"

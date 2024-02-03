@@ -36,3 +36,26 @@ class CSVFileSinkMapper(AbstractSinkMapper):
         df.columns = df.columns.str.replace(".", "__")
 
         df.to_csv(file_path, mode="a+", index=False, header=header)
+
+
+class JSONLFileSinkMapper(AbstractSinkMapper):
+    def __init__(self, path: Path | None = None) -> None:
+        super().__init__()
+
+        self._path = path or Path(".")
+
+    def to_output_format(
+        self,
+        df: pd.DataFrame,
+        schema: AbstractSinkSchema,
+        id: str,
+    ) -> None:
+        file_path = self._path / f"{schema._SINK_NAME}" / f"{id}.jsonl"
+
+        header = False
+        if not file_path.exists():
+            header = True
+
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        df.to_json(file_path, mode="a", orient="records", lines=True)

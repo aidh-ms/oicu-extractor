@@ -29,3 +29,13 @@ class EICUDiastolicBloodPressureInvasiveMapper(AbstractEICUVitalPeriodicMapper):
 class EICUMeanArterialBloodPressureInvasiveMapper(AbstractEICUVitalPeriodicMapper):
     SQL_FIELDS = {"field": "systemicmean"}
     UNIT = ""  # TODO
+
+
+class EICUTemperatureMapper(AbstractEICUVitalPeriodicMapper):
+    SQL_FIELDS = {"field": "temperature"}
+    UNIT = ""  # TODO
+
+
+class EICUOxygenSaturationMapper(AbstractEICUVitalPeriodicMapper):
+    SQL_FIELDS = {"field": "saO2"}
+    UNIT = ""  # TODO

@@ -54,6 +54,11 @@ from icu_pipeline.mapper.source.eicu.vitalaperiodic import (
     EICUDiastolicBloodPressureNonInvasiveMapper,
     EICUMeanArterialBloodPressureNonInvasiveMapper,
 )
+from icu_pipeline.mapper.source.eicu.patient import (
+    EICUAgeMapper,
+    EICUGenderMapper,
+    EICUHeightMapper,
+)
 
 
 class HeartRate(AbstractSnomedConcept):
@@ -175,21 +180,30 @@ class Height(AbstractSnomedConcept):
     CONCEPT_ID = "1153637007"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicHeightMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicHeightMapper,
+        DataSource.EICU: EICUHeightMapper,
+    }
 
 
 class Age(AbstractSnomedConcept):
     CONCEPT_ID = "424144002"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicAgeMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicAgeMapper,
+        DataSource.EICU: EICUAgeMapper,
+    }
 
 
 class Gender(AbstractSnomedConcept):
     CONCEPT_ID = "263495000"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicGenderMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicGenderMapper,
+        DataSource.EICU: EICUGenderMapper,
+    }
 
 
 class LeukocyteCount(AbstractSnomedConcept):

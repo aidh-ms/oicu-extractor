@@ -88,9 +88,10 @@ class AbstractDatabaseSourceMapper(
 
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
         engine = create_engine(self._source_config.connection)
-        with engine.connect().execution_options(
-            stream_results=True
-        ) as con, con.begin():
+        with (
+            engine.connect().execution_options(stream_results=True) as con,
+            con.begin(),
+        ):
             for df in pd.read_sql_query(
                 sql.SQL(self.SQL_QUERY)
                 .format(
@@ -99,7 +100,7 @@ class AbstractDatabaseSourceMapper(
                         for field, name in self.SQL_FIELDS.items()
                     }
                 )
-                .as_string(con),
+                .as_string(con),  # type: ignore[arg-type]
                 con,
                 chunksize=self._source_config.chunksize,
                 params=self.SQL_PARAMS,

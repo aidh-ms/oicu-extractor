@@ -5,7 +5,7 @@ from icu_pipeline.pipeline import (
     SourceMapperConfiguration,
 )
 from icu_pipeline.mapper.sink.file import CSVFileSinkMapper
-from icu_pipeline.concept.snomed.observable_entity import (
+from icu_pipeline.concepts.snomed.observable_entity import (
     DiastolicBloodPressureInvasive,
     HeartRate,
     SystolicBloodPressureInvasive,

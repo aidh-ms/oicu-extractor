@@ -1,4 +1,4 @@
-from icu_pipeline.concept.snomed import AbstractSnomedConcept
+from icu_pipeline.concepts.snomed import AbstractSnomedConcept
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.source import DataSource

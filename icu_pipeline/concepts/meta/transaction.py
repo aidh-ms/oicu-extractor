@@ -1,4 +1,4 @@
-from icu_pipeline.concept.meta import AbstractMetaConcept
+from icu_pipeline.concepts.meta import AbstractMetaConcept
 from icu_pipeline.mapper.schema.fhir.encounter import FHIREncounter
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.source import DataSource

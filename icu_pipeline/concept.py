@@ -11,10 +11,6 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 
 
 class Concept:
-    MAPPER: dict[
-        DataSource, Type[AbstractSourceMapper] | list[Type[AbstractSourceMapper]]
-    ]
-
     def __init__(
         self,
         concept_config: dict[str, Any],
@@ -50,7 +46,7 @@ class Concept:
 
     def map(self):
         for mapper_config in self._mapper:
-            name, config = mapper_config.popitem()
+            _, config = mapper_config.popitem()
             source = config["source"]
             source_mapper = self._load_class(
                 f"icu_pipeline.mapper.source.{source}", config["class"]

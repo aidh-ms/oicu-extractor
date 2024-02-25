@@ -41,6 +41,24 @@ from icu_pipeline.mapper.source.mimic.patient import (
 from icu_pipeline.mapper.source.mimic.chartevent import (
     MimicHeightMapper,
 )
+from icu_pipeline.mapper.source.eicu.vitalperiodic import (
+    EICUHeartRateMapper,
+    EICUDiastolicBloodPressureInvasiveMapper,
+    EICUMeanArterialBloodPressureInvasiveMapper,
+    EICUSystolicBloodPressureInvasiveMapper,
+    EICUOxygenSaturationMapper,
+    EICUTemperatureMapper,
+)
+from icu_pipeline.mapper.source.eicu.vitalaperiodic import (
+    EICUSystolicBloodPressureNonInvasiveMapper,
+    EICUDiastolicBloodPressureNonInvasiveMapper,
+    EICUMeanArterialBloodPressureNonInvasiveMapper,
+)
+from icu_pipeline.mapper.source.eicu.patient import (
+    EICUAgeMapper,
+    EICUGenderMapper,
+    EICUHeightMapper,
+)
 
 
 class HeartRate(AbstractSnomedConcept):
@@ -50,6 +68,7 @@ class HeartRate(AbstractSnomedConcept):
     MAPPER = {
         DataSource.MIMIC: MimicHeartRateMapper,
         DataSource.AMDS: AmdsHeartRateMapper,
+        DataSource.EICU: EICUHeartRateMapper,
     }
 
 
@@ -60,6 +79,7 @@ class SystolicBloodPressureInvasive(AbstractSnomedConcept):
     MAPPER = {
         DataSource.MIMIC: MimicSystolicBloodPressureInvasiveMapper,
         DataSource.AMDS: AmdsSystolicBloodPressureInvasiveMapper,
+        DataSource.EICU: EICUSystolicBloodPressureInvasiveMapper,
     }
 
 
@@ -70,6 +90,7 @@ class DiastolicBloodPressureInvasive(AbstractSnomedConcept):
     MAPPER = {
         DataSource.MIMIC: MimicDiastolicBloodPressureInvasiveMapper,
         DataSource.AMDS: AmdsDiastolicBloodPressureInvasiveMapper,
+        DataSource.EICU: EICUDiastolicBloodPressureInvasiveMapper,
     }
 
 
@@ -80,6 +101,7 @@ class MeanArterialBloodPressureInvasive(AbstractSnomedConcept):
     MAPPER = {
         DataSource.MIMIC: MimicMeanArterialBloodPressureInvasiveMapper,
         DataSource.AMDS: AmdsMeanArterialBloodPressureInvasiveMapper,
+        DataSource.EICU: EICUMeanArterialBloodPressureInvasiveMapper,
     }
 
 
@@ -87,21 +109,30 @@ class SystolicBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251070002"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicSystolicBloodPressureNonInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicSystolicBloodPressureNonInvasiveMapper,
+        DataSource.EICU: EICUSystolicBloodPressureNonInvasiveMapper,
+    }
 
 
 class DiastolicBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "174255007"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicDiastolicBloodPressureNonInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicDiastolicBloodPressureNonInvasiveMapper,
+        DataSource.EICU: EICUDiastolicBloodPressureNonInvasiveMapper,
+    }
 
 
 class MeanArterialBloodPressureNonInvasive(AbstractSnomedConcept):
     CONCEPT_ID = "251074006"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicMeanArterialBloodPressureNonInvasiveMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicMeanArterialBloodPressureNonInvasiveMapper,
+        DataSource.EICU: EICUMeanArterialBloodPressureNonInvasiveMapper,
+    }
 
 
 class UrineOutput(AbstractSnomedConcept):
@@ -116,7 +147,8 @@ class Temperature(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {
-        DataSource.MIMIC: [MimicTemperatureFahrenheitMapper, MimicTemperatureMapper]
+        DataSource.MIMIC: [MimicTemperatureFahrenheitMapper, MimicTemperatureMapper],
+        DataSource.EICU: EICUTemperatureMapper,
     }
 
 
@@ -131,7 +163,10 @@ class OxygenSaturation(AbstractSnomedConcept):
     CONCEPT_ID = "431314004"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicOxygenSaturationMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicOxygenSaturationMapper,
+        DataSource.EICU: EICUOxygenSaturationMapper,
+    }
 
 
 class ArterialBloodLactate(AbstractSnomedConcept):
@@ -145,21 +180,30 @@ class Height(AbstractSnomedConcept):
     CONCEPT_ID = "1153637007"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicHeightMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicHeightMapper,
+        DataSource.EICU: EICUHeightMapper,
+    }
 
 
 class Age(AbstractSnomedConcept):
     CONCEPT_ID = "424144002"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicAgeMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicAgeMapper,
+        DataSource.EICU: EICUAgeMapper,
+    }
 
 
 class Gender(AbstractSnomedConcept):
     CONCEPT_ID = "263495000"
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
-    MAPPER = {DataSource.MIMIC: MimicGenderMapper}
+    MAPPER = {
+        DataSource.MIMIC: MimicGenderMapper,
+        DataSource.EICU: EICUGenderMapper,
+    }
 
 
 class LeukocyteCount(AbstractSnomedConcept):

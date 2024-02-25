@@ -6,6 +6,7 @@ from typing import Any, Generic, TypeVar, Type, Generator
 import pandas as pd
 from pandera.typing import DataFrame
 from sqlalchemy import create_engine
+from psycopg import sql
 
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
@@ -82,15 +83,24 @@ class AbstractDatabaseSourceMapper(
     AbstractSourceMapper, Generic[F, O], metaclass=ABCMeta
 ):
     SQL_QUERY: str
-    SQL_PARAMS: dict[str, Any] = {}
+    SQL_PARAMS: dict[str, Any] = dict()
+    SQL_FIELDS: dict[str, str] = dict()
 
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
         engine = create_engine(self._source_config.connection)
-        with engine.connect().execution_options(
-            stream_results=True
-        ) as con, con.begin():
+        with (
+            engine.connect().execution_options(stream_results=True) as con,
+            con.begin(),
+        ):
             for df in pd.read_sql_query(
-                self.SQL_QUERY,
+                sql.SQL(self.SQL_QUERY)
+                .format(
+                    **{
+                        field: sql.Identifier(name)
+                        for field, name in self.SQL_FIELDS.items()
+                    }
+                )
+                .as_string(con),  # type: ignore[arg-type]
                 con,
                 chunksize=self._source_config.chunksize,
                 params=self.SQL_PARAMS,

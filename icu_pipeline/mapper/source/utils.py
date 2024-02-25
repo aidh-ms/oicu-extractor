@@ -6,7 +6,7 @@ from icu_pipeline.mapper.schema.fhir import Period
 def to_timestamp(
     time: str, year: int | str, month: int | str = "01", day: int | str = "01"
 ) -> pd.Timestamp:
-    return pd.Timestamp(f"{year}-{month}-{day}T{time}")
+    return pd.Timestamp(f"{year}-{month}-{day}T{time}", tz="UTC")
 
 
 def offset_to_timestamp(timestamp: pd.Timestamp, offset: int) -> pd.Timestamp:

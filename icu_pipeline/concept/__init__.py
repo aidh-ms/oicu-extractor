@@ -39,14 +39,6 @@ class AbstractConcept(ABC):
             for source_mapper in source_mappers:
                 self._map(source_mapper, source)
 
-    @abstractmethod
-    def _map(
-        self,
-        source_mapper: Type[AbstractSourceMapper],
-        source: DataSource,
-    ) -> None:
-        raise NotImplementedError
-
     def _map(
         self,
         source_mapper: Type[AbstractSourceMapper],

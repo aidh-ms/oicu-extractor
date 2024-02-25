@@ -3,7 +3,7 @@ from icu_pipeline.mapper.schema.fhir.encounter import FHIREncounter
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.source import DataSource
 from icu_pipeline.mapper.source.mimic.icustays import MimicICUEncounterMapper
-from icu_pipeline.mapper.source.eicu.patient import eICUEncounterMapper
+from icu_pipeline.mapper.source.eicu.patient import EICUEncounterMapper
 
 
 class ICUEncounter(AbstractMetaConcept):
@@ -12,5 +12,5 @@ class ICUEncounter(AbstractMetaConcept):
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {
         DataSource.MIMIC: MimicICUEncounterMapper,
-        DataSource.EICU: eICUEncounterMapper,
+        DataSource.EICU: EICUEncounterMapper,
     }

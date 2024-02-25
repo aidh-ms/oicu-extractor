@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from typing import Type
 
 import pandas as pd
 from pandera.typing import DataFrame
@@ -6,12 +7,32 @@ from pandera.typing import DataFrame
 from icu_pipeline.mapper.schema.fhir import (
     Quantity,
 )
+from icu_pipeline.mapper.schema.fhir.base import AbstractFHIRSinkSchema
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
+from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
+from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
+from icu_pipeline.mapper.source import SourceMapperConfiguration
 from icu_pipeline.mapper.source.mimic import AbstractMimicEventsMapper
 
 
 class AbstractMimicChartEventsMapper(AbstractMimicEventsMapper, metaclass=ABCMeta):
     SQL_QUERY = "SELECT * FROM mimiciv_icu.chartevents WHERE itemid = any(%(values)s);"
+
+
+class MimicChartEventsMapper(AbstractMimicEventsMapper):
+    SQL_QUERY = (
+        "SELECT * FROM mimiciv_icu.chartevents WHERE itemid = any(%(item_ids)s);"
+    )
+
+    def __init__(
+        self, *args: list, item_ids: str | None = None, **kwargs: dict
+    ) -> None:
+        super().__init__(*args, **kwargs)
+
+        if item_ids is None:
+            raise ValueError()
+
+        self.SQL_PARAMS["item_ids"] = item_ids
 
 
 class MimicHeartRateMapper(AbstractMimicChartEventsMapper):

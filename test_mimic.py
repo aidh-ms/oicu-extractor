@@ -71,12 +71,14 @@ if __name__ == "__main__":
     POSTGRES_HOST = os.getenv("POSTGRES_HOST")
     POSTGRES_PORT = os.getenv("POSTGRES_PORT")
     MIMIC_DB = os.getenv("MIMIC_DB")
+    MIMIC_DEMO_DB = os.getenv("MIMIC_DEMO_DB")
     AMDS_DB = os.getenv("AMDS_DB")
     EICU_DB = os.getenv("EICU_DB")
 
     configs = {
         DataSource.MIMIC: SourceMapperConfiguration(
-            f"postgresql+psycopg://{POSTGRES_USER}@{POSTGRES_HOST}/{MIMIC_DB}",
+            f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{
+                POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}",
         ),
     }
 

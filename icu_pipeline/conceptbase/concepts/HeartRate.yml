@@ -1,16 +1,23 @@
 concept:
-  name: Heart Rate
+  name: HeartRate
   description: Heart rate is the speed of the heartbeat measured by the number of contractions of the heart per minute (bpm).
-  type: Snomed-CT
-  id: "364075005"
   unit: bpm
+  identificators:
+    snomed:
+      id: 364075005
+      fsn: "364075005 |Heart rate (observable entity)|"
+    loinc:
+      id: "Heart rate"
+      code: "8867-4"
   schema:
     fhir: FHIRObservation
     ohdsi: AbstractOHDSISinkSchema
   mapper:
     - mimic: 
         class: MimicChartEventsMapper
-        source: mimic
+        source: mimiciv
+        schema: mimiciv_icu
+        table: chartevents
         params:
           item_ids: ["220045",]
 

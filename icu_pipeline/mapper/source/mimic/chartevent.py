@@ -79,7 +79,8 @@ class MimicTemperatureFahrenheitMapper(AbstractMimicChartEventsMapper):
         observation_df[FHIRObservation.value_quantity] = observation_df[
             FHIRObservation.value_quantity
         ].map(
-            lambda quantity: Quantity(value=(quantity["value"] - 32) * 5 / 9, unit="°C")
+            lambda quantity: Quantity(
+                value=(quantity["value"] - 32) * 5 / 9, unit="°C")
         )
 
         return observation_df.pipe(DataFrame[FHIRObservation])

@@ -24,8 +24,8 @@ class Concept:
 
         print(concept)
 
-        self._concept_id: str = concept["id"]
-        self._concept_type: str = concept["type"]
+        self._concept_name: str = concept["name"]
+        self._concept_category: str = concept["category"]
 
         schema_config = concept["schema"]
         self._fhir_schema: Type[AbstractFHIRSinkSchema] = self._load_class(
@@ -36,6 +36,7 @@ class Concept:
         )
 
         self._mapper: list = concept["mapper"]
+        self._identificators: list = concept["identificators"]
         self._sink_mapper = sink_mapper
         self._mapping_format = mapping_format
         self._source_mapper_configs = source_mapper_configs
@@ -63,8 +64,8 @@ class Concept:
         print(params)
 
         mapper = source_mapper(
-            self._concept_id,
-            self._concept_type,
+            self._concept_name,
+            self._concept_category,
             self._fhir_schema,
             self._ohdsi_schema,
             self._source_mapper_configs[source],

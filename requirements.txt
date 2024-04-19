@@ -1,6 +1,6 @@
 psycopg[binary]==3.1.14
 SQLAlchemy==2.0.23
-pandas==2.2.0
+pandas==2.2.2
 pandas-stubs==2.2.0.240218
 colorlog==6.8.0
 pandera[mypy]==0.18.0

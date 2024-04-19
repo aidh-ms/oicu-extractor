@@ -1,4 +1,4 @@
-from icu_pipeline.concept.snomed.procedure import (
+from icu_pipeline.concepts.snomed.procedure import (
     GGT,
     GOTAST,
     GPTAPT,
@@ -18,8 +18,8 @@ from icu_pipeline.concept.snomed.procedure import (
     SerumLDH,
     Urea,
 )
-from icu_pipeline.concept.snomed.qualifier_value import Weight
-from icu_pipeline.concept.snomed.substance import (
+from icu_pipeline.concepts.snomed.qualifier_value import Weight
+from icu_pipeline.concepts.snomed.substance import (
     Adrenaline,
     Albumine25Percent,
     Dextrose5Percent,
@@ -36,7 +36,7 @@ from icu_pipeline.pipeline import (
     SourceMapperConfiguration,
 )
 from icu_pipeline.mapper.sink.file import CSVFileSinkMapper
-from icu_pipeline.concept.snomed.observable_entity import (
+from icu_pipeline.concepts.snomed.observable_entity import (
     CRP,
     Age,
     ArterialBloodLactate,

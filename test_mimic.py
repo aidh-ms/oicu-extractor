@@ -1,34 +1,3 @@
-from icu_pipeline.concepts.snomed.procedure import (
-    GGT,
-    GOTAST,
-    GPTAPT,
-    INR,
-    ArterialBaseexcess,
-    ArterialBicarbonate,
-    ArterialPCO2,
-    ArterialPH,
-    ArterialPO2,
-    Bilirubine,
-    BloodSodium,
-    Chloride,
-    Dialysis,
-    Hb,
-    Potassium,
-    SerumCreatinine,
-    SerumLDH,
-    Urea,
-)
-from icu_pipeline.concepts.snomed.qualifier_value import Weight
-from icu_pipeline.concepts.snomed.substance import (
-    Adrenaline,
-    Albumine25Percent,
-    Dextrose5Percent,
-    Dobutamine,
-    NaCl,
-    Norepinephrine,
-    Vancomycine,
-    Vasopressine,
-)
 from icu_pipeline.pipeline import (
     Pipeline,
     DataSource,
@@ -36,30 +5,6 @@ from icu_pipeline.pipeline import (
     SourceMapperConfiguration,
 )
 from icu_pipeline.mapper.sink.file import CSVFileSinkMapper
-from icu_pipeline.concepts.snomed.observable_entity import (
-    CRP,
-    Age,
-    ArterialBloodLactate,
-    Calcium,
-    DiastolicBloodPressureInvasive,
-    DiastolicBloodPressureNonInvasive,
-    FiO2,
-    Gender,
-    Glucose,
-    HeartRate,
-    Height,
-    LeukocyteCount,
-    Magnesium,
-    MeanArterialBloodPressureInvasive,
-    MeanArterialBloodPressureNonInvasive,
-    OxygenSaturation,
-    Phosphate,
-    PlateletCount,
-    SystolicBloodPressureInvasive,
-    SystolicBloodPressureNonInvasive,
-    Temperature,
-    UrineOutput,
-)
 from dotenv import load_dotenv
 import os
 
@@ -78,7 +23,7 @@ if __name__ == "__main__":
     configs = {
         DataSource.MIMIC: SourceMapperConfiguration(
             f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{
-                POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}",
+                POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DEMO_DB}",
         ),
     }
 

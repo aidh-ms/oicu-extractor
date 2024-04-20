@@ -9,7 +9,6 @@ from icu_pipeline.mapper.source.amds.numericitems import (
     AmdsMeanArterialBloodPressureInvasiveMapper,
 )
 from icu_pipeline.mapper.source.mimic.chartevent import (
-    MimicHeartRateMapper,
     MimicSystolicBloodPressureInvasiveMapper,
     MimicDiastolicBloodPressureInvasiveMapper,
     MimicMeanArterialBloodPressureInvasiveMapper,
@@ -66,7 +65,6 @@ class HeartRate(AbstractSnomedConcept):
     FHIR_SCHEMA = FHIRObservation
     OHDSI_SCHEMA = AbstractOHDSISinkSchema
     MAPPER = {
-        DataSource.MIMIC: MimicHeartRateMapper,
         DataSource.AMDS: AmdsHeartRateMapper,
         DataSource.EICU: EICUHeartRateMapper,
     }

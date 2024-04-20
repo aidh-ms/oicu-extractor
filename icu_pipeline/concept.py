@@ -22,11 +22,9 @@ class Concept:
 
         concept = concept_config["concept"]
 
-        print(concept)
-
         self._concept_name: str = concept["name"]
         self._concept_category: str = concept["category"]
-
+        self._concept_unit: str = concept["unit"]
         schema_config = concept["schema"]
         self._fhir_schema: Type[AbstractFHIRSinkSchema] = self._load_class(
             "icu_pipeline.mapper.schema.fhir", schema_config["fhir"]
@@ -61,8 +59,6 @@ class Concept:
         source: DataSource,
         params: dict[str, Any],
     ):
-        print(params)
-
         mapper = source_mapper(
             self._concept_name,
             self._concept_category,
@@ -73,5 +69,7 @@ class Concept:
             self._mapping_format,
             **params,
         )
+        # print every attribute of the mapper
+        print(mapper.__dict__)
 
         mapper.map()

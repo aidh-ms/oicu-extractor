@@ -1,7 +1,9 @@
+import os
 from abc import ABCMeta
-
+from typing import Union, Iterator, Generator
 import pandas as pd
 from pandera.typing import DataFrame
+from sqlalchemy import Engine, create_engine
 
 from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
@@ -20,7 +22,20 @@ class AbstractMimicEventsMapper(
 ):
     UNIT = ""
 
-    def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
+    def create_connection(self) -> Engine:
+        POSTGRES_USER = os.getenv("POSTGRES_USER")
+        POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+        POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+        POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+        MIMIC_DB = os.getenv("MIMIC_DB")
+        engine = create_engine(f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}")
+        return engine.connect().execution_options(stream_results=True)
+
+    def _to_ohdsi(self, df: DataFrame) -> DataFrame:
+        # Drop this as soon as possible
+        return super()._to_ohdsi(df)
+
+    def _to_fihr(self, df: DataFrame) -> Generator[DataFrame[FHIRObservation], None, None]:
         observation_df = pd.DataFrame()
 
         observation_df[FHIRObservation.subject] = df["subject_id"].map(
@@ -42,6 +57,3 @@ class AbstractMimicEventsMapper(
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])
-
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
-        raise NotImplementedError

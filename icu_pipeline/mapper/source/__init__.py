@@ -5,7 +5,7 @@ from typing import Any, Generic, TypeVar, Type, Generator
 
 import pandas as pd
 from pandera.typing import DataFrame
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Engine
 from psycopg import sql
 
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
@@ -26,6 +26,7 @@ class DataSource(StrEnum):
 class SourceMapperConfiguration:
     connection: str
     chunksize: int = 10000
+    limit: int = -1
 
 
 class AbstractSourceMapper(ABC, Generic[F, O]):
@@ -50,16 +51,21 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
         self._mapping_format = mapping_format
 
     def map(self) -> None:
-        match self._mapping_format:
-            case MappingFormat.FHIR:
-                self.to_fihr()
-            case MappingFormat.OHDSI:
-                self.to_ohdsi()
+        # FHIR is default and later transformed if necessary
+        return self.to_fihr()
+        # match self._mapping_format:
+        #     case MappingFormat.FHIR:
+        #         return self.to_fihr()
+        #     case MappingFormat.OHDSI:
+        #         return self.to_ohdsi()
+        #     case _:
+        #         raise KeyError(f"Couldn't match MappingFormat '{self._mapping_format}'")
 
     def to_fihr(self):
         for df in self.get_data():
             df = self._to_fihr(df).pipe(self._fhir_schema)
-            self._sink_mapper.to_output_format(df, self._fhir_schema, self._concept_id)
+            #self._sink_mapper.to_output_format(df, self._fhir_schema, self._concept_id)
+            yield df
 
     def to_ohdsi(self):
         for df in self.get_data():
@@ -86,21 +92,27 @@ class AbstractDatabaseSourceMapper(
     SQL_PARAMS: dict[str, Any] = dict()
     SQL_FIELDS: dict[str, str] = dict()
 
+    def create_connection(self) -> Engine:
+        raise NotImplementedError
+
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
-        engine = create_engine(self._source_config.connection)
         with (
-            engine.connect().execution_options(stream_results=True) as con,
+            self.create_connection() as con,
             con.begin(),
         ):
-            for df in pd.read_sql_query(
-                sql.SQL(self.SQL_QUERY)
-                .format(
+            limit = self._source_config.limit
+            if limit > 0:
+                query = sql.SQL(self.SQL_QUERY.replace(";", f" LIMIT {limit};"))
+            else:
+                query = sql.SQL(self.SQL_QUERY)
+            query = query.format(
                     **{
                         field: sql.Identifier(name)
                         for field, name in self.SQL_FIELDS.items()
                     }
                 )
-                .as_string(con),  # type: ignore[arg-type]
+            for df in pd.read_sql_query(
+                query.as_string(con),  # type: ignore[arg-type]
                 con,
                 chunksize=self._source_config.chunksize,
                 params=self.SQL_PARAMS,

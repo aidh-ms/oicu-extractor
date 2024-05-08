@@ -1,76 +1,89 @@
-from abc import ABC, abstractmethod
-from typing import Type, Any
+from typing import Type, Any, List, Dict, Generator
+from dataclasses import dataclass
 from importlib import import_module
-
+import pandas as pd
+from pydantic import BaseModel
 from icu_pipeline.mapper.source import AbstractSourceMapper, DataSource
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
-from icu_pipeline.mapper.schema import AbstractSinkSchema
-from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
-from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
-from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
+from icu_pipeline.mapper.source import SourceMapperConfiguration
+
+
+class ConceptConfig(BaseModel):
+    @dataclass
+    class MapperConfig:
+        klass: str
+        source: str
+        params: Dict[str, Any]
+
+    name: str
+    description: str
+    type: str
+    id: str
+    unit: str
+    schema: Dict[str, str]
+    mapper: Dict[str, MapperConfig]
 
 
 class Concept:
     def __init__(
         self,
-        concept_config: dict[str, Any],
-        sink_mapper: AbstractSinkMapper,
-        mapping_format: MappingFormat,
-        source_mapper_configs: dict[DataSource, SourceMapperConfiguration],
+        concept_config: ConceptConfig,
+        source_configs: dict[DataSource, SourceMapperConfiguration],
     ) -> None:
-        super().__init__()
-
-        concept = concept_config["concept"]
-
-        print(concept)
-
-        self._concept_id: str = concept["id"]
-        self._concept_type: str = concept["type"]
-
-        schema_config = concept["schema"]
+        # concept = concept_config["concept"]
+        # self._concept_id: str = concept["id"]
+        # self._concept_type: str = concept["type"]
+        # schema_config = concept["schema"]
+        # self._mapper: dict = concept["mapper"]  # Dictionary, DB_Name --> Config
+        self._concept_config = concept_config
+        self._source_configs = source_configs
+        # TODO - Concepts should only use FHIR, transforms will be performed in later pipeline steps
         self._fhir_schema: Type[AbstractFHIRSinkSchema] = self._load_class(
-            "icu_pipeline.mapper.schema.fhir", schema_config["fhir"]
+            "icu_pipeline.mapper.schema.fhir", concept_config.schema["fhir"]
         )
-        self._ohdsi_schema: Type[AbstractOHDSISinkSchema] = self._load_class(
-            "icu_pipeline.mapper.schema.ohdsi", schema_config["ohdsi"]
-        )
-
-        self._mapper: list = concept["mapper"]
-        self._sink_mapper = sink_mapper
-        self._mapping_format = mapping_format
-        self._source_mapper_configs = source_mapper_configs
 
     def _load_class(self, module_name: str, class_name: str) -> Type:
         module = import_module(module_name)
         return getattr(module, class_name)
 
-    def map(self):
-        for mapper_config in self._mapper:
-            _, config = mapper_config.popitem()
-            source = config["source"]
+    def map(self) -> Generator[pd.DataFrame, None, None]:
+        # assert all(
+        #     [s in self._mapper for s in sources]
+        # ), f"Not all Source have a mapper for Concept '{self._concept_id}'"
+        # for db in sources:
+        #     config = self._mapper[db]
+        #     source = config["source"]
+        #     source_mapper = self._load_class(
+        #         f"icu_pipeline.mapper.source.{source}", config["class"]
+        #     )
+
+        assert all(
+            [s in self._concept_config.mapper for s in self._source_configs.keys()]
+        ), f"Not all Source have a mapper for Concept '{self._concept_config.id}'"
+        for db in self._source_configs.keys():
+            config = self._concept_config.mapper[db]
+            source = config.source
             source_mapper = self._load_class(
-                f"icu_pipeline.mapper.source.{source}", config["class"]
+                f"icu_pipeline.mapper.source.{source}", config.klass
             )
 
-            self._map(source_mapper, source, config["params"])
+            for df_chunk in self._map(source_mapper, source, config.params):
+                yield df_chunk
 
     def _map(
         self,
         source_mapper: Type[AbstractSourceMapper],
         source: DataSource,
-        params: dict[str, Any],
+        params: Dict[str, Any],
     ):
-        print(params)
-
         mapper = source_mapper(
-            self._concept_id,
-            self._concept_type,
+            self._concept_config.id,
+            self._concept_config.type,
             self._fhir_schema,
-            self._ohdsi_schema,
-            self._source_mapper_configs[source],
-            self._sink_mapper,
-            self._mapping_format,
+            ohdsi_schema=None,
+            source_mapper_config=self._source_configs[source],
+            sink_mapper=None, #self._sink_mapper,
+            mapping_format=None, #self._mapping_format,
             **params,
         )
-
-        mapper.map()
+        return mapper.map()

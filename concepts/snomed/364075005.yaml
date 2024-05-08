@@ -8,10 +8,10 @@ concept:
     fhir: FHIRObservation
     ohdsi: AbstractOHDSISinkSchema
   mapper:
-    - mimic: 
-        class: MimicChartEventsMapper
-        source: mimic
-        params:
-          item_ids: ["220045",]
+    mimic: 
+      klass: MimicChartEventsMapper
+      source: mimic
+      params:
+        item_ids: ["220045",]
 
 

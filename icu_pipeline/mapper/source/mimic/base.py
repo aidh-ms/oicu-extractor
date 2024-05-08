@@ -28,7 +28,7 @@ class AbstractMimicEventsMapper(
         if item_ids is None:
             raise ValueError()
         item_ids = ', '.join(map(str, item_ids))
-        self.SQL_QUERY = f"SELECT * FROM {schema}.{table} WHERE itemid IN ({item_ids})"
+        self.SQL_QUERY = f"SELECT * FROM {schema}.{table} WHERE itemid IN ({item_ids});"
 
     def create_connection(self) -> Engine:
         POSTGRES_USER = os.getenv("POSTGRES_USER")

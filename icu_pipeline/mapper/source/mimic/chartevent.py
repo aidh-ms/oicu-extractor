@@ -16,7 +16,8 @@ class MimicTemperatureFahrenheitMapper(AbstractMimicEventsMapper):
             FHIRObservation.value_quantity
         ].map(
             lambda quantity: Quantity(
-                value=(quantity["value"] - 32) * 5 / 9, unit="°C")
+                # TODO - Remove Unit-Conversions from Extractors
+                value=(quantity["value"] - 32) * 5 / 9, unit="°C") # TODO - Only ASCII in case encodings get mixed up?
         )
 
         return observation_df.pipe(DataFrame[FHIRObservation])

@@ -39,10 +39,6 @@ class AbstractMimicEventsMapper(
         engine = create_engine(f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}")
         return engine.connect().execution_options(stream_results=True)
 
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame:
-        # Drop this as soon as possible
-        return super()._to_ohdsi(df)
-
     def _to_fihr(self, df: DataFrame) -> Generator[DataFrame[FHIRObservation], None, None]:
         observation_df = pd.DataFrame()
 

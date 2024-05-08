@@ -2,10 +2,9 @@ from multiprocessing import Pool
 from typing import List, Dict
 from pathlib import Path
 import os.path as osp
-
 from yaml import safe_load_all
 
-from icu_pipeline.concept_alternative import Concept, ConceptConfig
+from icu_pipeline.concept import Concept, ConceptConfig
 from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
 from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 
@@ -77,6 +76,7 @@ class Pipeline:
 
         out = {c._concept_config.id: None for c in concepts}
 
+        # Initialize Generators for all Concepts
         # TODO - SubProcesses need to use Queues in order
         #   to properly send chunks back to the main process.
         #   Skip multiprocessing for now and implement later.
@@ -84,8 +84,7 @@ class Pipeline:
         #     out.append(worker_pool.map(self._worker_func, loaded_concepts))
         # return out
 
-        # Initialize Generators for all Concepts
-        #   Concept-Generator gathers multiple sources sequentially.
+        # Concept-Generator gathers multiple sources sequentially.
         for c in concepts:
             out[c._concept_config.id] = self._worker_func(c)
 

@@ -4,7 +4,7 @@ from typing import Generator
 import pandas as pd
 
 from icu_pipeline.mapper.sink import AbstractSinkMapper
-from icu_pipeline.concept_alternative import Concept
+from icu_pipeline.concept import Concept
 
 
 class AbstractFileSinkMapper(AbstractSinkMapper, metaclass=ABCMeta):
@@ -23,15 +23,6 @@ class AbstractFileSinkMapper(AbstractSinkMapper, metaclass=ABCMeta):
         # file_path: Path, # Don't explicitly give a Path. It should be defined on init
     ) -> None:
         raise NotImplementedError
-
-    # Not Necessary - Looks like a proxy
-    # @abstractmethod
-    # def _to_output_format(
-    #     self,
-    #     df: pd.DataFrame,
-    #     concept: Concept
-    # ) -> None:
-    #     raise NotImplementedError
 
 
 class CSVFileSinkMapper(AbstractFileSinkMapper):

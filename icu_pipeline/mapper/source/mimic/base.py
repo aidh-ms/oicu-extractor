@@ -20,7 +20,15 @@ class AbstractMimicEventsMapper(
     AbstractDatabaseSourceMapper[FHIRObservation, AbstractOHDSISinkSchema],
     metaclass=ABCMeta,
 ):
-    UNIT = ""
+    def __init__(
+        self, *args: list, item_ids: str | None = None, schema: str | None, table: str | None, **kwargs: dict
+    ) -> None:
+        super().__init__(*args, **kwargs)
+
+        if item_ids is None:
+            raise ValueError()
+        item_ids = ', '.join(map(str, item_ids))
+        self.SQL_QUERY = f"SELECT * FROM {schema}.{table} WHERE itemid IN ({item_ids})"
 
     def create_connection(self) -> Engine:
         POSTGRES_USER = os.getenv("POSTGRES_USER")

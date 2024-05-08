@@ -47,19 +47,10 @@ class Concept:
         return getattr(module, class_name)
 
     def map(self) -> Generator[pd.DataFrame, None, None]:
-        # assert all(
-        #     [s in self._mapper for s in sources]
-        # ), f"Not all Source have a mapper for Concept '{self._concept_id}'"
-        # for db in sources:
-        #     config = self._mapper[db]
-        #     source = config["source"]
-        #     source_mapper = self._load_class(
-        #         f"icu_pipeline.mapper.source.{source}", config["class"]
-        #     )
-
         assert all(
             [s in self._concept_config.mapper for s in self._source_configs.keys()]
         ), f"Not all Source have a mapper for Concept '{self._concept_config.id}'"
+        # Yield a DataFrame-Chunk for each Source and for each Chunk
         for db in self._source_configs.keys():
             config = self._concept_config.mapper[db]
             source = config.source
@@ -82,8 +73,8 @@ class Concept:
             self._fhir_schema,
             ohdsi_schema=None,
             source_mapper_config=self._source_configs[source],
-            sink_mapper=None, #self._sink_mapper,
-            mapping_format=None, #self._mapping_format,
+            sink_mapper=None,
+            mapping_format=None,
             **params,
         )
         return mapper.map()

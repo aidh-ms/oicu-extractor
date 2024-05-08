@@ -5,7 +5,7 @@ from typing import Any, Generic, TypeVar, Type, Generator
 
 import pandas as pd
 from pandera.typing import DataFrame
-from sqlalchemy import create_engine, Engine
+from sqlalchemy import Engine
 from psycopg import sql
 
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
@@ -64,13 +64,13 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
     def to_fihr(self):
         for df in self.get_data():
             df = self._to_fihr(df).pipe(self._fhir_schema)
-            #self._sink_mapper.to_output_format(df, self._fhir_schema, self._concept_id)
             yield df
 
     def to_ohdsi(self):
         for df in self.get_data():
             df = self._to_ohdsi(df).pipe(self._ohdsi_schema)
-            self._sink_mapper.to_output_format(df, self._ohdsi_schema, self._concept_id)
+            self._sink_mapper.to_output_format(
+                df, self._ohdsi_schema, self._concept_id)
 
     @abstractmethod
     def get_data(self) -> Generator[pd.DataFrame, None, None]:

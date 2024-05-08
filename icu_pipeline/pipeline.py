@@ -4,7 +4,7 @@ from pathlib import Path
 import os.path as osp
 from yaml import safe_load_all
 
-from icu_pipeline.concept import Concept, ConceptConfig
+from icu_pipeline.concept import Concept, ConceptConfig, ConceptCoding
 from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
 from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 
@@ -15,6 +15,7 @@ class Pipeline:
         source_configs: None | Dict[DataSource, SourceMapperConfiguration] = None,
         sink_mapper: None | AbstractSinkMapper = None,
         mapping_format = MappingFormat.FHIR,
+        concept_coding = ConceptCoding.SNOMED,
         processes: int = 2,
     ) -> None:
         """A Pipeline that extracts, transforms, and loads data into sinks.
@@ -26,12 +27,13 @@ class Pipeline:
         self._sink_mapper = sink_mapper
         self._mapping_format = mapping_format
         self._source_configs = source_configs
+        self._concept_coding = concept_coding
         self._processes = processes
 
     def _load_concepts(self, concepts: List[str|Path], base_path=None) -> List[Concept]:
         if base_path is None:
             base_path = osp.split(__file__)[:-2]
-            base_path = osp.join(*base_path, "concepts", "snomed")
+            base_path = osp.join(*base_path, "conceptbase", "concepts")
         out = []
         for next_concept in concepts:
             if isinstance(next_concept, str):
@@ -39,10 +41,9 @@ class Pipeline:
                     config = dict(*safe_load_all(concept_file))
                     out.append(
                         Concept(
-                            ConceptConfig.model_validate(
-                                config["concept"]
-                            ),  # TODO - Does the Config need to be wrapped under 'concept' ?
+                            ConceptConfig.model_validate(config),
                             self._source_configs,
+                            concept_coding=self._concept_coding
                         )
                     )
             elif type(next_concept) in [Concept]:
@@ -69,12 +70,13 @@ class Pipeline:
 
         for c in concepts:
             for db in self._source_configs.keys():
-                avail_mappers = [k for k in c._concept_config.mapper]
+                avail_mappers = [k.source for k in c._concept_config.mapper]
                 assert (
                     db in avail_mappers
-                ), f"Database '{db}' is not in available mappers {avail_mappers} for Concept '{c._concept_config.id}'"
+                ), f"Database '{db}' is not in available sources {avail_mappers} for Concept '{c._concept_config.name}'"
 
-        out = {c._concept_config.id: None for c in concepts}
+        # TODO - ConceptName is easiert to handle/debug but might not be as unique as snomed?
+        out = {c._concept_config.name: None for c in concepts}
 
         # Initialize Generators for all Concepts
         # TODO - SubProcesses need to use Queues in order
@@ -86,7 +88,7 @@ class Pipeline:
 
         # Concept-Generator gathers multiple sources sequentially.
         for c in concepts:
-            out[c._concept_config.id] = self._worker_func(c)
+            out[c._concept_config.name] = self._worker_func(c)
 
         # TODO - Any intermediate steps would be added at this point
         #   For instance, transformation from FHIR to OHDSI
@@ -96,7 +98,7 @@ class Pipeline:
         if self._sink_mapper is not None:
             for c in concepts:
                 result = self._sink_mapper.to_output_format(
-                    df_generator=out[c._concept_config.id], concept=c
+                    df_generator=out[c._concept_config.name], concept=c
                 )
-                out[c._concept_config.id] = result
+                out[c._concept_config.name] = result
         return out

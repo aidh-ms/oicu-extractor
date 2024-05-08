@@ -43,6 +43,3 @@ class AbstractAmdsEventsMapper(
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])
-
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
-        raise NotImplementedError

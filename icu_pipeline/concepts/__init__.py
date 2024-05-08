@@ -21,13 +21,13 @@ class AbstractConcept(ABC):
         self,
         sink_mapper: AbstractSinkMapper,
         mapping_format: MappingFormat,
-        source_mapper_configs: dict[DataSource, SourceMapperConfiguration],
+        source_configs: dict[DataSource, SourceMapperConfiguration],
     ) -> None:
         super().__init__()
 
         self._sink_mapper = sink_mapper
         self._mapping_format = mapping_format
-        self._source_mapper_configs = source_mapper_configs
+        self._source_configs = source_configs
 
     def map(self):
         for source, source_mapper in self.MAPPER.items():
@@ -49,7 +49,7 @@ class AbstractConcept(ABC):
             self.CONCEPT_TYPE,
             self.FHIR_SCHEMA,
             self.OHDSI_SCHEMA,
-            self._source_mapper_configs[source],
+            self._source_configs[source],
             self._sink_mapper,
             self._mapping_format,
         )

@@ -38,7 +38,6 @@ class AbstractMimicEventsMapper(
         POSTGRES_HOST = os.getenv("POSTGRES_HOST")
         POSTGRES_PORT = os.getenv("POSTGRES_PORT")
         MIMIC_DB = os.getenv("MIMIC_DB")
-        print("Postgres user: ", os.getenv("POSTGRES_USER"))
         engine = create_engine(f"""postgresql+psycopg://{POSTGRES_USER}:{
                                POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}""")
         return engine.connect().execution_options(stream_results=True)

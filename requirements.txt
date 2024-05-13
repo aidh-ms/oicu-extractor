@@ -1,4 +1,4 @@
-psycopg2[binary]==3.1.18
+psycopg[binary]==3.1.18
 SQLAlchemy==2.0.29
 pandas==2.2.2
 pandas-stubs==2.2.0.240218

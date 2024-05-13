@@ -21,4 +21,4 @@ if __name__ == "__main__":
         MappingFormat.FHIR,
     )
 
-    pipeline.transform(["HeartRate.yml"])
+    pipeline.transform(["HeartRate.yml", "SystolicBloodPressure.yml"])

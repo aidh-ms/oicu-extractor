@@ -1,3 +1,5 @@
 [submodule "conceptbase"]
 	path = conceptbase
-	url = https://github.com/aidh-ms/oicu-conceptbase.git
+	url = https://github.com/aidh-ms/oicu-conceptbase
+	branch = main
+

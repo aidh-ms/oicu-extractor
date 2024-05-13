@@ -13,7 +13,7 @@ class AbstractFileSinkMapper(AbstractSinkMapper, metaclass=ABCMeta):
     def __init__(self, path: Path | None = None) -> None:
         super().__init__()
 
-        self._path = path or Path(".")
+        self._path = path or Path("./output")
         self._path.mkdir(exist_ok=True)
 
     def to_output_format(
@@ -39,7 +39,8 @@ class CSVFileSinkMapper(AbstractFileSinkMapper):
         out = dict(total_rows=0)
         for df in df_generator:
             header = False
-            file_path = self._path / f"{concept._concept_config.id}.{self.FILE_EXTENSION}"
+            file_path = self._path / \
+                f"{concept._concept_config.name}.{self.FILE_EXTENSION}"
             if not file_path.exists():
                 header = True
 
@@ -47,7 +48,8 @@ class CSVFileSinkMapper(AbstractFileSinkMapper):
                 if not isinstance(df[column][0], dict):
                     continue
 
-                df = df.join(pd.json_normalize(df[column]).add_prefix(f"{column}__"))  # type: ignore[arg-type]
+                df = df.join(pd.json_normalize(df[column]).add_prefix(
+                    f"{column}__"))  # type: ignore[arg-type]
                 df = df.drop(columns=[column])
 
             df.columns = df.columns.str.replace(".", "__")

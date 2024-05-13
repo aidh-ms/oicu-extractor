@@ -23,7 +23,7 @@ class DataSource(StrEnum):
 
 @dataclass
 class SourceMapperConfiguration:
-    connection: str
+    # connection: str TODO: do we need this?
     chunksize: int = 10000
     limit: int = -1
 
@@ -78,15 +78,16 @@ class AbstractDatabaseSourceMapper(
         ):
             limit = self._source_config.limit
             if limit > 0:
-                query = sql.SQL(self.SQL_QUERY.replace(";", f" LIMIT {limit};"))
+                query = sql.SQL(self.SQL_QUERY.replace(
+                    ";", f" LIMIT {limit};"))
             else:
                 query = sql.SQL(self.SQL_QUERY)
             query = query.format(
-                    **{
-                        field: sql.Identifier(name)
-                        for field, name in self.SQL_FIELDS.items()
-                    }
-                )
+                **{
+                    field: sql.Identifier(name)
+                    for field, name in self.SQL_FIELDS.items()
+                }
+            )
             for df in pd.read_sql_query(
                 query.as_string(con),  # type: ignore[arg-type]
                 con,

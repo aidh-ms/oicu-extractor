@@ -1,10 +1,10 @@
 import os
 from abc import ABCMeta
-from typing import Union, Iterator, Generator
+from typing import Generator
 import pandas as pd
 from pandera.typing import DataFrame
 from sqlalchemy import Engine, create_engine
-
+from dotenv import load_dotenv
 from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 from icu_pipeline.mapper.schema.fhir import (
@@ -28,15 +28,19 @@ class AbstractMimicEventsMapper(
         if item_ids is None:
             raise ValueError()
         item_ids = ', '.join(map(str, item_ids))
-        self.SQL_QUERY = f"SELECT * FROM {schema}.{table} WHERE itemid IN ({item_ids});"
+        self.SQL_QUERY = f"SELECT * FROM {schema}.{
+            table} WHERE itemid IN ({item_ids});"
 
     def create_connection(self) -> Engine:
+        load_dotenv()
         POSTGRES_USER = os.getenv("POSTGRES_USER")
         POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
         POSTGRES_HOST = os.getenv("POSTGRES_HOST")
         POSTGRES_PORT = os.getenv("POSTGRES_PORT")
         MIMIC_DB = os.getenv("MIMIC_DB")
-        engine = create_engine(f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}")
+        print("Postgres user: ", os.getenv("POSTGRES_USER"))
+        engine = create_engine(f"""postgresql+psycopg://{POSTGRES_USER}:{
+                               POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}""")
         return engine.connect().execution_options(stream_results=True)
 
     def _to_fihr(self, df: DataFrame) -> Generator[DataFrame[FHIRObservation], None, None]:

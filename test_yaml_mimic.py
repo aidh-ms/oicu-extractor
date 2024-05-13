@@ -13,7 +13,6 @@ if __name__ == "__main__":
     configs = {
         DataSource.MIMIC: SourceMapperConfiguration()
     }
-    concept_paths = [*(Path(__file__).parent / "concepts").rglob("*.yaml")]
 
     pipeline = Pipeline(
         configs,
@@ -21,4 +20,4 @@ if __name__ == "__main__":
         MappingFormat.FHIR,
     )
 
-    pipeline.transform(["HeartRate.yml", "SystolicBloodPressure.yml"])
+    pipeline.transform(["HeartRate", "SystolicBloodPressure"])

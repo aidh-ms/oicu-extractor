@@ -12,10 +12,11 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
 class Pipeline:
     def __init__(
         self,
-        source_configs: None | Dict[DataSource, SourceMapperConfiguration] = None,
+        source_configs: None | Dict[DataSource,
+                                    SourceMapperConfiguration] = None,
         sink_mapper: None | AbstractSinkMapper = None,
-        mapping_format = MappingFormat.FHIR,
-        concept_coding = ConceptCoding.SNOMED,
+        mapping_format=MappingFormat.FHIR,
+        concept_coding=ConceptCoding.SNOMED,
         processes: int = 2,
     ) -> None:
         """A Pipeline that extracts, transforms, and loads data into sinks.
@@ -30,14 +31,14 @@ class Pipeline:
         self._concept_coding = concept_coding
         self._processes = processes
 
-    def _load_concepts(self, concepts: List[str|Path], base_path=None) -> List[Concept]:
+    def _load_concepts(self, concepts: List[str | Path], base_path=None) -> List[Concept]:
         if base_path is None:
             base_path = osp.split(__file__)[:-2]
             base_path = osp.join(*base_path, "conceptbase", "concepts")
         out = []
         for next_concept in concepts:
             if isinstance(next_concept, str):
-                with open(osp.join(base_path, next_concept), "r") as concept_file:
+                with open(osp.join(base_path, f"{next_concept}.yml"), "r") as concept_file:
                     config = dict(*safe_load_all(concept_file))
                     out.append(
                         Concept(
@@ -59,12 +60,13 @@ class Pipeline:
         #   Could become relevant if multiprocessing includes Queues
         return concept.map()
 
-    def transform(self, concepts: List[Concept|str]):
+    def transform(self, concepts: List[Concept | str]):
         """Transform a list of Concepts according to given sources, steps, and sinks.
         Arguments:
           concepts: List of concepts. If (Concept) then use them directly.
             If (str) then expect a SNOMED ID."""
-        assert concepts and len(concepts) > 0, "'concepts' is either None or empty."
+        assert concepts and len(
+            concepts) > 0, "'concepts' is either None or empty."
 
         concepts: List[Concept] = self._load_concepts(concepts)
 

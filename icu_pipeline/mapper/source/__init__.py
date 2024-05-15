@@ -5,12 +5,11 @@ from typing import Any, Generic, TypeVar, Type, Generator
 
 import pandas as pd
 from pandera.typing import DataFrame
-from sqlalchemy import create_engine
+from sqlalchemy import Engine
 from psycopg import sql
 
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
 from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
-from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
 
 F = TypeVar("F", bound=AbstractFHIRSinkSchema)
 O = TypeVar("O", bound=AbstractOHDSISinkSchema)
@@ -24,8 +23,9 @@ class DataSource(StrEnum):
 
 @dataclass
 class SourceMapperConfiguration:
-    connection: str
+    # connection: str TODO: do we need this?
     chunksize: int = 10000
+    limit: int = -1
 
 
 class AbstractSourceMapper(ABC, Generic[F, O]):
@@ -34,37 +34,23 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
         concept_id: str,
         concept_type: str,
         fhir_schema: Type[AbstractFHIRSinkSchema],
-        ohdsi_schema: Type[AbstractOHDSISinkSchema],
-        source_mapper_config: SourceMapperConfiguration,
-        sink_mapper: AbstractSinkMapper,
-        mapping_format: MappingFormat = MappingFormat.FHIR,
+        source_config: SourceMapperConfiguration,
     ) -> None:
         super().__init__()
 
         self._concept_id = concept_id
         self._concept_type = concept_type
         self._fhir_schema = fhir_schema
-        self._ohdsi_schema = ohdsi_schema
-        self._source_config = source_mapper_config
-        self._sink_mapper = sink_mapper
-        self._mapping_format = mapping_format
+        self._source_config = source_config
 
     def map(self) -> None:
-        match self._mapping_format:
-            case MappingFormat.FHIR:
-                self.to_fihr()
-            case MappingFormat.OHDSI:
-                self.to_ohdsi()
+        # FHIR is default and later transformed if necessary in a separate module
+        return self.to_fihr()
 
     def to_fihr(self):
         for df in self.get_data():
             df = self._to_fihr(df).pipe(self._fhir_schema)
-            self._sink_mapper.to_output_format(df, self._fhir_schema, self._concept_id)
-
-    def to_ohdsi(self):
-        for df in self.get_data():
-            df = self._to_ohdsi(df).pipe(self._ohdsi_schema)
-            self._sink_mapper.to_output_format(df, self._ohdsi_schema, self._concept_id)
+            yield df
 
     @abstractmethod
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
@@ -72,10 +58,6 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
 
     @abstractmethod
     def _to_fihr(self, df: DataFrame) -> DataFrame[F]:
-        raise NotImplementedError
-
-    @abstractmethod
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame[O]:
         raise NotImplementedError
 
 
@@ -86,21 +68,28 @@ class AbstractDatabaseSourceMapper(
     SQL_PARAMS: dict[str, Any] = dict()
     SQL_FIELDS: dict[str, str] = dict()
 
+    def create_connection(self) -> Engine:
+        raise NotImplementedError
+
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
-        engine = create_engine(self._source_config.connection)
         with (
-            engine.connect().execution_options(stream_results=True) as con,
+            self.create_connection() as con,
             con.begin(),
         ):
+            limit = self._source_config.limit
+            if limit > 0:
+                query = sql.SQL(self.SQL_QUERY.replace(
+                    ";", f" LIMIT {limit};"))
+            else:
+                query = sql.SQL(self.SQL_QUERY)
+            query = query.format(
+                **{
+                    field: sql.Identifier(name)
+                    for field, name in self.SQL_FIELDS.items()
+                }
+            )
             for df in pd.read_sql_query(
-                sql.SQL(self.SQL_QUERY)
-                .format(
-                    **{
-                        field: sql.Identifier(name)
-                        for field, name in self.SQL_FIELDS.items()
-                    }
-                )
-                .as_string(con),  # type: ignore[arg-type]
+                query.as_string(con),  # type: ignore[arg-type]
                 con,
                 chunksize=self._source_config.chunksize,
                 params=self.SQL_PARAMS,

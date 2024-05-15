@@ -3,6 +3,6 @@ SQLAlchemy==2.0.29
 pandas==2.2.2
 pandas-stubs==2.2.2.240514
 colorlog==6.8.0
-pandera[mypy]==0.18.3
+pandera[mypy]==0.19.3
 python-dotenv==1.0.1
 PyYAML==6.0.1

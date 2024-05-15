@@ -33,6 +33,3 @@ class MimicICUEncounterMapper(
         )
 
         return encounter_df.pipe(DataFrame[FHIREncounter])
-
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
-        raise NotImplementedError

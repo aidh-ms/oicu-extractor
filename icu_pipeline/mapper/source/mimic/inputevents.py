@@ -58,9 +58,6 @@ class AbstractMimicInputEventMapper(
 
         return medication_df.pipe(DataFrame[FHIRMedicationStatement])
 
-    def _to_ohdsi(self, df: DataFrame) -> DataFrame[AbstractOHDSISinkSchema]:
-        raise NotImplementedError
-
 
 class MimicNorepinephrineMapper(AbstractMimicInputEventMapper):
     SQL_PARAMS = {"values": [221906]}

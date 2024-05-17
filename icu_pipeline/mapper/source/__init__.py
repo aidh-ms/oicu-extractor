@@ -5,14 +5,13 @@ from typing import Any, Generic, TypeVar, Type, Generator
 
 import pandas as pd
 from pandera.typing import DataFrame
-from sqlalchemy import Engine
+from sqlalchemy import Engine, create_engine
 from psycopg import sql
+from psycopg.sql import Composable
 
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
-from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 
 F = TypeVar("F", bound=AbstractFHIRSinkSchema)
-O = TypeVar("O", bound=AbstractOHDSISinkSchema)
 
 
 class DataSource(StrEnum):
@@ -23,12 +22,12 @@ class DataSource(StrEnum):
 
 @dataclass
 class SourceMapperConfiguration:
-    # connection: str TODO: do we need this?
+    connection: str
     chunksize: int = 10000
     limit: int = -1
 
 
-class AbstractSourceMapper(ABC, Generic[F, O]):
+class AbstractSourceMapper(ABC, Generic[F]):
     def __init__(
         self,
         concept_id: str,
@@ -61,37 +60,76 @@ class AbstractSourceMapper(ABC, Generic[F, O]):
         raise NotImplementedError
 
 
-class AbstractDatabaseSourceMapper(
-    AbstractSourceMapper, Generic[F, O], metaclass=ABCMeta
-):
-    SQL_QUERY: str
-    SQL_PARAMS: dict[str, Any] = dict()
-    SQL_FIELDS: dict[str, str] = dict()
+class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F], metaclass=ABCMeta):
+    SQL_QUERY: str | Composable
 
     def create_connection(self) -> Engine:
-        raise NotImplementedError
+        engine = create_engine(self._source_config.connection)
+        return engine.connect().execution_options(stream_results=True)
+
+    def build_query(
+        self,
+        schema: str,
+        table: str,
+        fields: dict[str, str],
+        constraints: dict[str, Any],
+    ) -> Composable:
+        def build_field(exp: str, org: str) -> Composable:
+            return sql.Composed(
+                (sql.Identifier(org), sql.SQL(" AS "), sql.Identifier(exp))
+            )
+
+        def build_constraint(key: str, value: Any) -> Composable:
+            if isinstance(value, list):
+                return sql.Composed(
+                    (
+                        sql.Identifier(key),
+                        sql.SQL(" = any({})").format(sql.Literal(value)),
+                    )
+                )
+            return sql.Composed(
+                (sql.Identifier(key), sql.SQL(" = "), sql.Literal(value))
+            )
+
+        raw_query = """
+            SELECT {fields}
+            FROM {schema}.{table}
+            WHERE {constraints}
+            LIMIT {limit}
+        """
+
+        query = sql.SQL(raw_query).format(
+            fields=sql.SQL(", ").join(
+                [build_field(exp, org) for exp, org in fields.items()]
+            ),
+            schema=sql.Identifier(schema),
+            table=sql.Identifier(table),
+            constraints=sql.SQL(" AND ").join(
+                [build_constraint(key, value) for key, value in constraints.items()]
+            ),
+            limit=(
+                sql.Literal(limit)
+                if (limit := self._source_config.limit) > 0
+                else sql.SQL("ALL")
+            ),
+        )
+
+        return query
 
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
         with (
             self.create_connection() as con,
             con.begin(),
         ):
-            limit = self._source_config.limit
-            if limit > 0:
-                query = sql.SQL(self.SQL_QUERY.replace(
-                    ";", f" LIMIT {limit};"))
-            else:
+            query = self.SQL_QUERY
+            if isinstance(self.SQL_QUERY, str):
                 query = sql.SQL(self.SQL_QUERY)
-            query = query.format(
-                **{
-                    field: sql.Identifier(name)
-                    for field, name in self.SQL_FIELDS.items()
-                }
-            )
+
+            print(query.as_string(con.connection.cursor()))
+
             for df in pd.read_sql_query(
-                query.as_string(con),  # type: ignore[arg-type]
+                query.as_string(con.connection.cursor()),  # type: ignore[arg-type]
                 con,
                 chunksize=self._source_config.chunksize,
-                params=self.SQL_PARAMS,
             ):
                 yield df

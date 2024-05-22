@@ -1,9 +1,8 @@
-from abc import ABCMeta
-
-import pandera as pa
-
 from . import AbstractSinkSchema
 
 
 class AbstractOHDSISinkSchema(AbstractSinkSchema):
+    """
+    Abstract class for the OHDSI sink schema. This class is not yet implemented.
+    """
     pass

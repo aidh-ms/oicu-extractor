@@ -29,7 +29,7 @@ class TestPipeline:
         pipeline, example_concepts = setup_pipeline
         assert pipeline._worker_func(example_concepts[0])
 
-    def test_run(self, setup_pipeline):
+    def test_run(self):
         """
         Test run for the whole pipeline implementation
         Asserts that the pipeline can be successfully executed.

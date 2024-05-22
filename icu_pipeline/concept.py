@@ -10,17 +10,29 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration
 
 
 class ConceptCoding(StrEnum):
+    """
+    Enum to define the coding system for the concept identifiers.
+    """
     SNOMED = auto()
     LOINC = auto()
 
+
 @dataclass
 class MapperConfig:
+    """
+    Dataclass to define the configuration for a mapper.
+    """
     klass: str
     source: str
     unit: str
-    params: Dict[str, Any] # TODO - Declare fixed set of parameters if possible
+    # TODO - Declare fixed set of parameters if possible
+    params: Dict[str, Any]
+
 
 class ConceptConfig(BaseModel):
+    """
+    Dataclass to define the configuration for a concept.
+    """
     name: str
     description: str
     identifiers: Dict[ConceptCoding, str]
@@ -30,6 +42,35 @@ class ConceptConfig(BaseModel):
 
 
 class Concept:
+    """
+    A class to represent a medical concept and its mapping to data sources.
+
+    This class is responsible for loading the appropriate schema and source mappers
+    based on the provided configuration. It also provides a method to map the concept
+    to data from the sources.
+
+    Parameters
+    ----------
+    concept_config : ConceptConfig
+        The configuration for the concept, including its name, description, identifiers,
+        unit, schema, and mappers.
+    source_configs : dict[DataSource, SourceMapperConfiguration]
+        The configurations for the data sources that the concept should be mapped to.
+    concept_coding : ConceptCoding
+        The coding system used for the concept's identifiers.
+
+    Attributes
+    ----------
+    _concept_config : ConceptConfig
+        The configuration for the concept.
+    _source_configs : dict[DataSource, SourceMapperConfiguration]
+        The configurations for the data sources.
+    _concept_coding : ConceptCoding
+        The coding system used for the concept's identifiers.
+    _fhir_schema : Type[AbstractFHIRSinkSchema]
+        The FHIR schema class for the concept.
+    """
+
     def __init__(
         self,
         concept_config: ConceptConfig,
@@ -45,6 +86,7 @@ class Concept:
         )
 
     def _load_class(self, module_name: str, class_name: str) -> Type:
+
         module = import_module(module_name)
         return getattr(module, class_name)
 

@@ -1,3 +1,4 @@
+import os
 import logging
 import colorlog
 
@@ -22,7 +23,11 @@ class ICULogger:
         console_handler.setFormatter(formatter)
         self._logger.addHandler(console_handler)
 
-        file_handler = logging.FileHandler("logs/icu_pipeline.log")
+        log_file_path = "logs/icu_pipeline.log"
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+
+        file_handler = logging.FileHandler(log_file_path)
         file_handler.setFormatter(formatter)
         self._logger.addHandler(file_handler)
 

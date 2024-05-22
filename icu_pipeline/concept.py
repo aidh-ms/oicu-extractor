@@ -86,15 +86,20 @@ class Concept:
         )
 
     def _load_class(self, module_name: str, class_name: str) -> Type:
-
+        """
+        Load a class from a module.
+        """
         module = import_module(module_name)
         return getattr(module, class_name)
 
     def map(self) -> Generator[pd.DataFrame, None, None]:
+        """
+        Map the concept to data from the sources.
+        """
         implemented_sources = [m.source for m in self._concept_config.mapper]
         assert all(
             [s in implemented_sources for s in self._source_configs.keys()]
-        ), f"Not all Source have a mapper for Concept '{self._concept_config.name}'"
+        ), f"Not all Sources have a mapper for Concept '{self._concept_config.name}'"
         # Yield a DataFrame-Chunk for each Source and for each Chunk
         for mapper in self._concept_config.mapper:
             source_mapper = self._load_class(
@@ -110,6 +115,9 @@ class Concept:
         source: DataSource,
         params: Dict[str, Any],
     ):
+        """
+        Map the concept to data from a source.
+        """
         identifier = self._concept_config.identifiers[self._concept_coding]
         mapper = source_mapper(
             concept_id=identifier,

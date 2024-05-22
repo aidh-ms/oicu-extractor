@@ -7,11 +7,17 @@ from icu_pipeline.mapper.schema import AbstractSinkSchema
 
 
 class MappingFormat(StrEnum):
+    """
+    Enum for mapping formats.
+    """
     FHIR = auto()
     OHDSI = auto()
 
 
 class AbstractSinkMapper(ABC):
+    """
+    Abstract sink mapper class.
+    """
     @abstractmethod
     def to_output_format(
         self,

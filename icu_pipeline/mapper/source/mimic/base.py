@@ -26,7 +26,7 @@ class AbstractMimicEventsMapper(
         super().__init__(*args, **kwargs)
 
         if item_ids is None:
-            raise ValueError()
+            raise ValueError("item_ids must be provided")
         item_ids = ', '.join(map(str, item_ids))
         self.SQL_QUERY = f"SELECT * FROM {schema}.{
             table} WHERE itemid IN ({item_ids});"

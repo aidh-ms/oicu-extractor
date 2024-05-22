@@ -1,4 +1,3 @@
-from multiprocessing import Pool
 from typing import List, Dict
 from pathlib import Path
 import os.path as osp

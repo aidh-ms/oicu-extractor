@@ -5,19 +5,18 @@ from typing import Any, Generic, TypeVar, Type, Generator
 
 import pandas as pd
 from pandera.typing import DataFrame
-from sqlalchemy import Engine
+from sqlalchemy import Engine, create_engine
 from psycopg import sql
+from psycopg.sql import Composable
 
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
-from icu_pipeline.mapper.schema.ohdsi import AbstractOHDSISinkSchema
 
 from icu_pipeline.logger import ICULogger
 
 # add logging
 logger = ICULogger().get_logger()
 
-FHIRSchemaType = TypeVar("FHIRSchemaType", bound=AbstractFHIRSinkSchema)
-OHDSISchemaType = TypeVar("OHDSISchemaType", bound=AbstractOHDSISinkSchema)
+F = TypeVar("F", bound=AbstractFHIRSinkSchema)
 
 
 class DataSource(StrEnum):
@@ -34,13 +33,13 @@ class SourceMapperConfiguration:
     """
     Configuration for the source mapper.s
     """
-    # connection: str TODO: do we need this?
+    connection: str
     chunksize: int = 10000
     # optional limit for the number of rows to be fetched
     limit: int = -1
 
 
-class AbstractSourceMapper(ABC, Generic[FHIRSchemaType, OHDSISchemaType]):
+class AbstractSourceMapper(ABC, Generic[F]):
     """
     Abstract class for the source mappers.
 
@@ -120,7 +119,7 @@ class AbstractSourceMapper(ABC, Generic[FHIRSchemaType, OHDSISchemaType]):
         raise NotImplementedError
 
     @abstractmethod
-    def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRSchemaType]:
+    def _to_fihr(self, df: DataFrame) -> DataFrame[AbstractFHIRSinkSchema]:
         """
         Converts a dataframe to FHIR format.
 
@@ -140,8 +139,7 @@ class AbstractSourceMapper(ABC, Generic[FHIRSchemaType, OHDSISchemaType]):
 
 
 class AbstractDatabaseSourceMapper(
-    AbstractSourceMapper, Generic[FHIRSchemaType,
-                                  OHDSISchemaType], metaclass=ABCMeta
+    AbstractSourceMapper, Generic[F], metaclass=ABCMeta
 ):
     """
     Abstract class for the database source mappers.
@@ -166,21 +164,64 @@ class AbstractDatabaseSourceMapper(
     get_datab():
         Retrieves data from the database. This method should be implemented by subclasses.
     """
-    SQL_QUERY: str  # the SQL query to be executed
-    # the parameters to be used in the SQL query
-    SQL_PARAMS: dict[str, Any] = dict()
-    # the fields to be retrieved from the database
-    SQL_FIELDS: dict[str, str] = dict()
+    SQL_QUERY: str | Composable  # the SQL query to be executed
 
     def create_connection(self) -> Engine:
-        raise NotImplementedError
+        engine = create_engine(self._source_config.connection)
+        return engine.connect().execution_options(stream_results=True)
+
+    def build_query(
+        self,
+        schema: str,
+        table: str,
+        fields: dict[str, str],
+        constraints: dict[str, Any],
+    ) -> Composable:
+        def build_field(exp: str, org: str) -> Composable:
+            return sql.Composed(
+                (sql.Identifier(org), sql.SQL(" AS "), sql.Identifier(exp))
+            )
+
+        def build_constraint(key: str, value: Any) -> Composable:
+            if isinstance(value, list):
+                return sql.Composed(
+                    (
+                        sql.Identifier(key),
+                        sql.SQL(" = any({})").format(sql.Literal(value)),
+                    )
+                )
+            return sql.Composed(
+                (sql.Identifier(key), sql.SQL(" = "), sql.Literal(value))
+            )
+
+        raw_query = """
+            SELECT {fields}
+            FROM {schema}.{table}
+            WHERE {constraints}
+            LIMIT {limit}
+        """
+
+        query = sql.SQL(raw_query).format(
+            fields=sql.SQL(", ").join(
+                [build_field(exp, org) for exp, org in fields.items()]
+            ),
+            schema=sql.Identifier(schema),
+            table=sql.Identifier(table),
+            constraints=sql.SQL(" AND ").join(
+                [build_constraint(key, value)
+                 for key, value in constraints.items()]
+            ),
+            limit=(
+                sql.Literal(limit)
+                if (limit := self._source_config.limit) > 0
+                else sql.SQL("ALL")
+            ),
+        )
+
+        return query
 
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
-        with (
-            self.create_connection() as con,
-            con.begin(),
-        ):
-            """
+        """
             Retrieves data from the database.
 
             This method establishes a connection to the database, constructs a SQL query based on the
@@ -197,24 +238,20 @@ class AbstractDatabaseSourceMapper(
             DatabaseError
                 If there is a problem executing the SQL query.
             """
-            limit = self._source_config.limit  # default is -1 so no limit at all
-            if limit > 0:  # add limit to the query
-                query = sql.SQL(self.SQL_QUERY.replace(
-                    ";", f" LIMIT {limit};"))
-            else:
+        with (
+            self.create_connection() as con,
+            con.begin(),
+        ):
+            query = self.SQL_QUERY
+            if isinstance(self.SQL_QUERY, str):
                 query = sql.SQL(self.SQL_QUERY)
-                # format the query with the fields
-            query = query.format(
-                **{
-                    field: sql.Identifier(name)
-                    for field, name in self.SQL_FIELDS.items()
-                }
-            )
-            logger.debug(f"Executing query: {query.as_string(con)}")
+
+            print(query.as_string(con.connection.cursor()))
+
             for df in pd.read_sql_query(
-                query.as_string(con),  # type: ignore[arg-type]
+                # type: ignore[arg-type]
+                query.as_string(con.connection.cursor()),
                 con,
                 chunksize=self._source_config.chunksize,
-                params=self.SQL_PARAMS,
             ):
                 yield df

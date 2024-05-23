@@ -26,7 +26,7 @@ class MapperConfig:
     source: str
     unit: str
     # TODO - Declare fixed set of parameters if possible
-    params: Dict[str, Any]
+    params: dict[str, Any]
 
 
 class ConceptConfig(BaseModel):
@@ -35,10 +35,10 @@ class ConceptConfig(BaseModel):
     """
     name: str
     description: str
-    identifiers: Dict[ConceptCoding, str]
+    identifiers: dict[ConceptCoding, str]
     unit: str
     schema: str
-    mapper: List[MapperConfig]
+    mapper: list[MapperConfig]
 
 
 class Concept:
@@ -75,7 +75,7 @@ class Concept:
         self,
         concept_config: ConceptConfig,
         source_configs: dict[DataSource, SourceMapperConfiguration],
-        concept_coding: ConceptCoding
+        concept_coding: ConceptCoding,
     ) -> None:
         self._concept_config = concept_config
         self._source_configs = source_configs
@@ -106,14 +106,14 @@ class Concept:
                 f"icu_pipeline.mapper.source.{mapper.source}", mapper.klass
             )
 
-            for df_chunk in self._map(source_mapper, mapper.source, mapper.params):
+            for df_chunk in self._map(source_mapper, mapper.source, mapper):
                 yield df_chunk
 
     def _map(
         self,
         source_mapper: Type[AbstractSourceMapper],
         source: DataSource,
-        params: Dict[str, Any],
+        mapper_config: MapperConfig,
     ):
         """
         Map the concept to data from a source.
@@ -124,6 +124,8 @@ class Concept:
             concept_type=self._concept_coding,
             fhir_schema=self._fhir_schema,
             source_config=self._source_configs[source],
-            **params,
+            unit=mapper_config.unit,
+            source=mapper_config.source,
+            **mapper_config.params,
         )
         return mapper.map()

@@ -23,6 +23,7 @@ class DataSource(StrEnum):
     """
     Enum for the different data sources that can be queried.
     """
+
     MIMIC = auto()
     AMDS = auto()
     EICU = auto()
@@ -33,6 +34,7 @@ class SourceMapperConfiguration:
     """
     Configuration for the source mapper.s
     """
+
     connection: str
     chunksize: int = 10000
     # optional limit for the number of rows to be fetched
@@ -138,9 +140,7 @@ class AbstractSourceMapper(ABC, Generic[F]):
         raise NotImplementedError
 
 
-class AbstractDatabaseSourceMapper(
-    AbstractSourceMapper, Generic[F], metaclass=ABCMeta
-):
+class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F], metaclass=ABCMeta):
     """
     Abstract class for the database source mappers.
 
@@ -161,9 +161,12 @@ class AbstractDatabaseSourceMapper(
     -------
     create_connection():
         Establishes a connection to the database. This method should be implemented by subclasses.
+    build_query(schema, table, fields, constraints):
+        Builds a SQL query to retrieve data from the database.
     get_datab():
         Retrieves data from the database. This method should be implemented by subclasses.
     """
+
     SQL_QUERY: str | Composable  # the SQL query to be executed
 
     def create_connection(self) -> Engine:
@@ -177,12 +180,27 @@ class AbstractDatabaseSourceMapper(
         fields: dict[str, str],
         constraints: dict[str, Any],
     ) -> Composable:
-        def build_field(exp: str, org: str) -> Composable:
+        """
+        builds a select SQL query to retrieve data from the database.
+
+        Parameters
+        ----------
+        schema : str
+            The schema to be queried.
+        table : str
+            The table to be queried.
+        fields : dict
+            The fields to be retrieved and their new name.
+        constraints : dict
+            The constraints to be applied to the query.
+        """
+
+        def _build_field(exp: str, org: str) -> Composable:
             return sql.Composed(
                 (sql.Identifier(org), sql.SQL(" AS "), sql.Identifier(exp))
             )
 
-        def build_constraint(key: str, value: Any) -> Composable:
+        def _build_constraint(key: str, value: Any) -> Composable:
             if isinstance(value, list):
                 return sql.Composed(
                     (
@@ -203,13 +221,12 @@ class AbstractDatabaseSourceMapper(
 
         query = sql.SQL(raw_query).format(
             fields=sql.SQL(", ").join(
-                [build_field(exp, org) for exp, org in fields.items()]
+                [_build_field(exp, org) for exp, org in fields.items()]
             ),
             schema=sql.Identifier(schema),
             table=sql.Identifier(table),
             constraints=sql.SQL(" AND ").join(
-                [build_constraint(key, value)
-                 for key, value in constraints.items()]
+                [_build_constraint(key, value) for key, value in constraints.items()]
             ),
             limit=(
                 sql.Literal(limit)
@@ -222,22 +239,22 @@ class AbstractDatabaseSourceMapper(
 
     def get_data(self) -> Generator[pd.DataFrame, None, None]:
         """
-            Retrieves data from the database.
+        Retrieves data from the database.
 
-            This method establishes a connection to the database, constructs a SQL query based on the
-            SQL_QUERY and SQL_FIELDS class attributes, and then executes the query to retrieve data.
-            The data is retrieved in chunks, with the chunk size specified by the source configuration.
+        This method establishes a connection to the database, constructs a SQL query based on the
+        SQL_QUERY and SQL_FIELDS class attributes, and then executes the query to retrieve data.
+        The data is retrieved in chunks, with the chunk size specified by the source configuration.
 
-            Yields
-            ------
-            pd.DataFrame
-                A DataFrame containing a chunk of the data retrieved from the database.
+        Yields
+        ------
+        pd.DataFrame
+            A DataFrame containing a chunk of the data retrieved from the database.
 
-            Raises
-            ------
-            DatabaseError
-                If there is a problem executing the SQL query.
-            """
+        Raises
+        ------
+        DatabaseError
+            If there is a problem executing the SQL query.
+        """
         with (
             self.create_connection() as con,
             con.begin(),

@@ -1,9 +1,7 @@
-from abc import ABCMeta
 from typing import Generator, Type, Any
 
 import pandas as pd
 from pandera.typing import DataFrame
-from psycopg import sql
 
 
 from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper
@@ -16,7 +14,30 @@ from icu_pipeline.mapper.schema.fhir import (
 from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
 
 
-class ObervationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
+class ObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
+    """
+    Mapper class that maps the data from an SQL database to the FHIR Observation schema.
+
+    This class is used to map data from an SQL database to the FHIR Observation schema.
+    It provides a base structure for specific observation mappers, which should overwrite the initialisation arguments.
+
+    Parameters
+    ----------
+    concept_id : str
+        The concept ID to be used in the mapping process.
+    concept_type : str
+        The type of the concept to be used in the mapping process.
+    fhir_schema : Type[FHIRObservation]
+        The FHIR schema to be used in the mapping process.
+    source_config : SourceMapperConfiguration
+        The configuration for the source mapper.
+
+    Methods
+    -------
+    _to_fihr(df: DataFrame) -> Generator[DataFrame[FHIRObservation], None, None]
+        Maps the data from the source to the FHIR schema.
+    """
+
     def __init__(
         self,
         concept_id: str,

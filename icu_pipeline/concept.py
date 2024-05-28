@@ -1,4 +1,4 @@
-from typing import Type, Any, List, Dict, Generator
+from typing import Type, Any, Generator
 from enum import StrEnum, auto
 from dataclasses import dataclass
 from importlib import import_module
@@ -10,19 +10,29 @@ from icu_pipeline.mapper.source import SourceMapperConfiguration
 
 
 class ConceptCoding(StrEnum):
+    """
+    Enum to define the coding system for the concept identifiers.
+    """
     SNOMED = auto()
     LOINC = auto()
 
 
 @dataclass
 class MapperConfig:
+    """
+    Dataclass to define the configuration for a mapper.
+    """
     klass: str
     source: str
     unit: str
-    params: dict[str, Any]  # TODO - Declare fixed set of parameters if possible
+    # TODO - Declare fixed set of parameters if possible
+    params: dict[str, Any]
 
 
 class ConceptConfig(BaseModel):
+    """
+    Dataclass to define the configuration for a concept.
+    """
     name: str
     description: str
     identifiers: dict[ConceptCoding, str]
@@ -32,6 +42,35 @@ class ConceptConfig(BaseModel):
 
 
 class Concept:
+    """
+    A class to represent a medical concept and its mapping to data sources.
+
+    This class is responsible for loading the appropriate schema and source mappers
+    based on the provided configuration. It also provides a method to map the concept
+    to data from the sources.
+
+    Parameters
+    ----------
+    concept_config : ConceptConfig
+        The configuration for the concept, including its name, description, identifiers,
+        unit, schema, and mappers.
+    source_configs : dict[DataSource, SourceMapperConfiguration]
+        The configurations for the data sources that the concept should be mapped to.
+    concept_coding : ConceptCoding
+        The coding system used for the concept's identifiers.
+
+    Attributes
+    ----------
+    _concept_config : ConceptConfig
+        The configuration for the concept.
+    _source_configs : dict[DataSource, SourceMapperConfiguration]
+        The configurations for the data sources.
+    _concept_coding : ConceptCoding
+        The coding system used for the concept's identifiers.
+    _fhir_schema : Type[AbstractFHIRSinkSchema]
+        The FHIR schema class for the concept.
+    """
+
     def __init__(
         self,
         concept_config: ConceptConfig,
@@ -47,14 +86,20 @@ class Concept:
         )
 
     def _load_class(self, module_name: str, class_name: str) -> Type:
+        """
+        Load a class from a module.
+        """
         module = import_module(module_name)
         return getattr(module, class_name)
 
     def map(self) -> Generator[pd.DataFrame, None, None]:
+        """
+        Map the concept to data from the sources.
+        """
         implemented_sources = [m.source for m in self._concept_config.mapper]
         assert all(
             [s in implemented_sources for s in self._source_configs.keys()]
-        ), f"Not all Source have a mapper for Concept '{self._concept_config.name}'"
+        ), f"Not all Sources have a mapper for Concept '{self._concept_config.name}'"
         # Yield a DataFrame-Chunk for each Source and for each Chunk
         for mapper in self._concept_config.mapper:
             source_mapper = self._load_class(
@@ -70,6 +115,9 @@ class Concept:
         source: DataSource,
         mapper_config: MapperConfig,
     ):
+        """
+        Map the concept to data from a source.
+        """
         identifier = self._concept_config.identifiers[self._concept_coding]
         mapper = source_mapper(
             concept_id=identifier,

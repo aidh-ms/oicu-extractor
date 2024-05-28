@@ -2,12 +2,12 @@ import logging
 import unittest
 from io import StringIO
 
-from icu_pipeline.logger import ICUPLogger
+from icu_pipeline.logger import ICULogger
 
 
 class LoggerTestCase(unittest.TestCase):
     def setUp(self):
-        self.logger = ICUPLogger().get_logger()
+        self.logger = ICULogger().get_logger()
 
         # Create a StringIO object to capture the logging output
         self.log_output = StringIO()
@@ -41,3 +41,13 @@ class LoggerTestCase(unittest.TestCase):
 
         self.assertIn(message, log_output)
         self.assertIn("error", log_output)
+
+    def test_logger_file_output(self):
+        message = "This is a message to be logged to a file"
+        self.logger.info(message)
+
+        # Assert
+        with open("logs/icu_pipeline.log", "r") as log_file:
+            log_content = log_file.read()
+            self.assertIn(message, log_content)
+            self.assertIn("info", log_content)

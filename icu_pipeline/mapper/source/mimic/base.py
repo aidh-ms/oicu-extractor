@@ -1,10 +1,13 @@
-from typing import Type, Any
+from typing import Any
 
-from icu_pipeline.mapper.schema.fhir.observation import FHIRObservation
-from icu_pipeline.mapper.source.base import ObervationMapper
+from icu_pipeline.mapper.source.base import ObservationMapper
 
 
-class MimicObervationMapper(ObervationMapper):
+class MimicObservationMapper(ObservationMapper):
+    """
+    Mapper class that maps the MIMIC-IV data to the FHIR Observation schema.
+    """
+
     def __init__(
         self,
         **kwargs: dict[str, Any],

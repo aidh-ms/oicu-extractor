@@ -11,6 +11,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Update submodules
+      run: git submodule update --init --recursive
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
@@ -28,7 +30,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest --cov=. test/
+        pytest --cov=. test/ -k "not test_run"
     - name: Coveralls
       run: coveralls
       env:

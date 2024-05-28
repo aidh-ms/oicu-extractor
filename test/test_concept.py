@@ -1,14 +1,27 @@
 import pytest
 import yaml
+import os
+from dotenv import load_dotenv
 from icu_pipeline.concept import Concept, ConceptConfig, DataSource, SourceMapperConfiguration, ConceptCoding
 
 
 class TestConcept:
     @pytest.fixture
     def example_concept(self):
+        load_dotenv()
+        POSTGRES_USER = os.getenv("POSTGRES_USER")
+        POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+        MIMIC_DB = os.getenv("MIMIC_DB")
+        POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+        POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+        connection_string = f"postgresql+psycopg://{POSTGRES_USER}:{
+            POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}"
+
         with open("conceptbase/example.yml", "r") as concept_file:
             config = yaml.safe_load(concept_file)
-            return Concept(ConceptConfig.model_validate(config), {DataSource.MIMIC: SourceMapperConfiguration()}, ConceptCoding.SNOMED)
+            return Concept(ConceptConfig.model_validate(config), {DataSource.MIMIC: SourceMapperConfiguration(
+                connection_string
+            )}, ConceptCoding.SNOMED)
 
     def test_conceptbase(self, example_concept):
         assert example_concept._concept_config.name == "HeartRate"

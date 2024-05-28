@@ -1,5 +1,6 @@
 import pytest
 import os
+from dotenv import load_dotenv
 from icu_pipeline.pipeline import Pipeline, DataSource, SourceMapperConfiguration, MappingFormat
 from icu_pipeline.mapper.sink.file import CSVFileSinkMapper
 
@@ -7,7 +8,16 @@ from icu_pipeline.mapper.sink.file import CSVFileSinkMapper
 class TestPipeline:
     @pytest.fixture
     def setup_pipeline(self):
-        source_configs = {DataSource.MIMIC: SourceMapperConfiguration()}
+        load_dotenv()
+        POOSTGRES_USER = os.getenv("POSTGRES_USER")
+        POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+        MIMIC_DB = os.getenv("MIMIC_DB")
+        POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+        POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+        connection_string = f"postgresql+psycopg://{POOSTGRES_USER}:{
+            POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}"
+        source_configs = {
+            DataSource.MIMIC: SourceMapperConfiguration(connection_string)}
         sink_mapper = CSVFileSinkMapper()
         pipeline = Pipeline(source_configs, sink_mapper)
         example_concept = pipeline._load_concepts(["HeartRate"])
@@ -29,20 +39,13 @@ class TestPipeline:
         pipeline, example_concepts = setup_pipeline
         assert pipeline._worker_func(example_concepts[0])
 
-    def test_run(self):
+    def test_run(self, setup_pipeline):
         """
         Test run for the whole pipeline implementation
         Asserts that the pipeline can be successfully executed.
         """
-        configs = {
-            DataSource.MIMIC: SourceMapperConfiguration()
-        }
 
-        pipeline = Pipeline(
-            configs,
-            CSVFileSinkMapper(),
-            MappingFormat.FHIR,
-        )
+        pipeline = setup_pipeline[0]
 
         pipeline.transform(["HeartRate"])
         # assert that the output is correctly created on root directory

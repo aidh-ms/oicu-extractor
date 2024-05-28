@@ -1,14 +1,21 @@
 import pytest
 from pandas import DataFrame
 from sqlalchemy.engine import create_engine
-from icu_pipeline.mapper.source import AbstractDatabaseSourceMapper, SourceMapperConfiguration
+from icu_pipeline.mapper.source import (
+    AbstractDatabaseSourceMapper,
+    SourceMapperConfiguration,
+)
 
 
 class DummyDatabaseSourceMapper(AbstractDatabaseSourceMapper):
     limit = -1
 
     def create_connection(self):
-        return create_engine("sqlite:///test_mimiciv.sqlite").connect().execution_options(stream_results=True)
+        return (
+            create_engine("sqlite:///test_mimiciv.sqlite")
+            .connect()
+            .execution_options(stream_results=True)
+        )
 
     def _to_fihr(self, df: DataFrame) -> DataFrame:
         return df
@@ -25,11 +32,14 @@ class TestDatabaseSourceMapper:
         concept_type = "VitalSign"
         fhir_schema = None
         mapper = DummyDatabaseSourceMapper(
-            concept_id=concept_id, concept_type=concept_type, fhir_schema=fhir_schema, source_config=DummySourceMapperConfiguration())
+            concept_id=concept_id,
+            concept_type=concept_type,
+            fhir_schema=fhir_schema,
+            source_config=DummySourceMapperConfiguration(),
+        )
         table = "chartevents"
         item_ids = "1, 2"
-        mapper.SQL_QUERY = f"SELECT * FROM {
-            table} WHERE itemid IN ({item_ids})"
+        mapper.SQL_QUERY = f"SELECT * FROM {table} WHERE itemid IN ({item_ids})"
         return mapper
 
     # def test_get_data(self, mapper):

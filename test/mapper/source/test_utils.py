@@ -1,5 +1,9 @@
 import pandas as pd
-from icu_pipeline.mapper.source.utils import to_timestamp, offset_to_timestamp, offset_to_period
+from icu_pipeline.mapper.source.utils import (
+    to_timestamp,
+    offset_to_timestamp,
+    offset_to_period,
+)
 
 
 class TestUtils:

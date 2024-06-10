@@ -12,19 +12,18 @@ class BaseConverter:
         self._source = source
         self._target = target if target is not None else self.SI_UNIT
 
-    def convert(self, data: Generator[DataFrame, None, None]) -> Generator[DataFrame, None, None]:
-        for d in data:
-            # Check if output != input
-            if self._source == self._target:
-                yield d
+    def convert(self, data: DataFrame) -> DataFrame:
+        # Check if output != input
+        if self._source == self._target:
+            return data
 
-            # FHIR Quantities need conversion of column 'value_quantity'
-            if "value_quantity" in d.columns:
-                # Convert inplace
-                self._convertToSI(d["value_quantity"])
-                self._convertToTarget(d["value_quantity"])
-            # Yield optionally converted DF
-            yield d
+        # FHIR Quantities need conversion of column 'value_quantity'
+        if "value_quantity" in data.columns:
+            # Convert inplace
+            data["value_quantity"] = self._convertToSI(data["value_quantity"])
+            data["value_quantity"] = self._convertToTarget(data["value_quantity"])
+        # Yield optionally converted DF
+        return data
 
     def _convertToSI(self, data: Series[Quantity]):
         raise NotImplementedError

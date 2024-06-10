@@ -7,12 +7,6 @@ class FrequencyConverter(BaseConverter):
     SI_UNIT = "Hz"
     AVAILABLE_UNITS = ["Hz", "bpm"]
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-    # def convert(self, data):
-    #     raise NotImplementedError
-
     def _convertToSI(self, data: Series[Quantity]):
         convert = lambda v: v
         # Data can use any unit and will be transformed to Hz

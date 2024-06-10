@@ -3,9 +3,9 @@ from icu_pipeline.mapper.schema.fhir import Quantity
 from icu_pipeline.mapper.unit.converter import BaseConverter
 
 
-class TemperatureConverter(BaseConverter):
-    SI_UNIT = "°C"
-    AVAILABLE_UNITS = ["°C", "°F", "°K"]
+class PressureConverter(BaseConverter):
+    SI_UNIT = "Pa"
+    AVAILABLE_UNITS = ["Pa", "mmHg", "bar", "mbar"]
 
     def _convertToSI(self, data: Series[Quantity]):
         convert = lambda v: v
@@ -16,11 +16,14 @@ class TemperatureConverter(BaseConverter):
                 return data
 
             # Actual Conversions
-            case "°F":
-                convert = lambda v: (v - 32) * 5 / 9
+            case "mmHg":
+                convert = lambda v: v * 133.322 # 1 mmHg ~= 133.322 Pa
 
-            case "°K":
-                convert = lambda v: v - 273.15
+            case "bar":
+                convert = lambda v: v * 10e5
+
+            case "mbar":
+                convert = lambda v: v * 10e2
 
             # Not Implemented
             case _:
@@ -39,11 +42,14 @@ class TemperatureConverter(BaseConverter):
                 return data
 
             # Actual Conversions
-            case "°F":
-                convert = lambda v: (v * 9 / 5) + 32
+            case "mmHg":
+                convert = lambda v: v / 133.322 # 1 mmHg ~= 133.322 Pa
 
-            case "°K":
-                convert = lambda v: v + 273.15
+            case "bar":
+                convert = lambda v: v / 10e5
+
+            case "mbar":
+                convert = lambda v: v / 10e2
 
             # Not Implemented
             case _:

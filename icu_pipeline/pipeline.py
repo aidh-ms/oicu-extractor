@@ -6,7 +6,7 @@ from yaml import safe_load_all
 from icu_pipeline.concept import Concept, ConceptConfig, ConceptCoding
 from icu_pipeline.mapper.sink import AbstractSinkMapper, MappingFormat
 from icu_pipeline.mapper.source import SourceMapperConfiguration, DataSource
-
+from icu_pipeline.mapper.unit.converter import BaseConverter
 
 class Pipeline:
     def __init__(
@@ -94,6 +94,10 @@ class Pipeline:
         # TODO - Any intermediate steps would be added at this point
         #   For instance, transformation from FHIR to OHDSI
         #   or Filtering for specific Cohorts.
+
+        # for c in concepts:
+        #     next_converter = BaseConverter.getConverter(c._concept_config.unit)
+        #     out[c._concept_config.name] = next_converter.convert(out[c._concept_config.name])
 
         # Run sink if not None
         if self._sink_mapper is not None:

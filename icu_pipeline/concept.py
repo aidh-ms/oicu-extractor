@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from icu_pipeline.mapper.source import AbstractSourceMapper, DataSource
 from icu_pipeline.mapper.schema.fhir import AbstractFHIRSinkSchema
 from icu_pipeline.mapper.source import SourceMapperConfiguration
+from icu_pipeline.mapper.unit.converter import BaseConverter
 
 
 class ConceptCoding(StrEnum):
@@ -105,9 +106,14 @@ class Concept:
             source_mapper = self._load_class(
                 f"icu_pipeline.mapper.source.{mapper.source}", mapper.klass
             )
+            converter = BaseConverter.getConverter(
+                source=mapper.unit, # source := unit of the database
+                target=self._concept_config.unit # target := default unit of the concept
+            )
+            # yield converter.convert(self._map(source_mapper, mapper.source, mapper))
 
             for df_chunk in self._map(source_mapper, mapper.source, mapper):
-                yield df_chunk
+                yield converter.convert(df_chunk)
 
     def _map(
         self,

@@ -1,3 +1,4 @@
+from typing import Callable
 from pandera.typing import Series
 from icu_pipeline.mapper.schema.fhir import Quantity
 from icu_pipeline.mapper.unit.converter import BaseConverter
@@ -8,7 +9,7 @@ class TemperatureConverter(BaseConverter):
     AVAILABLE_UNITS = ["°C", "°F", "°K"]
 
     def _convertToSI(self, data: Series[Quantity]):
-        convert = lambda v: v
+        convert: Callable[[float], float] = lambda v: v
         # Data can have any Unit and will be transformed to °C
         match self._source:
             # Already SI-Unit
@@ -31,7 +32,7 @@ class TemperatureConverter(BaseConverter):
             unit=self.SI_UNIT))
 
     def _convertToTarget(self, data: Series[Quantity]):
-        convert = lambda v: v
+        convert: Callable[[float], float] = lambda v: v
         # Data uses °C and can be transformed in to any Unit
         match self._target:
             # Already SI-Unit

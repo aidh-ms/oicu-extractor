@@ -1,30 +1,28 @@
 from typing import Callable
-from pandera.typing import Series
-from icu_pipeline.mapper.schema.fhir import Quantity
-from icu_pipeline.mapper.unit.converter import BaseConverter
+from pandera.typing import Series, DataFrame
+from icu_pipeline.schema.fhir import Quantity
+from icu_pipeline.unit.converter import BaseConverter
 
 
-class PressureConverter(BaseConverter):
-    SI_UNIT = "Pa" # Short name for Kg*m/s**2
-    AVAILABLE_UNITS = ["Pa", "mmHg", "bar", "mbar"]
+class TemperatureConverter(BaseConverter):
+    SI_UNIT = "°K"
+    AVAILABLE_UNITS = ["°K", "°C", "°F"]
+    REQUIRED_CONCEPTS = []
 
-    def _convertToSI(self, data: Series[Quantity]):
+    def _convertToSI(self, source_unit: str,data: Series[Quantity], dependencies: dict[str,DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data can have any Unit and will be transformed to °C
-        match self._source:
+        match source_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
 
             # Actual Conversions
-            case "mmHg":
-                convert = lambda v: v * 133.322 # 1 mmHg ~= 133.322 Pa
+            case "°C":
+                convert = lambda v: v + 273.15
 
-            case "bar":
-                convert = lambda v: v * 10e5
-
-            case "mbar":
-                convert = lambda v: v * 10e2
+            case "°F":
+                convert = lambda v: (v - 32) * 5 / 9 + 273.15
 
             # Not Implemented
             case _:
@@ -34,23 +32,20 @@ class PressureConverter(BaseConverter):
             value=convert(q["value"]),
             unit=self.SI_UNIT))
 
-    def _convertToTarget(self, data: Series[Quantity]):
+    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data uses °C and can be transformed in to any Unit
-        match self._target:
+        match sink_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
 
             # Actual Conversions
-            case "mmHg":
-                convert = lambda v: v / 133.322 # 1 mmHg ~= 133.322 Pa
+            case "°C":
+                convert = lambda v: v - 273.15
 
-            case "bar":
-                convert = lambda v: v / 10e5
-
-            case "mbar":
-                convert = lambda v: v / 10e2
+            case "°F":
+                convert = lambda v: ((v - 273.15) * 9 / 5) + 32
 
             # Not Implemented
             case _:

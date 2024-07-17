@@ -4,9 +4,15 @@ import colorlog
 
 
 class ICULogger:
+    logger = None
     def __init__(self):
-        self._logger: logging.Logger = logging.getLogger()  # Get the root logger
-        self._logger.setLevel(logging.DEBUG)  # Set your desired log level
+        pass
+    
+    def __init_logger():
+        if ICULogger.logger is not None:
+            return
+        _logger: logging.Logger = logging.getLogger()  # Get the root logger
+        _logger.setLevel(logging.DEBUG)  # Set your desired log level
 
         formatter = colorlog.ColoredFormatter(
             '%(log_color)s%(levelname)s:%(name)s:%(message)s%(reset)s',
@@ -21,7 +27,7 @@ class ICULogger:
 
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(formatter)
-        self._logger.addHandler(console_handler)
+        _logger.addHandler(console_handler)
 
         log_file_path = "logs/icu_pipeline.log"
         # Ensure the directory exists
@@ -29,7 +35,11 @@ class ICULogger:
 
         file_handler = logging.FileHandler(log_file_path)
         file_handler.setFormatter(formatter)
-        self._logger.addHandler(file_handler)
+        _logger.addHandler(file_handler)
+        _logger.info("New Logger Created")
+        ICULogger.logger =  _logger
 
-    def get_logger(self):
-        return self._logger
+    @staticmethod
+    def get_logger() -> logging.Logger:
+        ICULogger.__init_logger()
+        return ICULogger.logger

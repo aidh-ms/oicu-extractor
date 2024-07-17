@@ -1,6 +1,6 @@
 import pandas as pd
 
-from icu_pipeline.mapper.schema.fhir import Period
+from icu_pipeline.schema.fhir import Period
 
 
 def to_timestamp(

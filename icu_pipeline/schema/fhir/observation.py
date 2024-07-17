@@ -3,7 +3,7 @@ from typing import Annotated
 import pandas as pd
 from pandera.typing import Series
 
-from icu_pipeline.mapper.schema.fhir import (
+from icu_pipeline.schema.fhir import (
     AbstractFHIRSinkSchema,
     Reference,
     Quantity,

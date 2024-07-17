@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Generator
 import pandas as pd
 
-from icu_pipeline.mapper.sink import AbstractSinkMapper
+from icu_pipeline.sink import AbstractSinkMapper
 from icu_pipeline.concept import Concept
 
 

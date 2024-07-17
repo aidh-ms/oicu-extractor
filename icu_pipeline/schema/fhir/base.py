@@ -3,7 +3,7 @@ from typing import TypedDict, Annotated
 import pandas as pd
 from pydantic import PlainValidator
 
-from icu_pipeline.mapper.schema import AbstractSinkSchema
+from icu_pipeline.schema import AbstractSinkSchema
 
 
 class Reference(TypedDict):

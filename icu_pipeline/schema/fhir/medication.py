@@ -2,7 +2,7 @@ from typing import TypedDict
 
 from pandera.typing import Series
 
-from icu_pipeline.mapper.schema.fhir import (
+from icu_pipeline.schema.fhir import (
     AbstractFHIRSinkSchema,
     Reference,
     Quantity,

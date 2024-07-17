@@ -1,17 +1,18 @@
 from typing import Callable
-from pandera.typing import Series
-from icu_pipeline.mapper.schema.fhir import Quantity
-from icu_pipeline.mapper.unit.converter import BaseConverter
+from pandera.typing import Series, DataFrame
+from icu_pipeline.schema.fhir import Quantity
+from icu_pipeline.unit.converter import BaseConverter
 
 
 class FrequencyConverter(BaseConverter):
     SI_UNIT = "Hz"
     AVAILABLE_UNITS = ["Hz", "bpm"]
+    # REQUIRED_CONCEPTS = ["SystolicBloodPressure"]
 
-    def _convertToSI(self, data: Series[Quantity]):
+    def _convertToSI(self, source_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data can use any unit and will be transformed to Hz
-        match self._source:
+        match source_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
@@ -28,10 +29,10 @@ class FrequencyConverter(BaseConverter):
             value=convert(q["value"]),
             unit=self.SI_UNIT))
 
-    def _convertToTarget(self, data: Series[Quantity]):
+    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data contains Hz values and can be transformed into any Unit
-        match self._target:
+        match sink_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
@@ -46,4 +47,4 @@ class FrequencyConverter(BaseConverter):
 
         return data.apply(lambda q: Quantity(
             value=convert(q["value"]),
-            unit=self._target))
+            unit=sink_unit))

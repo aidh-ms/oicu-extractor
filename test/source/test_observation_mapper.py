@@ -5,29 +5,29 @@ from unittest.mock import patch
 
 from pandas import Timestamp
 
-from icu_pipeline.mapper.schema.fhir import (
+from icu_pipeline.schema.fhir import (
     FHIRObservation,
 )
-from icu_pipeline.mapper.source.base import (
-    ObservationMapper,
-)
+from icu_pipeline.source.mimic import MimicObservationMapper
 
 
 class TestObservationMapper:
     @pytest.fixture
     def mapper(self):
         with patch(
-            "icu_pipeline.mapper.source.base.AbstractDatabaseSourceMapper.build_query",
+            "icu_pipeline.source.database.AbstractDatabaseSourceMapper.build_query",
             return_value="",
         ):
-            yield ObservationMapper(
+            yield MimicObservationMapper(
+                schema="mimiciv_icu",
+                table="chartevents",
+                constraints={"itemid": "220045"},
                 concept_id="364075005",
                 concept_type="snomed",
-                fhir_schema=FHIRObservation,
-                source_config=None,
+                source_config="test"
             )
 
-    def test_get_data(self, mapper):
+    def test_get_data(self, mapper: MimicObservationMapper):
         """
         Test for the get_data method of the AbstractDatabaseSourceMapper class.
         Asserts that the method raises NotImplementedError.
@@ -92,7 +92,7 @@ class TestObservationMapper:
         FHIRObservation.validate(observation_df)  # will raise an exception if invalid
 
         assert observation_df[FHIRObservation.subject][0]["reference"] == "1234"
-        assert observation_df[FHIRObservation.subject][0]["type"] == "None-patient"
+        assert observation_df[FHIRObservation.subject][0]["type"] == "mimic"
         assert observation_df[FHIRObservation.effective_date_time][0] == Timestamp(
             "2173-08-03 16:00:00", tz="UTC"
         )

@@ -52,7 +52,7 @@ class Pipeline:
                     config = dict(*safe_load_all(concept_file))
                     out.append(
                         Concept(
-                            concept_config=ConceptConfig.model_validate(config),
+                            concept_config=ConceptConfig(**config),
                             source_configs=self._source_configs,
                             concept_coding=self._concept_coding,
                         )

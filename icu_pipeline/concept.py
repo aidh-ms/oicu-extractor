@@ -56,8 +56,6 @@ class Concept(Node):
             mapper = mapper_type(
                 concept_id=concept_config.name,
                 concept_type=concept_coding,
-                fhir_schema=concept_config.schema,
-                datasource=config.source,
                 source_config=source_configs[config.source],
                 **config.params,
             )

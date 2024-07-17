@@ -3,13 +3,13 @@ from typing import Any
 import pandas as pd
 from pandera.typing import DataFrame
 
-from icu_pipeline.source import SourceConfig
+from icu_pipeline.source import SourceConfig, DataSource
 from icu_pipeline.source.database import AbstractDatabaseSourceSampler, AbstractDatabaseSourceMapper
 from icu_pipeline.schema.fhir import (
     CodeableConcept,
     Coding,
     Reference,
-    Quantity
+    Quantity,
 )
 from icu_pipeline.schema.fhir.observation import FHIRObservation
 
@@ -41,8 +41,11 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         constraints: dict[str, Any],
         **kwargs: dict[str, Any],
     ) -> None:
-        super().__init__(**kwargs)
-        self._source = kwargs.get("source")
+        super().__init__(
+            fhir_schema=FHIRObservation,
+            datasource=DataSource.MIMIC,
+            **kwargs)
+        self._source = "mimic"
         self._unit = kwargs.get("unit", "undefined")
         
         self._id_field = "subject_id"

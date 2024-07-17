@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from unittest.mock import Mock, patch
 from pathlib import Path
-from icu_pipeline.mapper.sink.file import CSVFileSinkMapper, JSONLFileSinkMapper
+from icu_pipeline.sink.file import CSVFileSinkMapper, JSONLFileSinkMapper
 
 
 class TestCSVFileSinkMapper:

@@ -1,10 +1,8 @@
 import pytest
 from pandas import DataFrame
 from sqlalchemy.engine import create_engine
-from icu_pipeline.mapper.source import (
-    AbstractDatabaseSourceMapper,
-    SourceMapperConfiguration,
-)
+from icu_pipeline.source import SourceConfig
+from icu_pipeline.source.database import AbstractDatabaseSourceMapper
 
 
 class DummyDatabaseSourceMapper(AbstractDatabaseSourceMapper):
@@ -21,7 +19,7 @@ class DummyDatabaseSourceMapper(AbstractDatabaseSourceMapper):
         return df
 
 
-class DummySourceMapperConfiguration(SourceMapperConfiguration):
+class DummySourceMapperConfiguration(SourceConfig):
     limit = -1
 
 

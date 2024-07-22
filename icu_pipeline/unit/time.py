@@ -4,30 +4,28 @@ from icu_pipeline.schema.fhir import Quantity
 from icu_pipeline.unit.converter import BaseConverter
 
 
-class PressureConverter(BaseConverter):
-    SI_UNIT = "Pa" # Short name for Kg*m/s**2
-    AVAILABLE_UNITS = ["Pa", "mmHg", "bar", "mbar", "cmH2O"]
+class TimeConverter(BaseConverter):
+    SI_UNIT = "s"
+    AVAILABLE_UNITS = ["s", "min", "h", "year"] # year is amiguous (365, 366 days). TODO - Ignore since error is small and mimic does it anyway?
+    # REQUIRED_CONCEPTS = ["SystolicBloodPressure"]
 
     def _convertToSI(self, source_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
         convert: Callable[[float], float] = lambda v: v
-        # Data can have any Unit and will be transformed to °C
+        # Data can use any unit and will be transformed to Hz
         match source_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
 
             # Actual Conversions
-            case "mmHg":
-                convert = lambda v: v * 133.322 # 1 mmHg ~= 133.322 Pa
+            case "min":
+                convert = lambda v: v * 60
 
-            case "bar":
-                convert = lambda v: v * 10e5
+            case "h":
+                convert = lambda v: v * 60 * 60
 
-            case "mbar":
-                convert = lambda v: v * 10e2
-
-            case "cmH2O":
-                convert = lambda v: v * 98.0665
+            case "year":
+                convert = lambda v: v * 60 * 60 * 24 * 365
 
             # Not Implemented
             case _:
@@ -39,24 +37,21 @@ class PressureConverter(BaseConverter):
 
     def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
         convert: Callable[[float], float] = lambda v: v
-        # Data uses °C and can be transformed in to any Unit
+        # Data contains Hz values and can be transformed into any Unit
         match sink_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
 
             # Actual Conversions
-            case "mmHg":
-                convert = lambda v: v / 133.322 # 1 mmHg ~= 133.322 Pa
+            case "min":
+                convert = lambda v: v / 60
 
-            case "bar":
-                convert = lambda v: v / 10e5
+            case "h":
+                convert = lambda v: v / 60 / 60
 
-            case "mbar":
-                convert = lambda v: v / 10e2
-
-            case "cmH2O":
-                convert = lambda v: v / 98.0665
+            case "year":
+                convert = lambda v: v / 60 / 60 / 24 / 365
 
             # Not Implemented
             case _:

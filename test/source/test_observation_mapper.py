@@ -24,7 +24,8 @@ class TestObservationMapper:
                 constraints={"itemid": "220045"},
                 concept_id="364075005",
                 concept_type="snomed",
-                source_config="test"
+                source_config="test",
+                unit="bpm"
             )
 
     def test_get_data(self, mapper: MimicObservationMapper):
@@ -92,7 +93,7 @@ class TestObservationMapper:
         FHIRObservation.validate(observation_df)  # will raise an exception if invalid
 
         assert observation_df[FHIRObservation.subject][0]["reference"] == "1234"
-        assert observation_df[FHIRObservation.subject][0]["type"] == "mimic"
+        assert observation_df[FHIRObservation.subject][0]["type"] == "mimiciv"
         assert observation_df[FHIRObservation.effective_date_time][0] == Timestamp(
             "2173-08-03 16:00:00", tz="UTC"
         )

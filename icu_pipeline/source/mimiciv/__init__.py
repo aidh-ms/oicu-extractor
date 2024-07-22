@@ -17,3 +17,4 @@ class MimicSampler(AbstractDatabaseSourceSampler):
 
 
 from icu_pipeline.source.mimiciv.observation import MimicObservationMapper
+from icu_pipeline.source.mimiciv.dosage import MimicDosageMapper

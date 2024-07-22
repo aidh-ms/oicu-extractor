@@ -8,7 +8,7 @@ from pandas import Timestamp
 from icu_pipeline.schema.fhir import (
     FHIRObservation,
 )
-from icu_pipeline.source.mimic import MimicObservationMapper
+from icu_pipeline.source.mimiciv import MimicObservationMapper
 
 
 class TestObservationMapper:

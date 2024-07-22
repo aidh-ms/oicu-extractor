@@ -44,7 +44,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
 
     SQL_QUERY: str | Composable  # the SQL query to be executed
 
-    def __init__(self, concept_id: str, concept_type: str, fhir_schema: AbstractFHIRSinkSchema | str, datasource: DataSource, source_config: SourceConfig) -> None:
+    def __init__(self, concept_id: str, concept_type: str, fhir_schema: AbstractFHIRSinkSchema | str, datasource: DataSource, source_config: SourceConfig, **kwargs) -> None:
         super().__init__(concept_id, concept_type, fhir_schema, datasource, source_config)
         self._id_field = None
         self._query_args = {}
@@ -95,32 +95,57 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
                 (sql.Identifier(key), sql.SQL(" = "), sql.Literal(value))
             )
 
-        raw_query = """
-            SELECT {fields}
-            FROM {schema}.{table}
-            WHERE {constraints}
-            AND {subsetting}
-        """
+        # There are Tables without any constraints (except sampling) -> see mimiciv_derived.age
+        if len(constraints) == 0:
+            raw_query = """
+                SELECT {fields}
+                FROM {schema}.{table}
+                WHERE {subsetting}
+            """
+            params = dict(
+                fields=sql.SQL(", ").join(
+                    [_build_field(exp, org) for exp, org in fields.items()]
+                ),
+                schema=sql.Identifier(schema),
+                table=sql.Identifier(table),
+                subsetting=sql.SQL(" AND ").join(
+                    [
+                        sql.SQL("{next_identifier} IN ({next_list})").format(
+                            next_identifier=sql.SQL(i),
+                            next_list=sql.SQL(",".join(ids[i].astype(str)))
+                        )
+                        for i in ids.columns
+                    ]
+                )
+            )
+        else:
+            raw_query = """
+                SELECT {fields}
+                FROM {schema}.{table}
+                WHERE {constraints}
+                AND {subsetting}
+            """
+            params = dict(
+                fields=sql.SQL(", ").join(
+                    [_build_field(exp, org) for exp, org in fields.items()]
+                ),
+                schema=sql.Identifier(schema),
+                table=sql.Identifier(table),
+                constraints=sql.SQL(" AND ").join(
+                    [_build_constraint(key, value) for key, value in constraints.items()]
+                ),
+                subsetting=sql.SQL(" AND ").join(
+                    [
+                        sql.SQL("{next_identifier} IN ({next_list})").format(
+                            next_identifier=sql.SQL(i),
+                            next_list=sql.SQL(",".join(ids[i].astype(str)))
+                        )
+                        for i in ids.columns
+                    ]
+                )
+            )
 
-        query = sql.SQL(raw_query).format(
-            fields=sql.SQL(", ").join(
-                [_build_field(exp, org) for exp, org in fields.items()]
-            ),
-            schema=sql.Identifier(schema),
-            table=sql.Identifier(table),
-            constraints=sql.SQL(" AND ").join(
-                [_build_constraint(key, value) for key, value in constraints.items()]
-            ),
-            subsetting=sql.SQL(" AND ").join(
-                [
-                    sql.SQL("{next_identifier} IN ({next_list})").format(
-                        next_identifier=sql.SQL(i),
-                        next_list=sql.SQL(",".join(ids[i].astype(str)))
-                    )
-                    for i in self.IDENTIFIER
-                ]
-            ),
-        )
+        query = sql.SQL(raw_query).format(**params)
 
         return query
 

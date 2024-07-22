@@ -57,6 +57,7 @@ class Concept(Node):
                 concept_id=concept_config.name,
                 concept_type=concept_coding,
                 source_config=source_configs[config.source],
+                unit=config.unit,
                 **config.params,
             )
             self._data_sources[config.source] = mapper

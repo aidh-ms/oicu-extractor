@@ -26,7 +26,7 @@ class TestConcept:
             config = yaml.safe_load(concept_file)
             return Concept(
                 ConceptConfig(**config),
-                {DataSource.MIMIC: SourceConfig(connection=connection_string)},
+                {DataSource.MIMICIV: SourceConfig(connection=connection_string)},
                 ConceptCoding.SNOMED,
             )
 

@@ -3,8 +3,8 @@ from typing import Any
 import pandas as pd
 from pandera.typing import DataFrame
 
-from icu_pipeline.source import SourceConfig, DataSource
-from icu_pipeline.source.database import AbstractDatabaseSourceSampler, AbstractDatabaseSourceMapper
+from icu_pipeline.source import DataSource
+from icu_pipeline.source.database import AbstractDatabaseSourceMapper
 from icu_pipeline.schema.fhir import (
     CodeableConcept,
     Coding,
@@ -14,51 +14,41 @@ from icu_pipeline.schema.fhir import (
 from icu_pipeline.schema.fhir.observation import FHIRObservation
 
 
-class MimicSampler(AbstractDatabaseSourceSampler):
-    # TODO - subject IDs have an arbitrary amount of admissions..
-    #   Use both, subject_id + admission_id?
-    IDENTIFIER = ["subject_id"] # subject_id, stay_id
-
-    def __init__(self, source_config: SourceConfig) -> None:
-        super().__init__(source_config)
-
-        self.SQL_QUERY = self.build_query(
-            schema="mimiciv_icu",
-            table="icustays",
-        )
-
-
 class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
     """
     Mapper class that maps the MIMIC-IV data to the FHIR Observation schema.
     """
-    IDENTIFIER = MimicSampler.IDENTIFIER
 
     def __init__(
         self,
         schema: str,
         table: str,
         constraints: dict[str, Any],
+        unit: str,
         **kwargs: dict[str, Any],
     ) -> None:
         super().__init__(
             fhir_schema=FHIRObservation,
-            datasource=DataSource.MIMIC,
+            datasource=DataSource.MIMICIV,
             **kwargs)
-        self._source = "mimic"
-        self._unit = kwargs.get("unit", "undefined")
-        
+        self._source = "mimiciv"
+        self._unit = unit
+        assert self._unit is not None, f"No Unit definition for MimicObservationMapper '{schema+'.'+table}' given."
+
         self._id_field = "subject_id"
+        # Create and map fields to normalized names
+        fields = kwargs.pop("fields", {})
+        if "patient_id" not in fields:
+            fields["patient_id"] = "subject_id"
+        if "timestamp" not in fields:
+            fields["timestamp"] = "charttime"
+        if "value" not in fields:
+            fields["value"] = "valuenum"
         self._query_args = {
             "schema": schema,
             "table": table,
             "constraints": constraints,
-            "fields": {
-                "patient_id": "subject_id",
-                "timestamp": "charttime",
-                "value": "valuenum",
-                "unit": "valueuom",
-            }
+            "fields": fields
         }
 
     def _to_fihr(
@@ -74,7 +64,7 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         )
         observation_df[FHIRObservation.value_quantity] = df.apply(
             lambda _df: Quantity(
-                value=float(_df["value"]), unit=_df["unit"] or self._unit
+                value=float(_df["value"]), unit=self._unit or self._unit
             ),
             axis=1,
         )

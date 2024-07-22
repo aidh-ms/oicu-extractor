@@ -21,7 +21,7 @@ class TestPipeline:
         POSTGRES_PORT = os.getenv("POSTGRES_PORT")
         connection_string = f"postgresql+psycopg://{POOSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}"
         source_configs = {
-            DataSource.MIMIC: SourceConfig(connection=connection_string)
+            DataSource.MIMICIV: SourceConfig(connection=connection_string)
         }
         sink_mapper = CSVFileSinkMapper()
         pipeline = Pipeline(source_configs, sink_mapper)

@@ -20,7 +20,7 @@ class DataSource(StrEnum):
     Enum for the different data sources that can be queried.
     """
 
-    MIMIC = auto()
+    MIMICIV = auto()
     AMDS = auto()
     EICU = auto()
 
@@ -66,7 +66,6 @@ class AbstractSourceMapper(ABC, Generic[F]):
     map():
         Maps the data from the source to the sink. This method should be implemented by subclasses.
     """
-    IDENTIFIER = None
 
     def __init__(
         self,
@@ -77,7 +76,6 @@ class AbstractSourceMapper(ABC, Generic[F]):
         source_config: SourceConfig,
     ) -> None:
         super().__init__()
-        assert self.IDENTIFIER is not None and len(self.IDENTIFIER) > 0, f"Class {type(self)} has no Identifiers defined."
 
         self._concept_id = concept_id
         self._concept_type = concept_type
@@ -154,8 +152,8 @@ def getDataSourceMapper(config: MapperConfig) -> type[AbstractSourceMapper]:
 
 def getDataSampler(source: DataSource, source_config: SourceConfig) -> AbstractSourceSampler:
     match source:
-        case DataSource.MIMIC:
-            from icu_pipeline.source.mimic import MimicSampler
+        case DataSource.MIMICIV:
+            from icu_pipeline.source.mimiciv import MimicSampler
             return MimicSampler(source_config)
         case _:
             raise NotImplementedError

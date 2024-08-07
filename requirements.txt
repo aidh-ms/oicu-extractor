@@ -5,4 +5,4 @@ pandas-stubs==2.2.2.240514
 colorlog==6.8.2
 pandera[mypy]==0.19.3
 python-dotenv==1.0.1
-PyYAML==6.0.1
+PyYAML==6.0.2

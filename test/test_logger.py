@@ -7,7 +7,7 @@ from icu_pipeline.logger import ICULogger
 
 class LoggerTestCase(unittest.TestCase):
     def setUp(self):
-        self.logger = ICULogger().get_logger()
+        self.logger = ICULogger.get_logger()
 
         # Create a StringIO object to capture the logging output
         self.log_output = StringIO()

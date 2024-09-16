@@ -6,9 +6,7 @@ from abc import ABC, abstractmethod
 from pandera.typing import DataFrame, Series
 
 from icu_pipeline.logger import ICULogger
-from icu_pipeline.schema.fhir import (
-    AbstractFHIRSinkSchema
-)
+from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
 from conceptbase.config import MapperConfig
 
 # add logging
@@ -43,6 +41,7 @@ class SourceConfig:
 
 F = TypeVar("F", bound=AbstractFHIRSinkSchema)
 
+
 class AbstractSourceMapper(ABC, Generic[F]):
     """
     Abstract class for the source mappers.
@@ -71,7 +70,7 @@ class AbstractSourceMapper(ABC, Generic[F]):
         self,
         concept_id: str,
         concept_type: str,
-        fhir_schema: type[AbstractFHIRSinkSchema]|str,
+        fhir_schema: type[AbstractFHIRSinkSchema] | str,
         datasource: DataSource,
         source_config: SourceConfig,
     ) -> None:
@@ -82,7 +81,9 @@ class AbstractSourceMapper(ABC, Generic[F]):
         self._fhir_schema = fhir_schema
         if isinstance(fhir_schema, str):
             module = import_module("icu_pipeline.schema.fhir")
-            self.fhir_schema: type[AbstractFHIRSinkSchema] = getattr(module, fhir_schema)
+            self.fhir_schema: type[AbstractFHIRSinkSchema] = getattr(
+                module, fhir_schema
+            )
         self._data_source = datasource
         self._source_config = source_config
 
@@ -130,13 +131,16 @@ class AbstractSourceSampler(ABC):
     get_samples():
         Create a Generator, which produces Sample IDs
     """
+
     IDENTIFIER = None
 
     def __init__(self) -> None:
-        assert self.IDENTIFIER is not None and len(self.IDENTIFIER) > 0, f"Class {type(self)} has no Identifiers defined."
+        assert (
+            self.IDENTIFIER is not None and len(self.IDENTIFIER) > 0
+        ), f"Class {type(self)} has no Identifiers defined."
 
     @abstractmethod
-    def get_samples(self) -> Generator[Series[str],None,None]:
+    def get_samples(self) -> Generator[Series[str], None, None]:
         pass
 
 
@@ -144,16 +148,25 @@ class AbstractSourceSampler(ABC):
 # Getter
 #######
 
+
 def getDataSourceMapper(config: MapperConfig) -> type[AbstractSourceMapper]:
-    """ Load the SourceMapper from the corresponding module."""
+    """Load the SourceMapper from the corresponding module."""
     module = import_module(f"icu_pipeline.source.{config.source}")
     source_mapper = getattr(module, config.klass)
     return source_mapper
 
-def getDataSampler(source: DataSource, source_config: SourceConfig) -> AbstractSourceSampler:
+
+def getDataSampler(
+    source: DataSource, source_config: SourceConfig
+) -> AbstractSourceSampler:
     match source:
         case DataSource.MIMICIV:
             from icu_pipeline.source.mimiciv import MimicSampler
+
             return MimicSampler(source_config)
+        case DataSource.EICU:
+            from icu_pipeline.source.eicu import EICUSampler
+
+            return EICUSampler(source_config)
         case _:
             raise NotImplementedError

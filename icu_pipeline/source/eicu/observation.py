@@ -36,12 +36,17 @@ class EICUObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         assert (
             self._unit is not None
         ), f"No Unit definition for EICUObservationMapper '{schema+'.'+table}' given."
+        if constraints is None:
+            constraints = {}
 
         self._id_field = "subject_id"
         # Create and map fields to normalized names
         fields = kwargs.pop("fields", {})
-        if constraints is None:
-            constraints = {}
+        assert (
+            fields.get("value") is not None
+        ), f"No constraints for EICUObservationMapper '{schema+'.'+table}' given."
+        constraints[fields.get("value")] = "not null"
+
         if "patient_id" not in fields:
             fields["patient_id"] = "patienthealthsystemstayid"
         if "time" not in fields:

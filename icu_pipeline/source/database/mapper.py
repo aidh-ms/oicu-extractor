@@ -103,6 +103,9 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
             )
 
         def _build_constraint(key: str, value: Any) -> Composable:
+            if isinstance(value, str) and value.lower() == "not null":
+                return sql.Composed((sql.Identifier(key), sql.SQL(" IS NOT NULL")))
+
             if isinstance(value, list):
                 return sql.Composed(
                     (
@@ -110,6 +113,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
                         sql.SQL(" = any({})").format(sql.Literal(value)),
                     )
                 )
+
             return sql.Composed(
                 (sql.Identifier(key), sql.SQL(" = "), sql.Literal(value))
             )

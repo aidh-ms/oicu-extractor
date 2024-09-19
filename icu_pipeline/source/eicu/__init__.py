@@ -17,3 +17,4 @@ class EICUSampler(AbstractDatabaseSourceSampler):
 
 
 from .observation import EICUObservationMapper
+from .observation import EICUPationObservationMapper

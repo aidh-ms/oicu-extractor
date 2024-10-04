@@ -4,9 +4,11 @@ from icu_pipeline.schema.fhir import Quantity
 from icu_pipeline.unit.converter import BaseConverter
 
 
-class FrequencyConverter(BaseConverter):
-    SI_UNIT = "Hz"
-    AVAILABLE_UNITS = ["Hz", "bpm", "1/min"]
+class NoUnitConverter(BaseConverter):
+    SI_UNIT = ""
+    AVAILABLE_UNITS = [
+        ""
+    ]  # year is amiguous (365, 366 days). TODO - Ignore since error is small and mimic does it anyway?
     # REQUIRED_CONCEPTS = ["SystolicBloodPressure"]
 
     def _convertToSI(
@@ -23,11 +25,8 @@ class FrequencyConverter(BaseConverter):
                 return data
 
             # Actual Conversions
-            case "bpm":
-                convert = lambda v: v / 60  # bpm = 60 * Hz
-
-            case "1/min":
-                convert = lambda v: v / 60
+            case "":
+                convert = lambda v: v
 
             # Not Implemented
             case _:
@@ -48,11 +47,8 @@ class FrequencyConverter(BaseConverter):
                 return data
 
             # Actual Conversions
-            case "bpm":
-                convert = lambda v: v * 60  # 60 Seconds in 1 Minute
-
-            case "1/min":
-                convert = lambda v: v * 60
+            case "":
+                convert = lambda v: v
 
             # Not Implemented
             case _:

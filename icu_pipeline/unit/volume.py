@@ -4,10 +4,9 @@ from icu_pipeline.schema.fhir import Quantity
 from icu_pipeline.unit.converter import BaseConverter
 
 
-class FrequencyConverter(BaseConverter):
-    SI_UNIT = "Hz"
-    AVAILABLE_UNITS = ["Hz", "bpm", "1/min"]
-    # REQUIRED_CONCEPTS = ["SystolicBloodPressure"]
+class LengthConverter(BaseConverter):
+    SI_UNIT = "l"
+    AVAILABLE_UNITS = ["l", "ml"]
 
     def _convertToSI(
         self,
@@ -16,18 +15,15 @@ class FrequencyConverter(BaseConverter):
         dependencies: dict[str, DataFrame],
     ):
         convert: Callable[[float], float] = lambda v: v
-        # Data can use any unit and will be transformed to Hz
+        # Data can have any Unit and will be transformed to m
         match source_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
 
-            # Actual Conversions
-            case "bpm":
-                convert = lambda v: v / 60  # bpm = 60 * Hz
-
-            case "1/min":
-                convert = lambda v: v / 60
+            # Actual Conversions from case to cm
+            case "ml":
+                convert = lambda v: v * 100
 
             # Not Implemented
             case _:
@@ -41,18 +37,15 @@ class FrequencyConverter(BaseConverter):
         self, sink_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]
     ):
         convert: Callable[[float], float] = lambda v: v
-        # Data contains Hz values and can be transformed into any Unit
+        # Data uses m and can be transformed in to any Unit
         match sink_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
 
             # Actual Conversions
-            case "bpm":
-                convert = lambda v: v * 60  # 60 Seconds in 1 Minute
-
-            case "1/min":
-                convert = lambda v: v * 60
+            case "ml":
+                convert = lambda v: v / 100
 
             # Not Implemented
             case _:

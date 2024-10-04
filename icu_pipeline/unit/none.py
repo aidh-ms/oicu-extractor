@@ -4,9 +4,12 @@ from icu_pipeline.schema.fhir import Quantity
 from icu_pipeline.unit.converter import BaseConverter
 
 
-class UnitConverter(BaseConverter):
-    SI_UNIT = "unit"  # Abstract Unit. Usually used for unspecific medications (eg. Vasopressine)
-    AVAILABLE_UNITS = ["unit", "milliunit", "%"]
+class NoUnitConverter(BaseConverter):
+    SI_UNIT = ""
+    AVAILABLE_UNITS = [
+        ""
+    ]  # year is amiguous (365, 366 days). TODO - Ignore since error is small and mimic does it anyway?
+    # REQUIRED_CONCEPTS = ["SystolicBloodPressure"]
 
     def _convertToSI(
         self,
@@ -15,18 +18,15 @@ class UnitConverter(BaseConverter):
         dependencies: dict[str, DataFrame],
     ):
         convert: Callable[[float], float] = lambda v: v
-        # Data can have any Unit and will be transformed to °C
+        # Data can use any unit and will be transformed to Hz
         match source_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
 
-            # Actual Conversions from case to SI
-            case "milliunit":
-                convert = lambda v: v / 10e3
-
-            case "%":
-                convert = lambda v: v / 100
+            # Actual Conversions
+            case "":
+                convert = lambda v: v
 
             # Not Implemented
             case _:
@@ -40,18 +40,15 @@ class UnitConverter(BaseConverter):
         self, sink_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]
     ):
         convert: Callable[[float], float] = lambda v: v
-        # Data uses °C and can be transformed in to any Unit
+        # Data contains Hz values and can be transformed into any Unit
         match sink_unit:
             # Already SI-Unit
             case self.SI_UNIT:
                 return data
 
-            # Actual Conversions from SI to case
-            case "milliunit":
-                convert = lambda v: v * 10e3
-
-            case "%":
-                convert = lambda v: v * 100
+            # Actual Conversions
+            case "":
+                convert = lambda v: v
 
             # Not Implemented
             case _:

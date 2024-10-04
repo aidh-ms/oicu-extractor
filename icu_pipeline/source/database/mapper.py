@@ -11,9 +11,11 @@ from icu_pipeline.source import AbstractSourceMapper
 from icu_pipeline.job import Job
 
 from icu_pipeline.logger import ICULogger
+
 logger = ICULogger.get_logger()
 
 F = TypeVar("F", bound=AbstractFHIRSinkSchema)
+
 
 class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
     """
@@ -44,8 +46,18 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
 
     SQL_QUERY: str | Composable  # the SQL query to be executed
 
-    def __init__(self, concept_id: str, concept_type: str, fhir_schema: AbstractFHIRSinkSchema | str, datasource: DataSource, source_config: SourceConfig, **kwargs) -> None:
-        super().__init__(concept_id, concept_type, fhir_schema, datasource, source_config)
+    def __init__(
+        self,
+        concept_id: str,
+        concept_type: str,
+        fhir_schema: AbstractFHIRSinkSchema | str,
+        datasource: DataSource,
+        source_config: SourceConfig,
+        **kwargs,
+    ) -> None:
+        super().__init__(
+            concept_id, concept_type, fhir_schema, datasource, source_config
+        )
         self._id_field = None
         self._query_args = {}
 
@@ -59,7 +71,8 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         table: str,
         fields: dict[str, str],
         constraints: dict[str, Any],
-        ids: pd.DataFrame
+        ids: pd.DataFrame,
+        joins: dict[str, dict[str, str]] | None = None,
     ) -> Composable:
         """
         builds a select SQL query to retrieve data from the database.
@@ -74,9 +87,15 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
             The fields to be retrieved and their new name.
         constraints : dict
             The constraints to be applied to the query.
+        ids : pd.DataFrame
+            The IDs to be used in the query.
+        joins : dict
+            The tables to be joined and the fields to join on.
         """
 
-        assert self._id_field is not None, f"Attribute 'self._id_field' was not set for class {type(self)}"
+        assert (
+            self._id_field is not None
+        ), f"Attribute 'self._id_field' was not set for class {type(self)}"
 
         def _build_field(exp: str, org: str) -> Composable:
             return sql.Composed(
@@ -84,6 +103,9 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
             )
 
         def _build_constraint(key: str, value: Any) -> Composable:
+            if isinstance(value, str) and value.lower() == "not null":
+                return sql.Composed((sql.Identifier(key), sql.SQL(" IS NOT NULL")))
+
             if isinstance(value, list):
                 return sql.Composed(
                     (
@@ -91,58 +113,68 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
                         sql.SQL(" = any({})").format(sql.Literal(value)),
                     )
                 )
+
             return sql.Composed(
                 (sql.Identifier(key), sql.SQL(" = "), sql.Literal(value))
             )
 
+        def _build_join_identifier(identifier: str) -> Composable:
+            return sql.SQL(".").join(sql.Identifier(t) for t in identifier.split("."))
+
         # There are Tables without any constraints (except sampling) -> see mimiciv_derived.age
+        params = {
+            "fields": sql.SQL(", ").join(
+                [_build_field(exp, org) for exp, org in fields.items()]
+            ),
+            "schema": sql.Identifier(schema),
+            "table": sql.Identifier(table),
+            "subsetting": sql.SQL(" AND ").join(
+                [
+                    sql.SQL("{next_identifier} IN ({next_list})").format(
+                        next_identifier=sql.SQL(i),
+                        next_list=sql.SQL(",".join(ids[i].astype(str))),
+                    )
+                    for i in ids.columns
+                ]
+            ),
+        }
+
         if len(constraints) == 0:
             raw_query = """
                 SELECT {fields}
                 FROM {schema}.{table}
+                {joins}
                 WHERE {subsetting}
             """
-            params = dict(
-                fields=sql.SQL(", ").join(
-                    [_build_field(exp, org) for exp, org in fields.items()]
-                ),
-                schema=sql.Identifier(schema),
-                table=sql.Identifier(table),
-                subsetting=sql.SQL(" AND ").join(
-                    [
-                        sql.SQL("{next_identifier} IN ({next_list})").format(
-                            next_identifier=sql.SQL(i),
-                            next_list=sql.SQL(",".join(ids[i].astype(str)))
-                        )
-                        for i in ids.columns
-                    ]
-                )
-            )
         else:
             raw_query = """
                 SELECT {fields}
                 FROM {schema}.{table}
+                {joins}
                 WHERE {constraints}
                 AND {subsetting}
             """
-            params = dict(
-                fields=sql.SQL(", ").join(
-                    [_build_field(exp, org) for exp, org in fields.items()]
-                ),
-                schema=sql.Identifier(schema),
-                table=sql.Identifier(table),
-                constraints=sql.SQL(" AND ").join(
-                    [_build_constraint(key, value) for key, value in constraints.items()]
-                ),
-                subsetting=sql.SQL(" AND ").join(
-                    [
-                        sql.SQL("{next_identifier} IN ({next_list})").format(
-                            next_identifier=sql.SQL(i),
-                            next_list=sql.SQL(",".join(ids[i].astype(str)))
-                        )
-                        for i in ids.columns
-                    ]
-                )
+
+            params["constraints"] = sql.SQL(" AND ").join(
+                [_build_constraint(key, value) for key, value in constraints.items()]
+            )
+
+        params["joins"] = sql.SQL("")
+        if joins is not None:
+            params["joins"] = sql.SQL(" ").join(
+                [
+                    sql.SQL("INNER JOIN {table} ON {condition}").format(
+                        table=_build_join_identifier(table),
+                        condition=sql.SQL(" AND ").join(
+                            sql.SQL("{field_a} = {field_b}").format(
+                                field_a=_build_join_identifier(field_a),
+                                field_b=_build_join_identifier(field_b),
+                            )
+                            for field_a, field_b in value.items()
+                        ),
+                    )
+                    for table, value in joins.items()
+                ]
             )
 
         query = sql.SQL(raw_query).format(**params)

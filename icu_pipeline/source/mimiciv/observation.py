@@ -12,6 +12,7 @@ from icu_pipeline.schema.fhir import (
     Quantity,
 )
 from icu_pipeline.schema.fhir.observation import FHIRObservation
+from icu_pipeline.unit.gender import Gender
 
 
 class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
@@ -25,15 +26,17 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         table: str,
         constraints: dict[str, Any],
         unit: str,
+        joins: dict[str, dict[str, str]] | None = None,
         **kwargs: dict[str, Any],
     ) -> None:
         super().__init__(
-            fhir_schema=FHIRObservation,
-            datasource=DataSource.MIMICIV,
-            **kwargs)
+            fhir_schema=FHIRObservation, datasource=DataSource.MIMICIV, **kwargs
+        )
         self._source = "mimiciv"
         self._unit = unit
-        assert self._unit is not None, f"No Unit definition for MimicObservationMapper '{schema+'.'+table}' given."
+        assert (
+            self._unit is not None
+        ), f"No Unit definition for MimicObservationMapper '{schema+'.'+table}' given."
 
         self._id_field = "subject_id"
         # Create and map fields to normalized names
@@ -48,12 +51,27 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
             "schema": schema,
             "table": table,
             "constraints": constraints,
-            "fields": fields
+            "fields": fields,
+            "joins": joins,
         }
 
-    def _to_fihr(
-        self, df: DataFrame
-    ) -> DataFrame[FHIRObservation]:
+        self._converter = self._convert_none
+        if fields.get("value") == "gender":
+            self._converter = self._convert_gender
+
+    def _convert_none(self, value: str) -> str:
+        return value
+
+    def _convert_gender(self, gender: str) -> str:
+        match gender:
+            case "M":
+                return str(Gender.MALE.value)
+            case "F":
+                return str(Gender.FEMALE.value)
+            case _:
+                return str(Gender.DIVERSE.value)
+
+    def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRObservation]:
         observation_df = pd.DataFrame()
 
         observation_df[FHIRObservation.subject] = df["patient_id"].map(
@@ -64,7 +82,8 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         )
         observation_df[FHIRObservation.value_quantity] = df.apply(
             lambda _df: Quantity(
-                value=float(_df["value"]), unit=self._unit or self._unit
+                value=float(self._converter(_df["value"])),
+                unit=self._unit or self._unit,
             ),
             axis=1,
         )

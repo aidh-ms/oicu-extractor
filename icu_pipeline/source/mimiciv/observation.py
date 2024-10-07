@@ -26,6 +26,7 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         table: str,
         constraints: dict[str, Any],
         unit: str,
+        joins: dict[str, dict[str, str]] | None = None,
         **kwargs: dict[str, Any],
     ) -> None:
         super().__init__(
@@ -51,6 +52,7 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
             "table": table,
             "constraints": constraints,
             "fields": fields,
+            "joins": joins,
         }
 
         self._converter = self._convert_none

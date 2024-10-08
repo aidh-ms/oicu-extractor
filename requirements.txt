@@ -1,5 +1,5 @@
 numpy==1.26.4
-psycopg[binary]==3.1.19
+psycopg[binary]==3.2.3
 SQLAlchemy==2.0.30
 pandas==2.2.2
 pandas-stubs==2.2.2.240514

@@ -29,23 +29,17 @@ class EICUObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         constraints: dict[str, Any] | None = None,
         **kwargs: dict[str, Any],
     ) -> None:
-        super().__init__(
-            fhir_schema=FHIRObservation, datasource=DataSource.EICU, **kwargs
-        )
+        super().__init__(fhir_schema=FHIRObservation, datasource=DataSource.EICU, **kwargs)
         self._source = "eicu"
         self._unit = unit
-        assert (
-            self._unit is not None
-        ), f"No Unit definition for EICUObservationMapper '{schema+'.'+table}' given."
+        assert self._unit is not None, f"No Unit definition for EICUObservationMapper '{schema+'.'+table}' given."
         if constraints is None:
             constraints = {}
 
         self._id_field = "subject_id"
         # Create and map fields to normalized names
         fields = kwargs.pop("fields", {})
-        assert (
-            fields.get("value") is not None
-        ), f"No constraints for EICUObservationMapper '{schema+'.'+table}' given."
+        assert fields.get("value") is not None, f"No constraints for EICUObservationMapper '{schema+'.'+table}' given."
         constraints[fields.get("value")] = "not null"
 
         if "patient_id" not in fields:
@@ -65,9 +59,7 @@ class EICUObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
             "constraints": constraints,
             "fields": fields,
             "joins": {
-                "eicu_crd.patient": {
-                    "eicu_crd.vitalperiodic.patientunitstayid": "eicu_crd.patient.patientunitstayid"
-                }
+                "eicu_crd.patient": {f"{schema}.{table}.patientunitstayid": "eicu_crd.patient.patientunitstayid"}
             },
         }
 
@@ -85,15 +77,11 @@ class EICUObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
             axis=1,
         )
         observation_df[FHIRObservation.value_quantity] = df.apply(
-            lambda _df: Quantity(
-                value=float(_df["value"]), unit=self._unit or self._unit
-            ),
+            lambda _df: Quantity(value=float(_df["value"]), unit=self._unit or self._unit),
             axis=1,
         )
         observation_df[FHIRObservation.code] = [
-            CodeableConcept(
-                coding=Coding(code=self._concept_id, system=self._concept_type)
-            )
+            CodeableConcept(coding=Coding(code=self._concept_id, system=self._concept_type))
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])
@@ -112,23 +100,17 @@ class EICUPationObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation])
         constraints: dict[str, Any] | None = None,
         **kwargs: dict[str, Any],
     ) -> None:
-        super().__init__(
-            fhir_schema=FHIRObservation, datasource=DataSource.EICU, **kwargs
-        )
+        super().__init__(fhir_schema=FHIRObservation, datasource=DataSource.EICU, **kwargs)
         self._source = "eicu"
         self._unit = unit
-        assert (
-            self._unit is not None
-        ), f"No Unit definition for EICUObservationMapper '{schema+'.'+table}' given."
+        assert self._unit is not None, f"No Unit definition for EICUObservationMapper '{schema+'.'+table}' given."
         if constraints is None:
             constraints = {}
 
         self._id_field = "subject_id"
         # Create and map fields to normalized names
         fields = kwargs.pop("fields", {})
-        assert (
-            fields.get("value") is not None
-        ), f"No constraints for EICUObservationMapper '{schema+'.'+table}' given."
+        assert fields.get("value") is not None, f"No constraints for EICUObservationMapper '{schema+'.'+table}' given."
         constraints[fields.get("value")] = "not null"
 
         if "patient_id" not in fields:
@@ -186,9 +168,7 @@ class EICUPationObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation])
             axis=1,
         )
         observation_df[FHIRObservation.code] = [
-            CodeableConcept(
-                coding=Coding(code=self._concept_id, system=self._concept_type)
-            )
+            CodeableConcept(coding=Coding(code=self._concept_id, system=self._concept_type))
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])

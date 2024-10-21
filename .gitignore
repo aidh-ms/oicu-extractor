@@ -1,5 +1,4 @@
 # locals
-.vscode
 observation
 observation/*
 output
@@ -125,7 +124,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -164,6 +162,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-.vscode/
 test.py
 mimiciv_pipeline_test.ipynb
+
+.postgres_data/

@@ -23,4 +23,4 @@ repos:
       - id: mypy
         # additional_dependencies:
         #   -
-        files: ^src/
+        files: ^icu_pipeline/

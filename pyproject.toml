@@ -38,9 +38,9 @@ pytest = "^8.0.2"
 coverage = "^7.4.0"
 pytest-cov = ">=4.1,<6.0"
 ruff = ">=0.5.0,<0.7"
-pytest-asyncio = ">=0.23.3,<0.25.0"
 pytest-recording = "^0.13.1"
 pytest-mock = "^3.14.0"
+pytest-random-order = "^1.1.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -57,12 +57,9 @@ plugins = ["pandera.mypy"]
 [tool.pytest.ini_options]
 python_files = ["test_*.py", "*_test.py"]
 filterwarnings = ["ignore::DeprecationWarning"]
-asyncio_mode = "auto"
 addopts = [
-    "--rootdir=./test",
     "--cov-branch",
-    "--cov=src",
+    "--cov",
     "--cov-report=xml",
-    "--import-mode=importlib",
     "--random-order",
 ]

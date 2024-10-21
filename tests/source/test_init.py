@@ -9,11 +9,7 @@ class DummyDatabaseSourceMapper(AbstractDatabaseSourceMapper):
     limit = -1
 
     def create_connection(self):
-        return (
-            create_engine("sqlite:///test_mimiciv.sqlite")
-            .connect()
-            .execution_options(stream_results=True)
-        )
+        return create_engine("sqlite:///test_mimiciv.sqlite").connect().execution_options(stream_results=True)
 
     def _to_fihr(self, df: DataFrame) -> DataFrame:
         return df

@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  oicu:
+    container_name: oicu
+    init: true
+    env_file:
+      - .env
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    environment:
+      - no_proxy="127.0.0.1,localhost"
+      - NO_PROXY="127.0.0.1,localhost"
+    volumes:
+      - ..:/workspaces:cached
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres
+    image: postgres:17.0
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+        - ./create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh
+        - ../.postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: oicu,mimiciv,eicu,amsterdamumcdb,sicdb,hirid
+      POSTGRES_USER: oicu
+      POSTGRES_DB: oicu

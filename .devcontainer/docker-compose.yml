@@ -24,14 +24,15 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:17.0
+    image: postgres:16
     restart: always
     ports:
       - "5432:5432"
     volumes:
-        - ./create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh
+        - ./pg_scripts:/docker-entrypoint-initdb.d
         - ../.postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_MULTIPLE_DATABASES: oicu,mimiciv,eicu,amsterdamumcdb,sicdb,hirid
+      POSTGRES_MULTIPLE_DATABASES: mimiciv,eicu,amsterdamumcdb,sicdb,hirid
       POSTGRES_USER: oicu
       POSTGRES_DB: oicu
+      POSTGRES_PASSWORD: oicu

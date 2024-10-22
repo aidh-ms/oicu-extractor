@@ -18,5 +18,8 @@ RUN LATEST_COMPOSE_VERSION=$(curl -sSL "https://api.github.com/repos/docker/comp
 # Install GPG2
 RUN apt-get update && sudo apt-get install gnupg2 -y
 
+# install psotgres client
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Install Python Deps
 RUN pip install --upgrade pip pre-commit poetry

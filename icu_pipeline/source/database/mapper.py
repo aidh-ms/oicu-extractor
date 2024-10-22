@@ -1,16 +1,15 @@
-from typing import Any, TypeVar, Generic
+from typing import Any, Generic, TypeVar
 
 import pandas as pd
-from sqlalchemy import Engine, create_engine
+from pandas import DataFrame
 from psycopg import sql
 from psycopg.sql import Composable
+from sqlalchemy import Engine, create_engine
 
-from icu_pipeline.source import DataSource, SourceConfig
-from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
-from icu_pipeline.source import AbstractSourceMapper
 from icu_pipeline.job import Job
-
 from icu_pipeline.logger import ICULogger
+from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
+from icu_pipeline.source import AbstractSourceMapper, DataSource, SourceConfig
 
 logger = ICULogger.get_logger()
 
@@ -171,7 +170,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
 
         return query
 
-    def get_data(self, job: Job) -> pd.DataFrame:
+    def get_data(self, job: Job) -> DataFrame:
         """
         Retrieves data from the database.
 

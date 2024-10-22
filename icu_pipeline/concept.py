@@ -1,10 +1,13 @@
-import pandas as pd
-from .job import Job
-from icu_pipeline.source import DataSource, SourceConfig
-from icu_pipeline.source import AbstractSourceMapper, getDataSourceMapper
-from icu_pipeline.unit import BaseConverter, ConverterConfig
+from typing import Any
+
+from pandera.typing import DataFrame
+
+from conceptbase.config import ConceptCoding, ConceptConfig
 from icu_pipeline.graph import Node
-from conceptbase.config import ConceptConfig, ConceptCoding
+from icu_pipeline.source import AbstractSourceMapper, DataSource, SourceConfig, getDataSourceMapper
+from icu_pipeline.unit import BaseConverter, ConverterConfig
+
+from .job import Job
 
 
 class Concept(Node):
@@ -74,11 +77,11 @@ class Concept(Node):
             return value == self._concept_config.name
         return super().__eq__(value)
 
-    def fetch_sources(self, job: Job, *args, **kwargs):
+    def fetch_sources(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> dict[str, DataFrame]:
         # Don't do anything
         pass
 
-    def get_data(self, job) -> dict[str, pd.DataFrame]:
+    def get_data(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> DataFrame:
         """Map the concept to data from the sources."""
         assert (
             job.database in self._data_sources

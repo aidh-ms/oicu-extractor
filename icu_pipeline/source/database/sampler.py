@@ -32,6 +32,7 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
         Retrieves data from the database. This method should be implemented by subclasses.
     """
 
+    IDENTIFIER: list[str]  # the identifier columns for the table
     SQL_QUERY: str | Composable  # the SQL query to be executed
 
     def __init__(self, source_config: SourceConfig) -> None:
@@ -66,7 +67,7 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
             FROM {schema}.{table}
             LIMIT {limit}
         """
-        
+
         query = sql.SQL(raw_query).format(
             fields=sql.SQL(", ").join([sql.SQL(i) for i in self.IDENTIFIER]),
             schema=sql.Identifier(schema),

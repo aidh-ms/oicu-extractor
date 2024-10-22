@@ -7,6 +7,7 @@ from typing import Generator, Generic, TypeVar
 from pandera.typing import DataFrame, Series
 
 from conceptbase.config import MapperConfig
+from icu_pipeline.job import Job
 from icu_pipeline.logger import ICULogger
 from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
 
@@ -87,7 +88,7 @@ class AbstractSourceMapper(ABC, Generic[F]):
         self._source_config = source_config
 
     @abstractmethod
-    def get_data(self, job) -> DataFrame:
+    def get_data(self, job: Job) -> DataFrame:
         """
         Retrieves the data to be mapped.
 

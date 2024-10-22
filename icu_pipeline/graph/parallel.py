@@ -1,4 +1,5 @@
 import multiprocessing
+from typing import Any
 
 from pandera.typing import DataFrame
 
@@ -10,7 +11,7 @@ logger = ICULogger.get_logger()
 
 
 class MultiprocessingNode(BaseNode):
-    def fetch_sources(self, job: Job, *args, **kwargs) -> dict[str, DataFrame]:
+    def fetch_sources(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> dict[str, DataFrame]:
         manager = multiprocessing.Manager()
         out = manager.dict()
 
@@ -20,7 +21,7 @@ class MultiprocessingNode(BaseNode):
             p.join()
         return out
 
-    def get_data(self, job: Job) -> DataFrame:
+    def get_data(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> DataFrame:
         data = self.fetch_sources(job)
         if self._concept_id is not None:
             data = data[self._concept_id]
@@ -31,7 +32,7 @@ class MultiprocessingPipe(BasePipe):
     def __init__(self, source: MultiprocessingNode, sink: MultiprocessingNode) -> None:
         super().__init__(source, sink)
 
-    def read(self, job: Job, managed_dict, *args, **kwargs):
+    def read(self, job: Job, managed_dict, *args: list[Any], **kwargs: dict[Any, Any]) -> DataFrame:
         def _read(result: dict):
             df = self._source.get_data(job)
             result[self._source._concept_id] = df
@@ -40,6 +41,6 @@ class MultiprocessingPipe(BasePipe):
         p.start()
         return p
 
-    def write(self, job: Job, data, *args, **kwargs):
+    def write(self, job: Job, data: DataFrame, *args: list[Any], **kwargs: dict[Any, Any]) -> None:
         # Nothing special
         return data

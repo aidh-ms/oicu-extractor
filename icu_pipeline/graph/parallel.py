@@ -1,9 +1,9 @@
 import multiprocessing
 
-from pandas.core.api import DataFrame as DataFrame
-from icu_pipeline.graph.base import BasePipe, BaseNode
-from icu_pipeline.job import Job
+from pandera.typing import DataFrame
 
+from icu_pipeline.graph.base import BaseNode, BasePipe
+from icu_pipeline.job import Job
 from icu_pipeline.logger import ICULogger
 
 logger = ICULogger.get_logger()

@@ -24,7 +24,7 @@ class AbstractSinkMapper(ABC, Node):
     """
 
     def __init__(self) -> None:
-        super().__init__(concept_id=None)  # TODO - Sink doesn't have a concept_id for now
+        super().__init__(concept_id="")  # TODO - Sink doesn't have a concept_id for now
 
     @abstractmethod
     def to_output_format(

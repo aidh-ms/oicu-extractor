@@ -1,7 +1,4 @@
-from pandera.typing import DataFrame
-from ..schema import AbstractSinkSchema
 from icu_pipeline.job import Job
-from icu_pipeline.sink import AbstractSinkMapper
 from icu_pipeline.graph import Node
 
 

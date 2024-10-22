@@ -55,9 +55,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         source_config: SourceConfig,
         **kwargs,
     ) -> None:
-        super().__init__(
-            concept_id, concept_type, fhir_schema, datasource, source_config
-        )
+        super().__init__(concept_id, concept_type, fhir_schema, datasource, source_config)
         self._id_field = None
         self._query_args = {}
 
@@ -93,14 +91,10 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
             The tables to be joined and the fields to join on.
         """
 
-        assert (
-            self._id_field is not None
-        ), f"Attribute 'self._id_field' was not set for class {type(self)}"
+        assert self._id_field is not None, f"Attribute 'self._id_field' was not set for class {type(self)}"
 
         def _build_field(exp: str, org: str) -> Composable:
-            return sql.Composed(
-                (sql.Identifier(org), sql.SQL(" AS "), sql.Identifier(exp))
-            )
+            return sql.Composed((sql.Identifier(org), sql.SQL(" AS "), sql.Identifier(exp)))
 
         def _build_constraint(key: str, value: Any) -> Composable:
             if isinstance(value, str) and value.lower() == "not null":
@@ -114,18 +108,14 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
                     )
                 )
 
-            return sql.Composed(
-                (sql.Identifier(key), sql.SQL(" = "), sql.Literal(value))
-            )
+            return sql.Composed((sql.Identifier(key), sql.SQL(" = "), sql.Literal(value)))
 
         def _build_join_identifier(identifier: str) -> Composable:
             return sql.SQL(".").join(sql.Identifier(t) for t in identifier.split("."))
 
         # There are Tables without any constraints (except sampling) -> see mimiciv_derived.age
         params = {
-            "fields": sql.SQL(", ").join(
-                [_build_field(exp, org) for exp, org in fields.items()]
-            ),
+            "fields": sql.SQL(", ").join([_build_field(exp, org) for exp, org in fields.items()]),
             "schema": sql.Identifier(schema),
             "table": sql.Identifier(table),
             "subsetting": sql.SQL(" AND ").join(

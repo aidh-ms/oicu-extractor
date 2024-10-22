@@ -32,13 +32,9 @@ class UnitConverter(BaseConverter):
             case _:
                 raise NotImplementedError
 
-        return data.apply(
-            lambda q: Quantity(value=convert(q["value"]), unit=self.SI_UNIT)
-        )
+        return data.apply(lambda q: Quantity(value=convert(q["value"]), unit=self.SI_UNIT))
 
-    def _convertToTarget(
-        self, sink_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]
-    ):
+    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data uses °C and can be transformed in to any Unit
         match sink_unit:

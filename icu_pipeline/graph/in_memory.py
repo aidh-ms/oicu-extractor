@@ -6,7 +6,7 @@ from icu_pipeline.job import Job
 class InMemoryNode(BaseNode):
     def fetch_sources(self, job: Job, *args, **kwargs) -> dict[str, DataFrame]:
         out: dict[str, DataFrame] = {}
-        for c,s in self._sources.items():
+        for c, s in self._sources.items():
             out[c] = s.read(job, *args, **kwargs)
         return out
 

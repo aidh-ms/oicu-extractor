@@ -1,10 +1,13 @@
 from abc import ABCMeta
 from pathlib import Path
 from typing import Generator
-import pandas as pd
 
-from icu_pipeline.sink import AbstractSinkMapper
+import pandas as pd
+from pandera.typing import DataFrame
+
 from icu_pipeline.concept import Concept
+from icu_pipeline.schema import AbstractSinkSchema
+from icu_pipeline.sink import AbstractSinkMapper
 
 
 class AbstractFileSinkMapper(AbstractSinkMapper, metaclass=ABCMeta):
@@ -34,6 +37,7 @@ class AbstractFileSinkMapper(AbstractSinkMapper, metaclass=ABCMeta):
         Writes data from a generator of pandas DataFrames to a CSV file.
 
     """
+
     FILE_EXTENSION: str
 
     def __init__(self, path: Path | None = None) -> None:
@@ -53,7 +57,7 @@ class AbstractFileSinkMapper(AbstractSinkMapper, metaclass=ABCMeta):
 
     def to_output_format(
         self,
-        df: pd.DataFrame,
+        df_generator: Generator[DataFrame[AbstractSinkSchema], None, None],
         concept: Concept,
     ) -> None:
         raise NotImplementedError
@@ -103,7 +107,7 @@ class CSVFileSinkMapper(AbstractFileSinkMapper):
 
     def to_output_format(
         self,
-        df_generator: Generator[pd.DataFrame, None, None],
+        df_generator: Generator[DataFrame[AbstractSinkSchema], None, None],
         concept: Concept,
     ) -> None:
         """
@@ -130,8 +134,7 @@ class CSVFileSinkMapper(AbstractFileSinkMapper):
         out = dict(total_rows=0)
         for df in df_generator:
             header = False
-            file_path = self._path / \
-                f"{concept._concept_config.name}.{self.FILE_EXTENSION}"
+            file_path = self._path / f"{concept._concept_config.name}.{self.FILE_EXTENSION}"
             if not file_path.exists():
                 header = True
 
@@ -139,8 +142,7 @@ class CSVFileSinkMapper(AbstractFileSinkMapper):
                 if not isinstance(df[column][0], dict):
                     continue
 
-                df = df.join(pd.json_normalize(df[column]).add_prefix(
-                    f"{column}__"))  # type: ignore[arg-type]
+                df = df.join(pd.json_normalize(df[column]).add_prefix(f"{column}__"))  # type: ignore
                 df = df.drop(columns=[column])
 
             df.columns = df.columns.str.replace(".", "__")
@@ -148,7 +150,6 @@ class CSVFileSinkMapper(AbstractFileSinkMapper):
             # TODO - Some basic statistics. Maybe more details?
             out["total_rows"] += len(df)
             df.to_csv(file_path, mode="a+", index=False, header=header)
-        return out
 
 
 class JSONLFileSinkMapper(AbstractFileSinkMapper):
@@ -175,11 +176,13 @@ class JSONLFileSinkMapper(AbstractFileSinkMapper):
         Intended to write data from a pandas DataFrame to a JSONL file. Currently not implemented.
 
     """
+
     FILE_EXTENSION = "jsonl"
 
     def _to_output_format(
         self,
-        df: pd.DataFrame,
+        df_generator: Generator[DataFrame[AbstractSinkSchema], None, None],
+        concept: Concept,
     ) -> None:
         """
         Intended to write data from a pandas DataFrame to a JSONL file. Currently not implemented.
@@ -196,4 +199,4 @@ class JSONLFileSinkMapper(AbstractFileSinkMapper):
 
         """
         raise NotImplementedError
-        df.to_json(self._path, mode="a", orient="records", lines=True)
+        # df.to_json(self._path, mode="a", orient="records", lines=True)

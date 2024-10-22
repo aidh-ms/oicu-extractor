@@ -8,7 +8,7 @@ class MassConverter(BaseConverter):
     SI_UNIT = "kg"
     AVAILABLE_UNITS = ["mg", "g", "kg"]
 
-    def _convertToSI(self, source_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
+    def _convertToSI(self, source_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data can have any Unit and will be transformed to °C
         match source_unit:
@@ -27,11 +27,9 @@ class MassConverter(BaseConverter):
             case _:
                 raise NotImplementedError
 
-        return data.apply(lambda q: Quantity(
-            value=convert(q["value"]),
-            unit=self.SI_UNIT))
+        return data.apply(lambda q: Quantity(value=convert(q["value"]), unit=self.SI_UNIT))
 
-    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
+    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data uses °C and can be transformed in to any Unit
         match sink_unit:
@@ -50,6 +48,4 @@ class MassConverter(BaseConverter):
             case _:
                 raise NotImplementedError
 
-        return data.apply(lambda q: Quantity(
-            value=convert(q["value"]),
-            unit=sink_unit))
+        return data.apply(lambda q: Quantity(value=convert(q["value"]), unit=sink_unit))

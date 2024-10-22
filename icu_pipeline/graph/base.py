@@ -24,7 +24,7 @@ class BaseNode:
     def __str__(self) -> str:
         return f"{type(self).__name__}({self._node_id})"
 
-    def fetch_sources(self, job: Job, *args, **kwargs) -> dict[str,pd.DataFrame]:
+    def fetch_sources(self, job: Job, *args, **kwargs) -> dict[str, pd.DataFrame]:
         raise NotImplementedError
 
     def get_data(self, job: Job, *args, **kwargs) -> pd.DataFrame:
@@ -64,7 +64,7 @@ class Graph:
                 out.append(n)
         return out
 
-    def getNode(self, node: BaseNode|str) -> BaseNode|None:
+    def getNode(self, node: BaseNode | str) -> BaseNode | None:
         for n in self._nodes:
             if n == node:
                 return n
@@ -72,6 +72,7 @@ class Graph:
 
     def addPipe(self, source: BaseNode, sink: BaseNode):
         from icu_pipeline.graph import Pipe
+
         # Check if the Nodes are already part of the Graph
         if source not in self._nodes:
             self._nodes.append(source)
@@ -108,7 +109,7 @@ class Graph:
                     return True
             # If it didn't break to this point, it's not circular
             return False
-        
+
         # Sinks are fetched during execution, so begin there
         for next_sink in self.sinks:
             # For all possible sub-paths in this sink, check if a node appears twice
@@ -140,10 +141,7 @@ class Graph:
             out = [f"{n}-->{s}" for s in out]
             return out
 
-        out = [
-            f"Pipe Class: {Pipe.__name__}",
-            f"Node Class: {Node.__name__}"
-        ]
+        out = [f"Pipe Class: {Pipe.__name__}", f"Node Class: {Node.__name__}"]
         for next_source in self.sources:
             out.extend(_get_sink_str(next_source))
         return "\n".join(out)

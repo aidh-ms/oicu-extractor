@@ -5,10 +5,10 @@ from icu_pipeline.unit.converter import BaseConverter
 
 
 class PressureConverter(BaseConverter):
-    SI_UNIT = "Pa" # Short name for Kg*m/s**2
+    SI_UNIT = "Pa"  # Short name for Kg*m/s**2
     AVAILABLE_UNITS = ["Pa", "mmHg", "bar", "mbar", "cmH2O"]
 
-    def _convertToSI(self, source_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
+    def _convertToSI(self, source_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data can have any Unit and will be transformed to °C
         match source_unit:
@@ -18,7 +18,7 @@ class PressureConverter(BaseConverter):
 
             # Actual Conversions
             case "mmHg":
-                convert = lambda v: v * 133.322 # 1 mmHg ~= 133.322 Pa
+                convert = lambda v: v * 133.322  # 1 mmHg ~= 133.322 Pa
 
             case "bar":
                 convert = lambda v: v * 10e5
@@ -33,11 +33,9 @@ class PressureConverter(BaseConverter):
             case _:
                 raise NotImplementedError
 
-        return data.apply(lambda q: Quantity(
-            value=convert(q["value"]),
-            unit=self.SI_UNIT))
+        return data.apply(lambda q: Quantity(value=convert(q["value"]), unit=self.SI_UNIT))
 
-    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
+    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data uses °C and can be transformed in to any Unit
         match sink_unit:
@@ -47,7 +45,7 @@ class PressureConverter(BaseConverter):
 
             # Actual Conversions
             case "mmHg":
-                convert = lambda v: v / 133.322 # 1 mmHg ~= 133.322 Pa
+                convert = lambda v: v / 133.322  # 1 mmHg ~= 133.322 Pa
 
             case "bar":
                 convert = lambda v: v / 10e5
@@ -62,6 +60,4 @@ class PressureConverter(BaseConverter):
             case _:
                 raise NotImplementedError
 
-        return data.apply(lambda q: Quantity(
-            value=convert(q["value"]),
-            unit=sink_unit))
+        return data.apply(lambda q: Quantity(value=convert(q["value"]), unit=sink_unit))

@@ -5,13 +5,15 @@ from icu_pipeline.graph.base import BasePipe, BaseNode
 from icu_pipeline.job import Job
 
 from icu_pipeline.logger import ICULogger
+
 logger = ICULogger.get_logger()
+
 
 class MultiprocessingNode(BaseNode):
     def fetch_sources(self, job: Job, *args, **kwargs) -> dict[str, DataFrame]:
         manager = multiprocessing.Manager()
         out = manager.dict()
-        
+
         logger.debug(f"Getting data for Node '{self}'...")
         procs = [s.read(job, out) for s in self._sources.values()]
         for p in procs:
@@ -33,6 +35,7 @@ class MultiprocessingPipe(BasePipe):
         def _read(result: dict):
             df = self._source.get_data(job)
             result[self._source._concept_id] = df
+
         p = multiprocessing.Process(target=_read, args=[managed_dict], daemon=False)
         p.start()
         return p

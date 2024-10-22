@@ -1,13 +1,14 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import StrEnum, auto
-from typing import Generic, TypeVar, Generator
 from importlib import import_module
-from abc import ABC, abstractmethod
+from typing import Generator, Generic, TypeVar
+
 from pandera.typing import DataFrame, Series
 
+from conceptbase.config import MapperConfig
 from icu_pipeline.logger import ICULogger
 from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
-from conceptbase.config import MapperConfig
 
 # add logging
 logger = ICULogger.get_logger()
@@ -81,9 +82,7 @@ class AbstractSourceMapper(ABC, Generic[F]):
         self._fhir_schema = fhir_schema
         if isinstance(fhir_schema, str):
             module = import_module("icu_pipeline.schema.fhir")
-            self.fhir_schema: type[AbstractFHIRSinkSchema] = getattr(
-                module, fhir_schema
-            )
+            self.fhir_schema: type[AbstractFHIRSinkSchema] = getattr(module, fhir_schema)
         self._data_source = datasource
         self._source_config = source_config
 
@@ -156,9 +155,7 @@ def getDataSourceMapper(config: MapperConfig) -> type[AbstractSourceMapper]:
     return source_mapper
 
 
-def getDataSampler(
-    source: DataSource, source_config: SourceConfig
-) -> AbstractSourceSampler:
+def getDataSampler(source: DataSource, source_config: SourceConfig) -> AbstractSourceSampler:
     match source:
         case DataSource.MIMICIV:
             from icu_pipeline.source.mimiciv import MimicSampler

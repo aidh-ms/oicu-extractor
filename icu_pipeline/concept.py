@@ -78,15 +78,19 @@ class Concept(Node):
         # Don't do anything
         pass
 
-    def get_data(self, job) -> dict[str,pd.DataFrame]:
-        """ Map the concept to data from the sources. """
-        assert job.database in self._data_sources, f"Data Source '{job.database}' doesn't have a mapper for Concept '{self._concept_config.name}'"
+    def get_data(self, job) -> dict[str, pd.DataFrame]:
+        """Map the concept to data from the sources."""
+        assert (
+            job.database in self._data_sources
+        ), f"Data Source '{job.database}' doesn't have a mapper for Concept '{self._concept_config.name}'"
         # Query the DB and return the DF
         return self._data_sources[job.database].get_data(job)
 
     def getDefaultConverter(self) -> BaseConverter:
-        return BaseConverter.getConverter(config=ConverterConfig(
-            concept_id=self._concept_id,
-            source_units={m.source: m.unit for m in self._concept_config.mapper},
-            sink_unit=self._concept_config.unit
-        ))
+        return BaseConverter.getConverter(
+            config=ConverterConfig(
+                concept_id=self._concept_id,
+                source_units={m.source: m.unit for m in self._concept_config.mapper},
+                sink_unit=self._concept_config.unit,
+            )
+        )

@@ -1,12 +1,15 @@
-from typing import Any, Generator
+from typing import Generator
+
 import pandas as pd
-from icu_pipeline.source import SourceConfig, AbstractSourceSampler
-from sqlalchemy import Engine, create_engine
 from psycopg import sql
 from psycopg.sql import Composable
+from sqlalchemy import Connection, create_engine
 
 from icu_pipeline.logger import ICULogger
+from icu_pipeline.source import AbstractSourceSampler, SourceConfig
+
 logger = ICULogger.get_logger()
+
 
 class AbstractDatabaseSourceSampler(AbstractSourceSampler):
     """
@@ -34,7 +37,7 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
     def __init__(self, source_config: SourceConfig) -> None:
         self._source_config = source_config
 
-    def create_connection(self) -> Engine:
+    def create_connection(self) -> Connection:
         engine = create_engine(self._source_config.connection)
         return engine.connect().execution_options(stream_results=True)
 
@@ -63,16 +66,12 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
             FROM {schema}.{table}
             LIMIT {limit}
         """
-
+        
         query = sql.SQL(raw_query).format(
             fields=sql.SQL(", ").join([sql.SQL(i) for i in self.IDENTIFIER]),
             schema=sql.Identifier(schema),
             table=sql.Identifier(table),
-            limit=(
-                sql.Literal(limit)
-                if (limit := self._source_config.limit) > 0
-                else sql.SQL("ALL")
-            ),
+            limit=(sql.Literal(limit) if (limit := self._source_config.limit) > 0 else sql.SQL("ALL")),
         )
 
         return query
@@ -111,4 +110,4 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
                 con,
                 chunksize=self._source_config.chunksize,
             ):
-                yield df # Potentially multiple columns as ID
+                yield df  # Potentially multiple columns as ID

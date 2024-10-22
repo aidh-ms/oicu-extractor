@@ -9,7 +9,7 @@ class TemperatureConverter(BaseConverter):
     AVAILABLE_UNITS = ["°K", "°C", "°F"]
     REQUIRED_CONCEPTS = []
 
-    def _convertToSI(self, source_unit: str,data: Series[Quantity], dependencies: dict[str,DataFrame]):
+    def _convertToSI(self, source_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data can have any Unit and will be transformed to °C
         match source_unit:
@@ -28,11 +28,9 @@ class TemperatureConverter(BaseConverter):
             case _:
                 raise NotImplementedError
 
-        return data.apply(lambda q: Quantity(
-            value=convert(q["value"]),
-            unit=self.SI_UNIT))
+        return data.apply(lambda q: Quantity(value=convert(q["value"]), unit=self.SI_UNIT))
 
-    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str,DataFrame]):
+    def _convertToTarget(self, sink_unit: str, data: Series[Quantity], dependencies: dict[str, DataFrame]):
         convert: Callable[[float], float] = lambda v: v
         # Data uses °C and can be transformed in to any Unit
         match sink_unit:
@@ -51,6 +49,4 @@ class TemperatureConverter(BaseConverter):
             case _:
                 raise NotImplementedError
 
-        return data.apply(lambda q: Quantity(
-            value=convert(q["value"]),
-            unit=self.SI_UNIT))
+        return data.apply(lambda q: Quantity(value=convert(q["value"]), unit=self.SI_UNIT))

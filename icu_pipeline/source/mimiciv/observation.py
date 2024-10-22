@@ -29,14 +29,10 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         joins: dict[str, dict[str, str]] | None = None,
         **kwargs: dict[str, Any],
     ) -> None:
-        super().__init__(
-            fhir_schema=FHIRObservation, datasource=DataSource.MIMICIV, **kwargs
-        )
+        super().__init__(fhir_schema=FHIRObservation, datasource=DataSource.MIMICIV, **kwargs)
         self._source = "mimiciv"
         self._unit = unit
-        assert (
-            self._unit is not None
-        ), f"No Unit definition for MimicObservationMapper '{schema+'.'+table}' given."
+        assert self._unit is not None, f"No Unit definition for MimicObservationMapper '{schema+'.'+table}' given."
 
         self._id_field = "subject_id"
         # Create and map fields to normalized names
@@ -77,9 +73,7 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         observation_df[FHIRObservation.subject] = df["patient_id"].map(
             lambda id: Reference(reference=str(id), type=f"{self._data_source}")
         )
-        observation_df[FHIRObservation.effective_date_time] = pd.to_datetime(
-            df["timestamp"], utc=True
-        )
+        observation_df[FHIRObservation.effective_date_time] = pd.to_datetime(df["timestamp"], utc=True)
         observation_df[FHIRObservation.value_quantity] = df.apply(
             lambda _df: Quantity(
                 value=float(self._converter(_df["value"])),
@@ -88,9 +82,7 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
             axis=1,
         )
         observation_df[FHIRObservation.code] = [
-            CodeableConcept(
-                coding=Coding(code=self._concept_id, system=self._concept_type)
-            )
+            CodeableConcept(coding=Coding(code=self._concept_id, system=self._concept_type))
         ] * len(df)
 
         return observation_df.pipe(DataFrame[FHIRObservation])

@@ -1,10 +1,13 @@
-import pandas as pd
-from .job import Job
-from icu_pipeline.source import DataSource, SourceConfig
-from icu_pipeline.source import AbstractSourceMapper, getDataSourceMapper
-from icu_pipeline.unit import BaseConverter, ConverterConfig
+from typing import Any
+
+from pandera.typing import DataFrame
+
+from conceptbase.config import ConceptCoding, ConceptConfig
 from icu_pipeline.graph import Node
-from conceptbase.config import ConceptConfig, ConceptCoding
+from icu_pipeline.source import AbstractSourceMapper, DataSource, SourceConfig, getDataSourceMapper
+from icu_pipeline.unit import BaseConverter, ConverterConfig
+
+from .job import Job
 
 
 class Concept(Node):
@@ -74,19 +77,22 @@ class Concept(Node):
             return value == self._concept_config.name
         return super().__eq__(value)
 
-    def fetch_sources(self, job: Job, *args, **kwargs):
-        # Don't do anything
-        pass
+    def fetch_sources(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> dict[str, DataFrame]:
+        raise NotImplementedError
 
-    def get_data(self, job) -> dict[str,pd.DataFrame]:
-        """ Map the concept to data from the sources. """
-        assert job.database in self._data_sources, f"Data Source '{job.database}' doesn't have a mapper for Concept '{self._concept_config.name}'"
+    def get_data(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> DataFrame:
+        """Map the concept to data from the sources."""
+        assert (
+            job.database in self._data_sources
+        ), f"Data Source '{job.database}' doesn't have a mapper for Concept '{self._concept_config.name}'"
         # Query the DB and return the DF
         return self._data_sources[job.database].get_data(job)
 
     def getDefaultConverter(self) -> BaseConverter:
-        return BaseConverter.getConverter(config=ConverterConfig(
-            concept_id=self._concept_id,
-            source_units={m.source: m.unit for m in self._concept_config.mapper},
-            sink_unit=self._concept_config.unit
-        ))
+        return BaseConverter.getConverter(
+            config=ConverterConfig(
+                concept_id=self._concept_id,
+                source_units={m.source: m.unit for m in self._concept_config.mapper},
+                sink_unit=self._concept_config.unit,
+            )
+        )

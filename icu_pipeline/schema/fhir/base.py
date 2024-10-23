@@ -103,4 +103,5 @@ class AbstractFHIRSinkSchema(AbstractSinkSchema):
     This class is used to define the structure of a FHIR sink schema. It is an abstract class
     that should be inherited by the specific FHIR sink schemas.
     """
+
     pass

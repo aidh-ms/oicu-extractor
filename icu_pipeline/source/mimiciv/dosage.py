@@ -3,18 +3,10 @@ from typing import Any
 import pandas as pd
 from pandera.typing import DataFrame
 
+from icu_pipeline.schema.fhir import CodeableConcept, CodeableReference, Coding, Dosage, Period, Quantity, Reference
+from icu_pipeline.schema.fhir.medication import FHIRMedicationStatement
 from icu_pipeline.source import DataSource
 from icu_pipeline.source.database import AbstractDatabaseSourceMapper
-from icu_pipeline.schema.fhir import (
-    CodeableReference,
-    CodeableConcept,
-    Coding,
-    Reference,
-    Quantity,
-    Dosage,
-    Period
-)
-from icu_pipeline.schema.fhir.medication import FHIRMedicationStatement
 
 
 class MimicDosageMapper(AbstractDatabaseSourceMapper[FHIRMedicationStatement]):
@@ -29,15 +21,10 @@ class MimicDosageMapper(AbstractDatabaseSourceMapper[FHIRMedicationStatement]):
         schema: str,
         table: str,
         constraints: dict[str, Any],
-        unit: str,
         **kwargs: dict[str, Any],
     ) -> None:
-        super().__init__(
-            fhir_schema=FHIRMedicationStatement,
-            datasource=DataSource.MIMICIV,
-            **kwargs)
+        super().__init__(fhir_schema=FHIRMedicationStatement, datasource=DataSource.MIMICIV, **kwargs)  # type: ignore[arg-type]
         self._source = "mimiciv"
-        self._unit = unit
         assert self._unit is not None, f"No Unit definition for MimicMedicationMapper '{schema+'.'+table}' given."
 
         self._id_field = "subject_id"
@@ -49,16 +36,9 @@ class MimicDosageMapper(AbstractDatabaseSourceMapper[FHIRMedicationStatement]):
             fields["timestamp"] = "starttime"
         if "value" not in fields:
             fields["value"] = "amount"
-        self._query_args = {
-            "schema": schema,
-            "table": table,
-            "constraints": constraints,
-            "fields": fields
-        }
+        self._query_args = {"schema": schema, "table": table, "constraints": constraints, "fields": fields}
 
-    def _to_fihr(
-        self, df: DataFrame
-    ) -> DataFrame[FHIRMedicationStatement]:
+    def _to_fihr(self, df: DataFrame) -> DataFrame[FHIRMedicationStatement]:
         medication_df = pd.DataFrame()
 
         medication_df[FHIRMedicationStatement.subject] = df["patient_id"].map(
@@ -66,24 +46,19 @@ class MimicDosageMapper(AbstractDatabaseSourceMapper[FHIRMedicationStatement]):
         )
 
         medication_df[FHIRMedicationStatement.medication] = [
-            CodeableReference(concept=CodeableConcept(coding=Coding(
-                code=self._concept_id,
-                system=self._concept_type
-            )))
+            CodeableReference(concept=CodeableConcept(coding=Coding(code=self._concept_id, system=self._concept_type)))
         ] * len(df)
 
         medication_df[FHIRMedicationStatement.dosage] = df.apply(
             lambda _df: Dosage(
                 dose_quantity=Quantity(value=_df["value"], unit=self._unit),
-                rate_quantity=Quantity(value=1., unit="unit")),
-            axis=1
+                rate_quantity=Quantity(value=1.0, unit="unit"),
+            ),
+            axis=1,
         )
 
         medication_df[FHIRMedicationStatement.effective_period] = df.apply(
-            lambda _df: Period(
-                start=_df["timestamp"],
-                end=_df["timestamp"]),
-            axis=1
+            lambda _df: Period(start=_df["timestamp"], end=_df["timestamp"]), axis=1
         )
 
         return medication_df.pipe(DataFrame[FHIRMedicationStatement])

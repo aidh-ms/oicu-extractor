@@ -1,13 +1,15 @@
+import os
+
 import pytest
 import yaml
-import os
 from dotenv import load_dotenv
+
 from icu_pipeline.concept import (
     Concept,
+    ConceptCoding,
     ConceptConfig,
     DataSource,
     SourceConfig,
-    ConceptCoding,
 )
 
 
@@ -20,7 +22,9 @@ class TestConcept:
         MIMIC_DB = os.getenv("MIMIC_DB")
         POSTGRES_HOST = os.getenv("POSTGRES_HOST")
         POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-        connection_string = f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}"
+        connection_string = (
+            f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MIMIC_DB}"
+        )
 
         with open("conceptbase/example.yml", "r") as concept_file:
             config = yaml.safe_load(concept_file)

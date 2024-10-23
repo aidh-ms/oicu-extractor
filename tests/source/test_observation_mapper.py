@@ -25,7 +25,7 @@ class TestObservationMapper:
                 concept_id="364075005",
                 concept_type="snomed",
                 source_config="test",
-                unit="bpm"
+                unit="bpm",
             )
 
     def test_get_data(self, mapper: MimicObservationMapper):
@@ -94,9 +94,7 @@ class TestObservationMapper:
 
         assert observation_df[FHIRObservation.subject][0]["reference"] == "1234"
         assert observation_df[FHIRObservation.subject][0]["type"] == "mimiciv"
-        assert observation_df[FHIRObservation.effective_date_time][0] == Timestamp(
-            "2173-08-03 16:00:00", tz="UTC"
-        )
+        assert observation_df[FHIRObservation.effective_date_time][0] == Timestamp("2173-08-03 16:00:00", tz="UTC")
         assert observation_df[FHIRObservation.value_quantity][0]["value"] == 107.0
         assert observation_df[FHIRObservation.value_quantity][0]["unit"] == "bpm"
         assert observation_df[FHIRObservation.code][0]["coding"]["code"] == "364075005"

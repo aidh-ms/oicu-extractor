@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+
+from pandera.typing import DataFrame
+
 from icu_pipeline.source import DataSource
 
 
@@ -6,4 +9,4 @@ from icu_pipeline.source import DataSource
 class Job:
     jobID: str
     database: DataSource
-    subjects: list[str]
+    subjects: DataFrame

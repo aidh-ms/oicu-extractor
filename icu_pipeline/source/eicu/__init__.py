@@ -1,5 +1,6 @@
-from icu_pipeline.source.database import AbstractDatabaseSourceSampler
 from icu_pipeline.source import SourceConfig
+from icu_pipeline.source.database import AbstractDatabaseSourceSampler
+from icu_pipeline.source.eicu.observation import EICUObservationMapper, EICUPationObservationMapper
 
 
 class EICUSampler(AbstractDatabaseSourceSampler):
@@ -16,5 +17,8 @@ class EICUSampler(AbstractDatabaseSourceSampler):
         )
 
 
-from .observation import EICUObservationMapper
-from .observation import EICUPationObservationMapper
+__all__ = [
+    "EICUSampler",
+    "EICUObservationMapper",
+    "EICUPationObservationMapper",
+]

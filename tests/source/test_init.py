@@ -1,6 +1,7 @@
 import pytest
 from pandas import DataFrame
 from sqlalchemy.engine import create_engine
+
 from icu_pipeline.source import SourceConfig
 from icu_pipeline.source.database import AbstractDatabaseSourceMapper
 
@@ -30,6 +31,7 @@ class TestDatabaseSourceMapper:
             concept_type=concept_type,
             fhir_schema=fhir_schema,
             source_config=DummySourceMapperConfiguration(),
+            unit="",
         )
         table = "chartevents"
         item_ids = "1, 2"

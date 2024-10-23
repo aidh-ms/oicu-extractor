@@ -3,10 +3,10 @@ from typing import Any
 import pandas as pd
 from pandera.typing import DataFrame
 
+from icu_pipeline.schema.fhir import CodeableConcept, CodeableReference, Coding, Dosage, Period, Quantity, Reference
+from icu_pipeline.schema.fhir.medication import FHIRMedicationStatement
 from icu_pipeline.source import DataSource
 from icu_pipeline.source.database import AbstractDatabaseSourceMapper
-from icu_pipeline.schema.fhir import CodeableReference, CodeableConcept, Coding, Reference, Quantity, Dosage, Period
-from icu_pipeline.schema.fhir.medication import FHIRMedicationStatement
 
 
 class MimicDosageMapper(AbstractDatabaseSourceMapper[FHIRMedicationStatement]):
@@ -21,12 +21,10 @@ class MimicDosageMapper(AbstractDatabaseSourceMapper[FHIRMedicationStatement]):
         schema: str,
         table: str,
         constraints: dict[str, Any],
-        unit: str,
         **kwargs: dict[str, Any],
     ) -> None:
-        super().__init__(fhir_schema=FHIRMedicationStatement, datasource=DataSource.MIMICIV, **kwargs)
+        super().__init__(fhir_schema=FHIRMedicationStatement, datasource=DataSource.MIMICIV, **kwargs)  # type: ignore[arg-type]
         self._source = "mimiciv"
-        self._unit = unit
         assert self._unit is not None, f"No Unit definition for MimicMedicationMapper '{schema+'.'+table}' given."
 
         self._id_field = "subject_id"

@@ -1,17 +1,17 @@
-from typing import Any
+from typing import Any, Callable
 
 import pandas as pd
 from pandera.typing import DataFrame
 
-from icu_pipeline.source import DataSource
-from icu_pipeline.source.database import AbstractDatabaseSourceMapper
 from icu_pipeline.schema.fhir import (
     CodeableConcept,
     Coding,
-    Reference,
     Quantity,
+    Reference,
 )
 from icu_pipeline.schema.fhir.observation import FHIRObservation
+from icu_pipeline.source import DataSource
+from icu_pipeline.source.database import AbstractDatabaseSourceMapper
 from icu_pipeline.unit.gender import Gender
 
 
@@ -25,13 +25,11 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
         schema: str,
         table: str,
         constraints: dict[str, Any],
-        unit: str,
         joins: dict[str, dict[str, str]] | None = None,
         **kwargs: dict[str, Any],
     ) -> None:
-        super().__init__(fhir_schema=FHIRObservation, datasource=DataSource.MIMICIV, **kwargs)
+        super().__init__(fhir_schema=FHIRObservation, datasource=DataSource.MIMICIV, **kwargs)  # type: ignore[arg-type]
         self._source = "mimiciv"
-        self._unit = unit
         assert self._unit is not None, f"No Unit definition for MimicObservationMapper '{schema+'.'+table}' given."
 
         self._id_field = "subject_id"
@@ -51,7 +49,7 @@ class MimicObservationMapper(AbstractDatabaseSourceMapper[FHIRObservation]):
             "joins": joins,
         }
 
-        self._converter = self._convert_none
+        self._converter: Callable[[str], str] = self._convert_none
         if fields.get("value") == "gender":
             self._converter = self._convert_gender
 

@@ -1,10 +1,10 @@
 from typing import Any, Generic, TypeVar
 
 import pandas as pd
-from pandas import DataFrame
+from pandera.typing import DataFrame
 from psycopg import sql
 from psycopg.sql import Composable
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Connection, create_engine
 
 from icu_pipeline.job import Job
 from icu_pipeline.logger import ICULogger
@@ -49,16 +49,17 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         self,
         concept_id: str,
         concept_type: str,
-        fhir_schema: AbstractFHIRSinkSchema | str,
+        fhir_schema: type[AbstractFHIRSinkSchema] | str,
         datasource: DataSource,
         source_config: SourceConfig,
-        **kwargs,
+        unit: str,
+        **kwargs: dict[Any, Any],
     ) -> None:
-        super().__init__(concept_id, concept_type, fhir_schema, datasource, source_config)
-        self._id_field = None
-        self._query_args = {}
+        super().__init__(concept_id, concept_type, fhir_schema, datasource, source_config, unit)
+        self._id_field: str | None = None
+        self._query_args: dict[Any, Any] = {}
 
-    def create_connection(self) -> Engine:
+    def create_connection(self) -> Connection:
         engine = create_engine(self._source_config.connection)
         return engine.connect().execution_options(stream_results=True)
 
@@ -68,7 +69,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         table: str,
         fields: dict[str, str],
         constraints: dict[str, Any],
-        ids: pd.DataFrame,
+        ids: DataFrame,
         joins: dict[str, dict[str, str]] | None = None,
     ) -> Composable:
         """
@@ -194,12 +195,12 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         ):
             query = self.build_query(ids=job.subjects, **self._query_args)
 
-            logger.debug(query.as_string(con.connection.cursor()))
+            logger.debug(query.as_string(con.connection.cursor()))  # type: ignore[arg-type]
 
             df = pd.read_sql_query(
                 # type: ignore[arg-type]
-                query.as_string(con.connection.cursor()),
+                query.as_string(con.connection.cursor()),  # type: ignore[arg-type]
                 con,
                 chunksize=None,
             )
-            return self._to_fihr(df)
+            return self._to_fihr(df.pipe(DataFrame)).pipe(DataFrame)

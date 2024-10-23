@@ -1,6 +1,7 @@
 from typing import Generator
 
 import pandas as pd
+from pandera.typing import DataFrame
 from psycopg import sql
 from psycopg.sql import Composable
 from sqlalchemy import Connection, create_engine
@@ -33,7 +34,7 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
     """
 
     IDENTIFIER: list[str]  # the identifier columns for the table
-    SQL_QUERY: str | Composable  # the SQL query to be executed
+    SQL_QUERY: Composable  # the SQL query to be executed
 
     def __init__(self, source_config: SourceConfig) -> None:
         self._source_config = source_config
@@ -69,7 +70,7 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
         """
 
         query = sql.SQL(raw_query).format(
-            fields=sql.SQL(", ").join([sql.SQL(i) for i in self.IDENTIFIER]),
+            fields=sql.SQL(", ").join([sql.Identifier(i) for i in self.IDENTIFIER]),
             schema=sql.Identifier(schema),
             table=sql.Identifier(table),
             limit=(sql.Literal(limit) if (limit := self._source_config.limit) > 0 else sql.SQL("ALL")),
@@ -77,7 +78,7 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
 
         return query
 
-    def get_samples(self) -> Generator[pd.DataFrame, None, None]:
+    def get_samples(self) -> Generator[DataFrame, None, None]:
         """
         Retrieves data from the database.
 
@@ -103,12 +104,12 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
             if isinstance(self.SQL_QUERY, str):
                 query = sql.SQL(self.SQL_QUERY)
 
-            logger.debug(query.as_string(con.connection.cursor()))
+            logger.debug(query.as_string(con.connection.cursor()))  # type: ignore[arg-type]
 
             for df in pd.read_sql_query(
                 # type: ignore[arg-type]
-                query.as_string(con.connection.cursor()),
+                query.as_string(con.connection.cursor()),  # type: ignore[arg-type]
                 con,
                 chunksize=self._source_config.chunksize,
             ):
-                yield df  # Potentially multiple columns as ID
+                yield df.pipe(DataFrame)  # Potentially multiple columns as ID

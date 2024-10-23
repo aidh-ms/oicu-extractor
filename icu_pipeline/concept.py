@@ -78,8 +78,7 @@ class Concept(Node):
         return super().__eq__(value)
 
     def fetch_sources(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> dict[str, DataFrame]:
-        # Don't do anything
-        pass
+        raise NotImplementedError
 
     def get_data(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> DataFrame:
         """Map the concept to data from the sources."""

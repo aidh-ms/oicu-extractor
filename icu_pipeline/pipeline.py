@@ -66,7 +66,7 @@ class Pipeline:
         return out
 
     def transform(
-        self, concepts: list[str | Concept], base_path: str | None = None
+        self, concepts: list[str | Path | Concept], base_path: str | None = None
     ) -> Generator[DataFrame, None, None]:
         """Transform a list of Concepts according to given sources, steps, and sinks.
         Arguments:
@@ -76,13 +76,13 @@ class Pipeline:
 
         self._graph = Graph()
 
-        concepts: list[Concept] = self._load_concepts(concepts, base_path)
+        _concepts: list[Concept] = self._load_concepts(concepts, base_path)
         concept_id_to_node: dict[str, Concept] = {}
 
         #########################
         # Create left-to-right
         #########################
-        for c in concepts:
+        for c in _concepts:
             assert isinstance(c, Concept)
             for db in self._source_configs.keys():
                 avail_mappers = [k.source for k in c._concept_config.mapper]

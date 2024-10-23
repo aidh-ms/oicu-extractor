@@ -13,4 +13,4 @@ class PandasSink(Node):
     def get_data(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> DataFrame:
         data = self.fetch_sources(job, *args, **kwargs)
         # TODO - Merge the Data?
-        return data
+        return data  # type: ignore[return-value]  # TODO

@@ -43,4 +43,4 @@ class MultiprocessingPipe(BasePipe):
 
     def write(self, job: Job, data: DataFrame, *args: list[Any], **kwargs: dict[Any, Any]) -> None:
         # Nothing special
-        return data
+        return data  # type: ignore[return-value]  # TODO

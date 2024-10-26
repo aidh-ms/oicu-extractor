@@ -1,0 +1,17 @@
+description: Airway Plateau Pressure of a patient
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: '0'
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '224696'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: mmHg
+name: AirwayPlateauPressure
+unit: mmHg
+upper_limit: '100'

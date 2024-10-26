@@ -1,0 +1,34 @@
+name: SystolicBloodPressure
+description: Systolic blood pressure measured by any means, invasive or non-invasive.
+unit: mmHg
+upper_limit: 350
+lower_limit: 0
+identifiers:
+  snomed: "271649006"
+  loinc: "8480-6"
+schema: FHIRObservation
+mapper:
+- klass: MimicObservationMapper
+  source: mimiciv
+  unit: mmHg
+  params:
+    schema: mimiciv_icu
+    table: chartevents
+    constraints:
+      itemid: ["220050", "220179"]
+- klass: EICUObservationMapper
+  params:
+    fields:
+      value: systemicsystolic
+    schema: eicu_crd
+    table: vitalperiodic
+  source: eicu
+  unit: mmHg
+- klass: EICUObservationMapper
+  params:
+    fields:
+      value: noninvasivesystolic
+    schema: eicu_crd
+    table: vitalaperiodic
+  source: eicu
+  unit: mmHg

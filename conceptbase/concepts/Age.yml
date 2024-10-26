@@ -1,0 +1,27 @@
+description: Patient's age
+identifiers:
+  loinc: '30525-0'
+  snomed: '397669002'
+lower_limit: '0'
+mapper:
+- klass: MimicObservationMapper
+  params:
+    fields:
+      value: age
+      timestamp: admittime
+    constraints: {}
+    schema: mimiciv_derived
+    table: age
+  source: mimiciv
+  unit: year
+- klass: EICUPationObservationMapper
+  params:
+    fields:
+      value: age
+    schema: eicu_crd
+    table: patient
+  source: eicu
+  unit: year
+name: Age
+unit: year
+upper_limit: '130'

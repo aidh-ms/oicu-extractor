@@ -1,0 +1,17 @@
+description: Actual tidal volume of a patient
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: '0'
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '224685'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: ml
+name: TidalVolume
+unit: ml
+upper_limit: '10000'

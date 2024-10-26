@@ -1,0 +1,25 @@
+description: Height of a patient's body
+identifiers:
+  loinc: 8302-2
+  snomed: '1153637007'
+lower_limit: '0'
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '226730'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: cm
+- klass: EICUPationObservationMapper
+  params:
+    fields:
+      value: admissionheight
+    schema: eicu_crd
+    table: patient
+  source: eicu
+  unit: cm
+name: BodyHeight
+unit: cm
+upper_limit: '300'

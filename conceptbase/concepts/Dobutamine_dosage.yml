@@ -1,0 +1,17 @@
+description: ''
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: ''
+mapper:
+- klass: MimicDosageMapper
+  params:
+    constraints:
+      itemid: '221653'
+    schema: mimiciv_icu
+    table: inputevents
+  source: mimiciv
+  unit: mg/time
+name: Dobutamine_dosage
+unit: ug/kg/min
+upper_limit: ''

@@ -1,0 +1,17 @@
+description: Positive end-expiratory pressure
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: '0'
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '224700'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: cmH2O
+name: PEEP
+unit: cmH2O
+upper_limit: '40'

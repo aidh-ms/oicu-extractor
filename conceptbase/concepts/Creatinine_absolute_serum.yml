@@ -1,0 +1,17 @@
+description: ''
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: '0'
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '220615'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: 'mg/dl'
+name: Creatinine_absolute_serum
+unit: mg/dl
+upper_limit: '1000000'

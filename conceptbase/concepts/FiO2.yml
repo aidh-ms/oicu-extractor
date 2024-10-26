@@ -1,0 +1,17 @@
+description: Inspired oxygen concentration of a patient
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: '0'
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '223835'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: '%'
+name: FiO2
+unit: '%'
+upper_limit: '100'

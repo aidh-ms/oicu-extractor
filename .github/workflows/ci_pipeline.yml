@@ -27,9 +27,9 @@ jobs:
         pip install poetry
         poetry install --with dev
     - name: Lint with ruff
-      run: poetry run ruff check ./src
+      run: poetry run ruff check ./icu_pipeline
     - name: Lint with mypy
-      run: poetry run mypy ./src
+      run: poetry run mypy ./icu_pipeline
     - name: Test with pytest and coverage
       run: poetry run pytest -v -rA --junitxml=junit/test-results.xml --cov-branch --cov-report xml --cov --random-order tests
     - name: Coveralls

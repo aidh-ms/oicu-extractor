@@ -20,7 +20,7 @@ Changelog = "https://github.com/aidh-ms/oicu-extractor"
 Bugtracker = "https://github.com/aidh-ms/oicu-extractor/issues"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "~3.12"
 numpy = "^1.26.4"
 psycopg = {extras = ["binary"], version = "^3.1.19"}
 SQLAlchemy = "^2.0.30"
@@ -43,6 +43,7 @@ pytest-recording = "^0.13.1"
 pytest-mock = "^3.14.0"
 pytest-random-order = "^1.1.1"
 jupyterlab = "^4.2.5"
+coveralls = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core"]

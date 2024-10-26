@@ -1,8 +1,12 @@
+name: BodyTemperature
+unit: °C
 description: Temperature of a patient's body, irrespective of site
 identifiers:
   loinc: ''
   snomed: ''
 lower_limit: '20'
+upper_limit: '45'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -20,6 +24,3 @@ mapper:
     table: vitalperiodic
   source: eicu
   unit: °C
-name: BodyTemperature
-unit: °C
-upper_limit: '45'

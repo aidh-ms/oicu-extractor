@@ -1,8 +1,12 @@
+name: DiastolicBloodPressue_Arterial_Invasive
+unit: mmHg
 description: Diastolic arterial pressure of a patient
 identifiers:
   loinc: 76213-8
   snomed: '251073000'
 lower_limit: '0'
+upper_limit: '200'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -20,6 +24,3 @@ mapper:
     table: vitalperiodic
   source: eicu
   unit: mmHg
-name: DiastolicBloodPressue_Arterial_Invasive
-unit: mmHg
-upper_limit: '200'

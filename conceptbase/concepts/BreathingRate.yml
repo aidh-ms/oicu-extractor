@@ -1,8 +1,12 @@
+name: BreathingRate
+unit: 1/min
 description: Actual breathing rate of patient
 identifiers:
   loinc: ''
   snomed: ''
 lower_limit: '0'
+upper_limit: '100'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -20,6 +24,3 @@ mapper:
     table: vitalperiodic
   source: eicu
   unit: 1/min
-name: BreathingRate
-unit: 1/min
-upper_limit: '100'

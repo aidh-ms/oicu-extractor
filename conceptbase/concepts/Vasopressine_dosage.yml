@@ -1,8 +1,12 @@
+name: Vasopressine_dosage
+unit: IE/kg/min
 description: ''
 identifiers:
   loinc: ''
   snomed: ''
 lower_limit: ''
+upper_limit: ''
+
 mapper:
 - klass: MimicDosageMapper
   params:
@@ -12,6 +16,3 @@ mapper:
     table: inputevents
   source: mimiciv
   unit: IE/time
-name: Vasopressine_dosage
-unit: IE/kg/min
-upper_limit: ''

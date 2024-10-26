@@ -1,12 +1,12 @@
 name: SystolicBloodPressure
-description: Systolic blood pressure measured by any means, invasive or non-invasive.
 unit: mmHg
-upper_limit: 350
-lower_limit: 0
+description: Systolic blood pressure measured by any means, invasive or non-invasive.
 identifiers:
   snomed: "271649006"
   loinc: "8480-6"
-schema: FHIRObservation
+upper_limit: 350
+lower_limit: 0
+
 mapper:
 - klass: MimicObservationMapper
   source: mimiciv

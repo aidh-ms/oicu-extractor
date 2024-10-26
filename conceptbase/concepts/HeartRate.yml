@@ -1,8 +1,12 @@
+name: HeartRate
+unit: bpm
 description: heart rate of a patient, source agnostic
 identifiers:
   loinc: 8867-4
   snomed: '364075005'
 lower_limit: '0'
+upper_limit: '300'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -20,6 +24,3 @@ mapper:
     table: vitalperiodic
   source: eicu
   unit: bpm
-name: HeartRate
-unit: bpm
-upper_limit: '300'

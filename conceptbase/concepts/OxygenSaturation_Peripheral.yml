@@ -1,8 +1,12 @@
+name: OxygenSaturation_Peripheral
+unit: '%'
 description: Oxygen Saturation, irrespective of sample site
 identifiers:
   loinc: ''
   snomed: ''
 lower_limit: '0'
+upper_limit: '100'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -20,6 +24,3 @@ mapper:
     table: vitalperiodic
   source: eicu
   unit: '%'
-name: OxygenSaturation_Peripheral
-unit: '%'
-upper_limit: '100'

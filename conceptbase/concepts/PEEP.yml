@@ -1,8 +1,12 @@
+name: PEEP
+unit: cmH2O
 description: Positive end-expiratory pressure
 identifiers:
   loinc: ''
   snomed: ''
 lower_limit: '0'
+upper_limit: '40'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -12,6 +16,3 @@ mapper:
     table: chartevents
   source: mimiciv
   unit: cmH2O
-name: PEEP
-unit: cmH2O
-upper_limit: '40'

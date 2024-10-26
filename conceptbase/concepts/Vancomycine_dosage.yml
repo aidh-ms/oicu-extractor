@@ -1,8 +1,12 @@
+name: Vancomycine_dosage
+unit: mg
 description: ''
 identifiers:
   loinc: ''
   snomed: ''
 lower_limit: ''
+upper_limit: ''
+
 mapper:
 - klass: MimicDosageMapper
   params:
@@ -12,6 +16,3 @@ mapper:
     table: inputevents
   source: mimiciv
   unit: mg
-name: Vancomycine_dosage
-unit: mg
-upper_limit: ''

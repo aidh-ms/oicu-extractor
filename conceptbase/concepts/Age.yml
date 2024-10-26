@@ -1,8 +1,12 @@
+name: Age
+unit: year
 description: Patient's age
 identifiers:
   loinc: '30525-0'
   snomed: '397669002'
 lower_limit: '0'
+upper_limit: '130'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -22,6 +26,3 @@ mapper:
     table: patient
   source: eicu
   unit: year
-name: Age
-unit: year
-upper_limit: '130'

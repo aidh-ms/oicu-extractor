@@ -1,8 +1,12 @@
+name: BodyHeight
+unit: cm
 description: Height of a patient's body
 identifiers:
   loinc: 8302-2
   snomed: '1153637007'
 lower_limit: '0'
+upper_limit: '300'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -20,6 +24,3 @@ mapper:
     table: patient
   source: eicu
   unit: cm
-name: BodyHeight
-unit: cm
-upper_limit: '300'

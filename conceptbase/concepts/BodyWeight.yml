@@ -1,8 +1,12 @@
+name: BodyWeight
+unit: kg
 description: Weight of a patien's body
 identifiers:
   loinc: 29463-7
   snomed: '27113001'
 lower_limit: '0'
+upper_limit: '500'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -20,6 +24,3 @@ mapper:
     table: patient
   source: eicu
   unit: cm
-name: BodyWeight
-unit: kg
-upper_limit: '500'

@@ -1,8 +1,12 @@
+name: UrineVolume
+unit: ml
 description: Urine Volume measured at a certain point in time
 identifiers:
   loinc: ''
   snomed: ''
 lower_limit: '0'
+upper_limit: '10000'
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -16,6 +20,3 @@ mapper:
         mimiciv_icu.icustays.stay_id: mimiciv_derived.urine_output.stay_id
   source: mimiciv
   unit: ml
-name: UrineVolume
-unit: ml
-upper_limit: '10000'

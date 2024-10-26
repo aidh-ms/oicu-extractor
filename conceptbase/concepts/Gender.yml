@@ -1,8 +1,12 @@
+name: Gender
+unit: ''
 description: Patient's gender
 identifiers:
   loinc: ''
   snomed: ''
 lower_limit: ''
+upper_limit: ''
+
 mapper:
 - klass: MimicObservationMapper
   params:
@@ -22,6 +26,3 @@ mapper:
     table: patient
   source: eicu
   unit: ''
-name: Gender
-unit: ''
-upper_limit: ''

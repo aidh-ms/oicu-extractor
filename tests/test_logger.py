@@ -50,4 +50,4 @@ class LoggerTestCase(unittest.TestCase):
         with open("logs/icu_pipeline.log", "r") as log_file:
             log_content = log_file.read()
             self.assertIn(message, log_content)
-            self.assertIn("info", log_content)
+            self.assertIn("info", log_content.lower())

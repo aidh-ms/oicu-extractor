@@ -30,10 +30,10 @@ class BaseNode:
     def __str__(self) -> str:
         return f"{type(self).__name__}({self._node_id})"
 
-    def fetch_sources(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> dict[str, DataFrame]:
+    def fetch_sources(self, job: Job, *args: Any, **kwargs: Any) -> dict[str, DataFrame]:
         raise NotImplementedError
 
-    def get_data(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> DataFrame:
+    def get_data(self, job: Job, *args: Any, **kwargs: Any) -> DataFrame:
         raise NotImplementedError
 
 
@@ -42,10 +42,10 @@ class BasePipe:
         self._source = source
         self._sink = sink
 
-    def write(self, job: Job, data: DataFrame, *args: list[Any], **kwargs: dict[Any, Any]) -> None:
+    def write(self, job: Job, data: DataFrame, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError
 
-    def read(self, job: Job, *args: list[Any], **kwargs: dict[Any, Any]) -> DataFrame:
+    def read(self, job: Job, *args: Any, **kwargs: Any) -> DataFrame:
         raise NotImplementedError
 
 

@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from enum import StrEnum, auto
 from importlib import import_module
 from typing import TYPE_CHECKING, Generator, Generic, TypeVar
 
 from pandera.typing import DataFrame
 
-from conceptbase.config import MapperConfig
+from conceptbase.config import DataSource, MapperConfig, SourceConfig
 from icu_pipeline.logger import ICULogger
 from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
 
@@ -17,32 +15,9 @@ if TYPE_CHECKING:
 logger = ICULogger.get_logger()
 
 
-class DataSource(StrEnum):
-    """
-    Enum for the different data sources that can be queried.
-    """
-
-    MIMICIV = auto()
-    AMDS = auto()
-    EICU = auto()
-
-
-@dataclass
-class SourceConfig:
-    """
-    Configuration for the source mapper.s
-    """
-
-    connection: str
-    chunksize: int = 10000
-    # optional limit for the number of rows to be fetched
-    limit: int = -1
-
-
 ######
 # Abstract SourceMapper and SourceSampler
 ######
-
 F = TypeVar("F", bound=AbstractFHIRSinkSchema)
 
 

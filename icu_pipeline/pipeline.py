@@ -5,8 +5,7 @@ from pandera.typing import DataFrame
 from yaml import safe_load_all
 
 from icu_pipeline.concept import Concept, ConceptCoding, ConceptConfig
-from icu_pipeline.graph import Node
-from icu_pipeline.graph.base import Graph
+from icu_pipeline.graph.base import BaseNode, Graph
 from icu_pipeline.job import Job
 from icu_pipeline.logger import ICULogger
 from icu_pipeline.sink import AbstractSinkMapper, MappingFormat
@@ -77,7 +76,7 @@ class Pipeline:
         self._graph = Graph()
 
         _concepts: list[Concept] = self._load_concepts(concepts, base_path)
-        concept_id_to_node: dict[str, Concept] = {}
+        concept_id_to_node: dict[str, BaseNode] = {}
 
         #########################
         # Create left-to-right
@@ -94,6 +93,7 @@ class Pipeline:
         # Attach default converters
         for v in concept_id_to_node:
             next_concept = concept_id_to_node[v]
+            assert isinstance(next_concept, Concept)
             next_converter = next_concept.getDefaultConverter()
             self._graph.addPipe(next_concept, next_converter)
             concept_id_to_node[v] = next_converter
@@ -102,13 +102,13 @@ class Pipeline:
         #   Pass
 
         # Attach Sinks
-        for _, v in concept_id_to_node.items():
-            self._graph.addPipe(source=v, sink=self._sink_mapper)
+        for _, n in concept_id_to_node.items():
+            self._graph.addPipe(source=n, sink=self._sink_mapper)
 
         ##############################
         # Backpropagate Dependencies
         ##############################
-        def _attachDependencies(n: Node):
+        def _attachDependencies(n: BaseNode) -> int:
             out = 0
             for d in n.REQUIRED_CONCEPTS:
                 if d not in concept_id_to_node:

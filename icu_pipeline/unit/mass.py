@@ -8,7 +8,7 @@ from icu_pipeline.unit.converter import BaseConverter
 
 class MassConverter(BaseConverter):
     SI_UNIT = "kg"
-    AVAILABLE_UNITS = ["mg", "g", "kg"]
+    AVAILABLE_UNITS = ["mcg", "mg", "g", "kg"]
 
     def _convertToSI(
         self,
@@ -24,6 +24,9 @@ class MassConverter(BaseConverter):
                 return data
 
             # Actual Conversions from case to Kg
+            case "mcg":
+                convert = lambda v: v / 10e9
+
             case "mg":
                 convert = lambda v: v / 10e6
 
@@ -50,6 +53,9 @@ class MassConverter(BaseConverter):
                 return data
 
             # Actual Conversions
+            case "mcg":
+                convert = lambda v: v * 10e9
+
             case "mg":
                 convert = lambda v: v * 10e6
 

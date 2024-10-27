@@ -1,0 +1,28 @@
+name: Gender
+unit: ''
+description: Patient's gender
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: ''
+upper_limit: ''
+
+mapper:
+- klass: MimicObservationMapper
+  params:
+    fields:
+      value: gender
+      timestamp: anchor_year
+    constraints: {}
+    schema: mimiciv_hosp
+    table: patients
+  source: mimiciv
+  unit: ''
+- klass: EICUPationObservationMapper
+  params:
+    fields:
+      value: gender
+    schema: eicu_crd
+    table: patient
+  source: eicu
+  unit: ''

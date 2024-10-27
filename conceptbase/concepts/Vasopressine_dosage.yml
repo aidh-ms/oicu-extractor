@@ -1,0 +1,18 @@
+name: Vasopressine_dosage
+unit: IE/kg/min
+description: ''
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: ''
+upper_limit: ''
+
+mapper:
+- klass: MimicDosageMapper
+  params:
+    constraints:
+      itemid: '222315'
+    schema: mimiciv_icu
+    table: inputevents
+  source: mimiciv
+  unit: IE/time

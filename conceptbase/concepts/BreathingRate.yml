@@ -1,0 +1,26 @@
+name: BreathingRate
+unit: 1/min
+description: Actual breathing rate of patient
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: '0'
+upper_limit: '100'
+
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '224690'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: 1/min
+- klass: EICUObservationMapper
+  params:
+    fields:
+      value: respiration
+    schema: eicu_crd
+    table: vitalperiodic
+  source: eicu
+  unit: 1/min

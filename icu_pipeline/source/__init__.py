@@ -1,44 +1,23 @@
-from dataclasses import dataclass
-from enum import StrEnum, auto
-from typing import Generic, TypeVar, Generator
-from importlib import import_module
 from abc import ABC, abstractmethod
-from pandera.typing import DataFrame, Series
+from importlib import import_module
+from typing import TYPE_CHECKING, Generator, Generic, TypeVar
 
+from pandera.typing import DataFrame
+
+from conceptbase.config import DataSource, MapperConfig, SourceConfig
 from icu_pipeline.logger import ICULogger
 from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
-from conceptbase.config import MapperConfig
+
+if TYPE_CHECKING:
+    from icu_pipeline.job import Job
 
 # add logging
 logger = ICULogger.get_logger()
 
 
-class DataSource(StrEnum):
-    """
-    Enum for the different data sources that can be queried.
-    """
-
-    MIMICIV = auto()
-    AMDS = auto()
-    EICU = auto()
-
-
-@dataclass
-class SourceConfig:
-    """
-    Configuration for the source mapper.s
-    """
-
-    connection: str
-    chunksize: int = 10000
-    # optional limit for the number of rows to be fetched
-    limit: int = -1
-
-
 ######
 # Abstract SourceMapper and SourceSampler
 ######
-
 F = TypeVar("F", bound=AbstractFHIRSinkSchema)
 
 
@@ -73,6 +52,7 @@ class AbstractSourceMapper(ABC, Generic[F]):
         fhir_schema: type[AbstractFHIRSinkSchema] | str,
         datasource: DataSource,
         source_config: SourceConfig,
+        unit: str,
     ) -> None:
         super().__init__()
 
@@ -81,14 +61,13 @@ class AbstractSourceMapper(ABC, Generic[F]):
         self._fhir_schema = fhir_schema
         if isinstance(fhir_schema, str):
             module = import_module("icu_pipeline.schema.fhir")
-            self.fhir_schema: type[AbstractFHIRSinkSchema] = getattr(
-                module, fhir_schema
-            )
+            self.fhir_schema: type[AbstractFHIRSinkSchema] = getattr(module, fhir_schema)
         self._data_source = datasource
         self._source_config = source_config
+        self._unit = unit
 
     @abstractmethod
-    def get_data(self, job) -> DataFrame:
+    def get_data(self, job: "Job") -> DataFrame:
         """
         Retrieves the data to be mapped.
 
@@ -102,7 +81,7 @@ class AbstractSourceMapper(ABC, Generic[F]):
         raise NotImplementedError
 
     @abstractmethod
-    def _to_fihr(self, df: DataFrame) -> DataFrame[AbstractFHIRSinkSchema]:
+    def _to_fihr(self, df: DataFrame) -> DataFrame[F]:
         """
         Converts a dataframe to FHIR format.
 
@@ -132,7 +111,7 @@ class AbstractSourceSampler(ABC):
         Create a Generator, which produces Sample IDs
     """
 
-    IDENTIFIER = None
+    IDENTIFIER: list[str] = []
 
     def __init__(self) -> None:
         assert (
@@ -140,7 +119,7 @@ class AbstractSourceSampler(ABC):
         ), f"Class {type(self)} has no Identifiers defined."
 
     @abstractmethod
-    def get_samples(self) -> Generator[Series[str], None, None]:
+    def get_samples(self) -> Generator[DataFrame, None, None]:
         pass
 
 
@@ -153,12 +132,10 @@ def getDataSourceMapper(config: MapperConfig) -> type[AbstractSourceMapper]:
     """Load the SourceMapper from the corresponding module."""
     module = import_module(f"icu_pipeline.source.{config.source}")
     source_mapper = getattr(module, config.klass)
-    return source_mapper
+    return source_mapper  # type: ignore[no-any-return]
 
 
-def getDataSampler(
-    source: DataSource, source_config: SourceConfig
-) -> AbstractSourceSampler:
+def getDataSampler(source: DataSource, source_config: SourceConfig) -> AbstractSourceSampler:
     match source:
         case DataSource.MIMICIV:
             from icu_pipeline.source.mimiciv import MimicSampler

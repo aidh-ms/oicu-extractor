@@ -1,12 +1,16 @@
-from typing import Any, Generator
+from typing import Generator
+
 import pandas as pd
-from icu_pipeline.source import SourceConfig, AbstractSourceSampler
-from sqlalchemy import Engine, create_engine
+from pandera.typing import DataFrame
 from psycopg import sql
 from psycopg.sql import Composable
+from sqlalchemy import Connection, create_engine
 
 from icu_pipeline.logger import ICULogger
+from icu_pipeline.source import AbstractSourceSampler, SourceConfig
+
 logger = ICULogger.get_logger()
+
 
 class AbstractDatabaseSourceSampler(AbstractSourceSampler):
     """
@@ -29,12 +33,13 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
         Retrieves data from the database. This method should be implemented by subclasses.
     """
 
-    SQL_QUERY: str | Composable  # the SQL query to be executed
+    IDENTIFIER: list[str]  # the identifier columns for the table
+    SQL_QUERY: Composable  # the SQL query to be executed
 
     def __init__(self, source_config: SourceConfig) -> None:
         self._source_config = source_config
 
-    def create_connection(self) -> Engine:
+    def create_connection(self) -> Connection:
         engine = create_engine(self._source_config.connection)
         return engine.connect().execution_options(stream_results=True)
 
@@ -65,19 +70,15 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
         """
 
         query = sql.SQL(raw_query).format(
-            fields=sql.SQL(", ").join([sql.SQL(i) for i in self.IDENTIFIER]),
+            fields=sql.SQL(", ").join([sql.Identifier(i) for i in self.IDENTIFIER]),
             schema=sql.Identifier(schema),
             table=sql.Identifier(table),
-            limit=(
-                sql.Literal(limit)
-                if (limit := self._source_config.limit) > 0
-                else sql.SQL("ALL")
-            ),
+            limit=(sql.Literal(limit) if (limit := self._source_config.limit) > 0 else sql.SQL("ALL")),
         )
 
         return query
 
-    def get_samples(self) -> Generator[pd.DataFrame, None, None]:
+    def get_samples(self) -> Generator[DataFrame, None, None]:
         """
         Retrieves data from the database.
 
@@ -103,12 +104,12 @@ class AbstractDatabaseSourceSampler(AbstractSourceSampler):
             if isinstance(self.SQL_QUERY, str):
                 query = sql.SQL(self.SQL_QUERY)
 
-            logger.debug(query.as_string(con.connection.cursor()))
+            logger.debug(query.as_string(con.connection.cursor()))  # type: ignore[arg-type]
 
             for df in pd.read_sql_query(
                 # type: ignore[arg-type]
-                query.as_string(con.connection.cursor()),
+                query.as_string(con.connection.cursor()),  # type: ignore[arg-type]
                 con,
                 chunksize=self._source_config.chunksize,
             ):
-                yield df # Potentially multiple columns as ID
+                yield df.pipe(DataFrame)  # Potentially multiple columns as ID

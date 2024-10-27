@@ -1,10 +1,16 @@
-import pandas as pd
+from typing import TYPE_CHECKING, Any
+
+from pandera.typing import DataFrame
+
 from icu_pipeline.job import Job
+
+if TYPE_CHECKING:
+    from icu_pipeline.concept import Concept
 
 
 class BaseNode:
     ID = 0
-    REQUIRED_CONCEPTS = []
+    REQUIRED_CONCEPTS: list["Concept"] = []
 
     def __init__(self, concept_id: str) -> None:
         self._node_id = BaseNode.ID
@@ -24,10 +30,10 @@ class BaseNode:
     def __str__(self) -> str:
         return f"{type(self).__name__}({self._node_id})"
 
-    def fetch_sources(self, job: Job, *args, **kwargs) -> dict[str,pd.DataFrame]:
+    def fetch_sources(self, job: Job, *args: Any, **kwargs: Any) -> dict[str, DataFrame]:
         raise NotImplementedError
 
-    def get_data(self, job: Job, *args, **kwargs) -> pd.DataFrame:
+    def get_data(self, job: Job, *args: Any, **kwargs: Any) -> DataFrame:
         raise NotImplementedError
 
 
@@ -36,10 +42,10 @@ class BasePipe:
         self._source = source
         self._sink = sink
 
-    def write(self, job: Job, data: pd.DataFrame, *args, **kwargs) -> None:
+    def write(self, job: Job, data: DataFrame, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError
 
-    def read(self, job: Job, *args, **kwargs) -> pd.DataFrame:
+    def read(self, job: Job, *args: Any, **kwargs: Any) -> DataFrame:
         raise NotImplementedError
 
 
@@ -49,7 +55,7 @@ class Graph:
         self._edges: list[BasePipe] = []
 
     @property
-    def sources(self):
+    def sources(self) -> list[BaseNode]:
         out = []
         for n in self._nodes:
             if len(n._sources) == 0 and n not in out:
@@ -57,28 +63,29 @@ class Graph:
         return out
 
     @property
-    def sinks(self):
+    def sinks(self) -> list[BaseNode]:
         out = []
         for n in self._nodes:
             if len(n._sinks) == 0 and n not in out:
                 out.append(n)
         return out
 
-    def getNode(self, node: BaseNode|str) -> BaseNode|None:
+    def getNode(self, node: BaseNode | str) -> BaseNode | None:
         for n in self._nodes:
             if n == node:
                 return n
         return None
 
-    def addPipe(self, source: BaseNode, sink: BaseNode):
+    def addPipe(self, source: BaseNode, sink: BaseNode) -> None:
         from icu_pipeline.graph import Pipe
+
         # Check if the Nodes are already part of the Graph
         if source not in self._nodes:
             self._nodes.append(source)
         if sink not in self._nodes:
             self._nodes.append(sink)
 
-        new_pipe = Pipe(source, sink)
+        new_pipe = Pipe(source, sink)  # type: ignore[arg-type]
         # Append the Pipe to the Graph
         self._edges.append(new_pipe)
         # Append the Pipe to the Nodes
@@ -87,7 +94,7 @@ class Graph:
 
         self.check_circularity()
 
-    def check_circularity(self):
+    def check_circularity(self) -> bool:
         """Only works for directed acyclic graphs (DAGs).
         Return 'True' if the check is passed"""
         # Assume everythings fine
@@ -98,7 +105,7 @@ class Graph:
         if len(self.sources) == 0 and len(self._nodes) > 0:
             result = False
 
-        def _is_circular(node: BaseNode, nodes: list[BaseNode]):
+        def _is_circular(node: BaseNode, nodes: list[BaseNode]) -> bool:
             # Check if I'm part of the visited Nodes
             if node in nodes:
                 return True
@@ -108,7 +115,7 @@ class Graph:
                     return True
             # If it didn't break to this point, it's not circular
             return False
-        
+
         # Sinks are fetched during execution, so begin there
         for next_sink in self.sinks:
             # For all possible sub-paths in this sink, check if a node appears twice
@@ -116,12 +123,13 @@ class Graph:
                 result = False
 
         assert result, "Graph has Circular dependencies!"
+        return result
 
-    def check_hanging_leaves(self):
+    def check_hanging_leaves(self) -> bool:
         """Are there any Nodes that are not connected to the sink?"""
         raise NotImplementedError
 
-    def check_missing_connections(self):
+    def check_missing_connections(self) -> bool:
         """Are there any dependencies not met?"""
         raise NotImplementedError
 
@@ -140,10 +148,7 @@ class Graph:
             out = [f"{n}-->{s}" for s in out]
             return out
 
-        out = [
-            f"Pipe Class: {Pipe.__name__}",
-            f"Node Class: {Node.__name__}"
-        ]
+        out = [f"Pipe Class: {Pipe.__name__}", f"Node Class: {Node.__name__}"]
         for next_source in self.sources:
             out.extend(_get_sink_str(next_source))
         return "\n".join(out)

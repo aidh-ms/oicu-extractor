@@ -1,0 +1,26 @@
+name: OxygenSaturation_Peripheral
+unit: '%'
+description: Oxygen Saturation, irrespective of sample site
+identifiers:
+  loinc: ''
+  snomed: ''
+lower_limit: '0'
+upper_limit: '100'
+
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '220227'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: '%'
+- klass: EICUObservationMapper
+  params:
+    fields:
+      value: sao2
+    schema: eicu_crd
+    table: vitalperiodic
+  source: eicu
+  unit: '%'

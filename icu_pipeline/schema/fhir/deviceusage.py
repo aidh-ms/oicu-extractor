@@ -34,6 +34,7 @@ class FHIRDeviceUsage(AbstractFHIRSinkSchema):
         A pandas Series of CodeableReferences representing the devices.
 
     """
+
     _SINK_NAME = "deviceusage"
 
     patient: Series[Reference]  # type: ignore[type-var]

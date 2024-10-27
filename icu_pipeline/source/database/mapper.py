@@ -1,16 +1,15 @@
-from typing import Any, TypeVar, Generic
+from typing import Any, Generic, TypeVar
 
 import pandas as pd
-from sqlalchemy import Engine, create_engine
+from pandera.typing import DataFrame
 from psycopg import sql
 from psycopg.sql import Composable
+from sqlalchemy import Connection, create_engine
 
-from icu_pipeline.source import DataSource, SourceConfig
-from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
-from icu_pipeline.source import AbstractSourceMapper
 from icu_pipeline.job import Job
-
 from icu_pipeline.logger import ICULogger
+from icu_pipeline.schema.fhir import AbstractFHIRSinkSchema
+from icu_pipeline.source import AbstractSourceMapper, DataSource, SourceConfig
 
 logger = ICULogger.get_logger()
 
@@ -50,18 +49,17 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         self,
         concept_id: str,
         concept_type: str,
-        fhir_schema: AbstractFHIRSinkSchema | str,
+        fhir_schema: type[AbstractFHIRSinkSchema] | str,
         datasource: DataSource,
         source_config: SourceConfig,
-        **kwargs,
+        unit: str,
+        **kwargs: dict[Any, Any],
     ) -> None:
-        super().__init__(
-            concept_id, concept_type, fhir_schema, datasource, source_config
-        )
-        self._id_field = None
-        self._query_args = {}
+        super().__init__(concept_id, concept_type, fhir_schema, datasource, source_config, unit)
+        self._id_field: str | None = None
+        self._query_args: dict[Any, Any] = {}
 
-    def create_connection(self) -> Engine:
+    def create_connection(self) -> Connection:
         engine = create_engine(self._source_config.connection)
         return engine.connect().execution_options(stream_results=True)
 
@@ -71,7 +69,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         table: str,
         fields: dict[str, str],
         constraints: dict[str, Any],
-        ids: pd.DataFrame,
+        ids: DataFrame,
         joins: dict[str, dict[str, str]] | None = None,
     ) -> Composable:
         """
@@ -93,14 +91,10 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
             The tables to be joined and the fields to join on.
         """
 
-        assert (
-            self._id_field is not None
-        ), f"Attribute 'self._id_field' was not set for class {type(self)}"
+        assert self._id_field is not None, f"Attribute 'self._id_field' was not set for class {type(self)}"
 
         def _build_field(exp: str, org: str) -> Composable:
-            return sql.Composed(
-                (sql.Identifier(org), sql.SQL(" AS "), sql.Identifier(exp))
-            )
+            return sql.Composed((sql.Identifier(org), sql.SQL(" AS "), sql.Identifier(exp)))
 
         def _build_constraint(key: str, value: Any) -> Composable:
             if isinstance(value, str) and value.lower() == "not null":
@@ -114,18 +108,14 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
                     )
                 )
 
-            return sql.Composed(
-                (sql.Identifier(key), sql.SQL(" = "), sql.Literal(value))
-            )
+            return sql.Composed((sql.Identifier(key), sql.SQL(" = "), sql.Literal(value)))
 
         def _build_join_identifier(identifier: str) -> Composable:
             return sql.SQL(".").join(sql.Identifier(t) for t in identifier.split("."))
 
         # There are Tables without any constraints (except sampling) -> see mimiciv_derived.age
         params = {
-            "fields": sql.SQL(", ").join(
-                [_build_field(exp, org) for exp, org in fields.items()]
-            ),
+            "fields": sql.SQL(", ").join([_build_field(exp, org) for exp, org in fields.items()]),
             "schema": sql.Identifier(schema),
             "table": sql.Identifier(table),
             "subsetting": sql.SQL(" AND ").join(
@@ -181,7 +171,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
 
         return query
 
-    def get_data(self, job: Job) -> pd.DataFrame:
+    def get_data(self, job: Job) -> DataFrame:
         """
         Retrieves data from the database.
 
@@ -205,12 +195,12 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         ):
             query = self.build_query(ids=job.subjects, **self._query_args)
 
-            logger.debug(query.as_string(con.connection.cursor()))
+            logger.debug(query.as_string(con.connection.cursor()))  # type: ignore[arg-type]
 
             df = pd.read_sql_query(
                 # type: ignore[arg-type]
-                query.as_string(con.connection.cursor()),
+                query.as_string(con.connection.cursor()),  # type: ignore[arg-type]
                 con,
                 chunksize=None,
             )
-            return self._to_fihr(df)
+            return self._to_fihr(df.pipe(DataFrame)).pipe(DataFrame)

@@ -1,0 +1,26 @@
+name: BodyWeight
+unit: kg
+description: Weight of a patien's body
+identifiers:
+  loinc: 29463-7
+  snomed: '27113001'
+lower_limit: '0'
+upper_limit: '500'
+
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '224639'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: kg
+- klass: EICUPationObservationMapper
+  params:
+    fields:
+      value: admissionWeight
+    schema: eicu_crd
+    table: patient
+  source: eicu
+  unit: cm

@@ -1,25 +1,26 @@
-from typing import List, Dict
 from pathlib import Path
-import os.path as osp
+from typing import Generator
+
+from pandera.typing import DataFrame
 from yaml import safe_load_all
 
+from icu_pipeline.concept import Concept, ConceptCoding, ConceptConfig
+from icu_pipeline.graph.base import BaseNode, Graph
 from icu_pipeline.job import Job
-from icu_pipeline.concept import Concept, ConceptConfig, ConceptCoding
-from icu_pipeline.sink import AbstractSinkMapper, MappingFormat
-from icu_pipeline.source import SourceConfig, DataSource, getDataSampler
-from icu_pipeline.graph import Node
-from icu_pipeline.graph.base import Graph
-
 from icu_pipeline.logger import ICULogger
+from icu_pipeline.sink import AbstractSinkMapper, MappingFormat
+from icu_pipeline.source import DataSource, SourceConfig, getDataSampler
+
 logger = ICULogger.get_logger()
+
 
 class Pipeline:
     def __init__(
         self,
-        source_configs: Dict[DataSource, SourceConfig],
+        source_configs: dict[DataSource, SourceConfig],
         sink_mapper: AbstractSinkMapper,
-        mapping_format=MappingFormat.FHIR,
-        concept_coding=ConceptCoding.SNOMED,
+        mapping_format: MappingFormat = MappingFormat.FHIR,
+        concept_coding: ConceptCoding = ConceptCoding.SNOMED,
         processes: int = 2,
     ) -> None:
         """A Pipeline that extracts, transforms, and loads data into sinks.
@@ -36,19 +37,19 @@ class Pipeline:
         self._graph = Graph()
 
     def _load_concepts(
-        self, concepts: List[str|Path|Concept], base_path=None
-    ) -> List[Concept]:
+        self, concepts: list[str | Path | Concept], base_path: str | Path | None = None
+    ) -> list[Concept]:
         if base_path is None:
-            base_path = osp.split(__file__)[:-2]
-            base_path = osp.join(*base_path, "conceptbase", "concepts")
-        out = []
+            base_path = Path(__file__).parent.parent / "conceptbase" / "concepts"
+        if isinstance(base_path, str):
+            base_path = Path(base_path)
+        out: list = []
         # Check and add all concepts
         for next_concept in concepts:
             # Strings are ConceptNames -> filename
-            if isinstance(next_concept, str):
-                with open(
-                    osp.join(base_path, f"{next_concept}.yml"), "r"
-                ) as concept_file:
+            if isinstance(next_concept, (str, Path)):
+                concept_path = next_concept if isinstance(next_concept, Path) else base_path / f"{next_concept}.yml"
+                with open(concept_path, "r") as concept_file:
                     config = dict(*safe_load_all(concept_file))
                     out.append(
                         Concept(
@@ -57,15 +58,15 @@ class Pipeline:
                             concept_coding=self._concept_coding,
                         )
                     )
-            elif type(next_concept) in [Concept]:
+            elif isinstance(next_concept, Concept):
                 out.append(next_concept)
             else:
-                raise TypeError(
-                    f"Type of concept not recognized: '{type(next_concept)}'"
-                )
+                raise TypeError(f"Type of concept not recognized: '{type(next_concept)}'")
         return out
 
-    def transform(self, concepts: List[Concept | str]):
+    def transform(
+        self, concepts: list[str | Path | Concept], base_path: str | None = None
+    ) -> Generator[DataFrame, None, None]:
         """Transform a list of Concepts according to given sources, steps, and sinks.
         Arguments:
           concepts: List of concepts. If (Concept) then use them directly.
@@ -74,13 +75,14 @@ class Pipeline:
 
         self._graph = Graph()
 
-        concepts: List[Concept] = self._load_concepts(concepts)
-        concept_id_to_node: dict[str,Concept] = {}
+        _concepts: list[Concept] = self._load_concepts(concepts, base_path)
+        concept_id_to_node: dict[str, BaseNode] = {}
 
         #########################
         # Create left-to-right
         #########################
-        for c in concepts:
+        for c in _concepts:
+            assert isinstance(c, Concept)
             for db in self._source_configs.keys():
                 avail_mappers = [k.source for k in c._concept_config.mapper]
                 assert (
@@ -91,6 +93,7 @@ class Pipeline:
         # Attach default converters
         for v in concept_id_to_node:
             next_concept = concept_id_to_node[v]
+            assert isinstance(next_concept, Concept)
             next_converter = next_concept.getDefaultConverter()
             self._graph.addPipe(next_concept, next_converter)
             concept_id_to_node[v] = next_converter
@@ -99,18 +102,18 @@ class Pipeline:
         #   Pass
 
         # Attach Sinks
-        for k,v in concept_id_to_node.items():
-            self._graph.addPipe(source=v, sink=self._sink_mapper)
+        for _, n in concept_id_to_node.items():
+            self._graph.addPipe(source=n, sink=self._sink_mapper)
 
         ##############################
         # Backpropagate Dependencies
         ##############################
-        def _attachDependencies(n: Node):
+        def _attachDependencies(n: BaseNode) -> int:
             out = 0
             for d in n.REQUIRED_CONCEPTS:
                 if d not in concept_id_to_node:
                     # Create Concept
-                    next_concept = self._load_concepts([d])[0]
+                    next_concept = self._load_concepts([d], base_path)[0]
                     next_converter = next_concept.getDefaultConverter()
                     # Attach Concept to Converter
                     self._graph.addPipe(next_concept, next_converter)
@@ -140,6 +143,4 @@ class Pipeline:
         for data_source, source_config in self._source_configs.items():
             next_sampler = getDataSampler(data_source, source_config)
             for next_chunk in next_sampler.get_samples():
-                yield self._sink_mapper.get_data(
-                    job=Job(jobID="test", database=data_source, subjects=next_chunk)
-                )
+                yield self._sink_mapper.get_data(job=Job(jobID="test", database=data_source, subjects=next_chunk))

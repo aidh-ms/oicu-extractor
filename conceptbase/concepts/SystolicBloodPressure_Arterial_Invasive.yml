@@ -1,0 +1,26 @@
+name: SystolicBloodPressure_Arterial_Invasive
+unit: mmHg
+description: Systolic arterial pressure of a patient
+identifiers:
+  loinc: 76215-3
+  snomed: '251071003'
+lower_limit: '0'
+upper_limit: '300'
+
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '220050'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: mmHg
+- klass: EICUObservationMapper
+  params:
+    fields:
+      value: systemicsystolic
+    schema: eicu_crd
+    table: vitalperiodic
+  source: eicu
+  unit: mmHg

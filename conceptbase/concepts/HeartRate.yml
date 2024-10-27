@@ -1,0 +1,26 @@
+name: HeartRate
+unit: bpm
+description: heart rate of a patient, source agnostic
+identifiers:
+  loinc: 8867-4
+  snomed: '364075005'
+lower_limit: '0'
+upper_limit: '300'
+
+mapper:
+- klass: MimicObservationMapper
+  params:
+    constraints:
+      itemid: '220045'
+    schema: mimiciv_icu
+    table: chartevents
+  source: mimiciv
+  unit: bpm
+- klass: EICUObservationMapper
+  params:
+    fields:
+      value: heartrate
+    schema: eicu_crd
+    table: vitalperiodic
+  source: eicu
+  unit: bpm

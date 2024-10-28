@@ -21,7 +21,7 @@ Bugtracker = "https://github.com/aidh-ms/oicu-extractor/issues"
 
 [tool.poetry.dependencies]
 python = "~3.12"
-numpy = "^1.26.4"
+numpy = "^2.1.2"
 psycopg = {extras = ["binary"], version = "^3.1.19"}
 SQLAlchemy = "^2.0.30"
 pandas = "^2.2.2"

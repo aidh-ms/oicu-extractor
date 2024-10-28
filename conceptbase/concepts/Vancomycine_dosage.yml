@@ -1,5 +1,5 @@
 name: Vancomycine_dosage
-unit: mg
+unit: mcg  # TODO Fix
 description: ''
 identifiers:
   loinc: ''
@@ -15,4 +15,12 @@ mapper:
     schema: mimiciv_icu
     table: inputevents
   source: mimiciv
-  unit: mg
+  unit: mcg  # TODO Fix
+- klass: EICUInfusionDosageMapper
+  params:
+    constraints:
+      drugname: Vancomycin (ml/hr)
+    schema: eicu_crd
+    table: infusiondrug
+  source: eicu
+  unit: mcg

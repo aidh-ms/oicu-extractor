@@ -1,5 +1,5 @@
 name: Adrenaline_dosage
-unit: ug/kg/min
+unit: mcg  # TODO Fix
 description: ''
 identifiers:
   loinc: ''
@@ -15,4 +15,20 @@ mapper:
     schema: mimiciv_icu
     table: inputevents
   source: mimiciv
-  unit: mg/time
+  unit: mcg  # TODO Fix should be ml
+- klass: EICUInfusionDosageMapper
+  params:
+    constraints:
+      drugname: EPINEPHrine(Adrenalin)STD 4 mg Sodium Chloride 0.9% 250 ml (mcg/min)
+    schema: eicu_crd
+    table: infusiondrug
+  source: eicu
+  unit: mcg
+- klass: EICUInfusionDosageMapper
+  params:
+    constraints:
+      drugname: EPINEPHrine(Adrenalin)MAX 30 mg Sodium Chloride 0.9% 250 ml (mcg/min
+    schema: eicu_crd
+    table: infusiondrug
+  source: eicu
+  unit: mcg

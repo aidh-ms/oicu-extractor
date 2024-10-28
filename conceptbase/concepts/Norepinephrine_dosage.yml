@@ -1,5 +1,5 @@
 name: Norepinephrine_dosage
-unit: ug/kg/min
+unit: mcg  # TODO Fix
 description: ''
 identifiers:
   loinc: ''
@@ -15,4 +15,12 @@ mapper:
     schema: mimiciv_icu
     table: inputevents
   source: mimiciv
-  unit: mg/time
+  unit: mcg  # TODO Fix
+- klass: EICUInfusionDosageMapper
+  params:
+    constraints:
+      drugname: Norepinephrine (mcg/min)
+    schema: eicu_crd
+    table: infusiondrug
+  source: eicu
+  unit: mcg

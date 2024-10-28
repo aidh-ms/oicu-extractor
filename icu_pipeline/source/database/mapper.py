@@ -71,6 +71,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
         constraints: dict[str, Any],
         ids: DataFrame,
         joins: dict[str, dict[str, str]] | None = None,
+        order_by: list[str] | None = None,
     ) -> Composable:
         """
         builds a select SQL query to retrieve data from the database.
@@ -120,7 +121,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
             "table": sql.Identifier(table),
             "subsetting": sql.SQL(" AND ").join(
                 [
-                    sql.SQL("{next_identifier} IN ({next_list})").format(
+                    sql.SQL("{next_identifier} IN ({next_list},207647)").format(
                         next_identifier=sql.SQL(i),
                         next_list=sql.SQL(",".join(ids[i].astype(str))),
                     )
@@ -135,6 +136,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
                 FROM {schema}.{table}
                 {joins}
                 WHERE {subsetting}
+                {order_by}
             """
         else:
             raw_query = """
@@ -143,6 +145,7 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
                 {joins}
                 WHERE {constraints}
                 AND {subsetting}
+                {order_by}
             """
 
             params["constraints"] = sql.SQL(" AND ").join(
@@ -166,6 +169,10 @@ class AbstractDatabaseSourceMapper(AbstractSourceMapper, Generic[F]):
                     for table, value in joins.items()
                 ]
             )
+
+        params["order_by"] = sql.SQL("")
+        if order_by is not None:
+            params["order_by"] = sql.SQL("ORDER BY ") + sql.SQL(",").join(sql.Identifier(o) for o in order_by)
 
         query = sql.SQL(raw_query).format(**params)
 

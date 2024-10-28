@@ -1,5 +1,5 @@
 name: Vasopressine_dosage
-unit: IE/kg/min
+unit: unit  # TODO Fix
 description: ''
 identifiers:
   loinc: ''
@@ -15,4 +15,12 @@ mapper:
     schema: mimiciv_icu
     table: inputevents
   source: mimiciv
-  unit: IE/time
+  unit: unit  # TODO Fix
+- klass: EICUInfusionDosageMapper
+  params:
+    constraints:
+      drugname: Vasopressin (units/min)
+    schema: eicu_crd
+    table: infusiondrug
+  source: eicu
+  unit: unit

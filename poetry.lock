@@ -1784,28 +1784,28 @@ types-pytz = ">=2022.1.1"
 
 [[package]]
 name = "pandera"
-version = "0.19.3"
+version = "0.21.1"
 description = "A light-weight and flexible data validation and testing tool for statistical data objects."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pandera-0.19.3-py3-none-any.whl", hash = "sha256:4ff2f0446f4b8dd7c2fa2aac547044911f4957d137456bfe2b281ccd02cc5ff5"},
-    {file = "pandera-0.19.3.tar.gz", hash = "sha256:1bf9dc8a30525cb5bc77edb7d6a044cc59d59c3ef405517825cf6b04c6160c07"},
+    {file = "pandera-0.21.1-py3-none-any.whl", hash = "sha256:cb6323952815ab82484bd8371f71d0b609a9cd0f515a7b91b2c076871b4db387"},
+    {file = "pandera-0.21.1.tar.gz", hash = "sha256:3a40b643cd32d1fdd4142917ede1ae91b93a5f3469b01fcf70ffd1046964818c"},
 ]
 
 [package.dependencies]
-multimethod = "<=1.10.0"
+multimethod = "*"
 numpy = ">=1.19.0"
 packaging = ">=20.0"
 pandas = ">=1.2.0"
 pandas-stubs = {version = "*", optional = true, markers = "extra == \"mypy\""}
 pydantic = "*"
 typeguard = "*"
-typing-inspect = ">=0.6.0"
+typing_inspect = ">=0.6.0"
 wrapt = "*"
 
 [package.extras]
-all = ["black", "dask[dataframe]", "fastapi", "frictionless (<=4.40.8)", "geopandas", "hypothesis (>=6.92.7)", "modin", "pandas-stubs", "polars (>=0.20.0)", "pyspark (>=3.2.0)", "pyyaml (>=5.1)", "ray", "scipy", "shapely"]
+all = ["black", "dask[dataframe]", "fastapi", "frictionless (<=4.40.8)", "geopandas", "hypothesis (>=6.92.7)", "modin", "pandas-stubs", "polars (>=0.20.0)", "pyspark[connect] (>=3.2.0)", "pyyaml (>=5.1)", "ray", "scipy", "shapely"]
 dask = ["dask[dataframe]"]
 fastapi = ["fastapi"]
 geopandas = ["geopandas", "shapely"]
@@ -1816,7 +1816,7 @@ modin-dask = ["dask[dataframe]", "modin"]
 modin-ray = ["modin", "ray"]
 mypy = ["pandas-stubs"]
 polars = ["polars (>=0.20.0)"]
-pyspark = ["pyspark (>=3.2.0)"]
+pyspark = ["pyspark[connect] (>=3.2.0)"]
 strategies = ["hypothesis (>=6.92.7)"]
 
 [[package]]
@@ -3532,4 +3532,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "20594c3f6916fdbf94a51b2efed02ea424af49f5a8fa2266d75bdc106aa9a37b"
+content-hash = "088c26ae6f7d3a6e5eead3ae86bea54fe86ff6a5b0124f83d8acf10385d1c2af"
